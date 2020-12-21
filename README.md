@@ -25,3 +25,11 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
   * Docs: https://hexdocs.pm/phoenix
   * Forum: https://elixirforum.com/c/phoenix-forum
   * Source: https://github.com/phoenixframework/phoenix
+
+## Status
+
+Following https://littlelines.com/blog/2020/07/06/building-a-video-chat-app-in-phoenix-liveview
+
+```
+mix phx.gen.context Organizer Room rooms title:string slug:string
+```
