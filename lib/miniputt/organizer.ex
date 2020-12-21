@@ -28,14 +28,17 @@ defmodule Miniputt.Organizer do
 
   ## Examples
 
-      iex> get_room!(123)
+      iex> get_room!("123")
       %Room{}
 
-      iex> get_room!(456)
+      iex> get_room!("456")
       ** (Ecto.NoResultsError)
 
   """
-  def get_room!(id), do: Repo.get!(Room, id)
+  def get_room(slug) when is_binary(slug) do
+    from(room in Room, where: room.slug == ^slug)
+    |> Repo.one()
+  end
 
   @doc """
   Creates a room.
