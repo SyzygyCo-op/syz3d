@@ -13,6 +13,8 @@ defmodule Miniputt.Application do
       MiniputtWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: Miniputt.PubSub},
+      # Start our Presence module.
+      MiniputtWeb.Presence,
       # Start the Endpoint (http/https)
       MiniputtWeb.Endpoint
       # Start a worker by calling: Miniputt.Worker.start_link(arg)
