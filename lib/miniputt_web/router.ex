@@ -18,6 +18,11 @@ defmodule MiniputtWeb.Router do
     pipe_through :browser
 
     live "/", PageLive, :index
+
+    scope "/room" do
+      live "/new", Room.NewLive, :new, as: :new_room
+      live "/:slug", Room.ShowLive, :show, as: :show_room
+    end
   end
 
   # Other scopes may use custom stacks.
@@ -39,10 +44,5 @@ defmodule MiniputtWeb.Router do
       pipe_through :browser
       live_dashboard "/dashboard", metrics: MiniputtWeb.Telemetry
     end
-  end
-
-  scope "/room" do
-    live "/new", Room.NewLive, :new
-    live "/:slug", Room.ShowLive, :show
   end
 end
