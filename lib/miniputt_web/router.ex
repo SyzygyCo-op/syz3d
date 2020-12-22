@@ -40,4 +40,9 @@ defmodule MiniputtWeb.Router do
       live_dashboard "/dashboard", metrics: MiniputtWeb.Telemetry
     end
   end
+
+  scope "/room" do
+    live "/new", Room.NewLive, :new
+    live "/:slug", Room.ShowLive, :show
+  end
 end
