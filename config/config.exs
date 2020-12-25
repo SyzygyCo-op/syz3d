@@ -7,15 +7,15 @@
 # General application configuration
 use Mix.Config
 
-config :miniputt,
-  ecto_repos: [Miniputt.Repo]
+config :syz3d,
+  ecto_repos: [Syz3d.Repo]
 
 # Configures the endpoint
-config :miniputt, MiniputtWeb.Endpoint,
+config :syz3d, Syz3dWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "zDKV40bBx0x/KtmyYNOW+ZQRtNziO1GoxZRkjbZm5WEicwK8SrRHLMyHuTABUm+1",
-  render_errors: [view: MiniputtWeb.ErrorView, accepts: ~w(html json), layout: false],
-  pubsub_server: Miniputt.PubSub,
+  render_errors: [view: Syz3dWeb.ErrorView, accepts: ~w(html json), layout: false],
+  pubsub_server: Syz3d.PubSub,
   live_view: [signing_salt: "YC0uVXxW"]
 
 # Configures Elixir's Logger

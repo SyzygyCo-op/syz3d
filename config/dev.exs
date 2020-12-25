@@ -1,10 +1,10 @@
 use Mix.Config
 
 # Configure your database
-config :miniputt, Miniputt.Repo,
+config :syz3d, Syz3d.Repo,
   username: "postgres",
   password: "postgres",
-  database: "miniputt_dev",
+  database: "syz3d_dev",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -15,7 +15,7 @@ config :miniputt, Miniputt.Repo,
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
-config :miniputt, MiniputtWeb.Endpoint,
+config :syz3d, Syz3dWeb.Endpoint,
   http: [port: 4000],
   debug_errors: true,
   code_reloader: true,
@@ -55,13 +55,13 @@ config :miniputt, MiniputtWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :miniputt, MiniputtWeb.Endpoint,
+config :syz3d, Syz3dWeb.Endpoint,
   live_reload: [
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/miniputt_web/(live|views)/.*(ex)$",
-      ~r"lib/miniputt_web/templates/.*(eex)$"
+      ~r"lib/syz3d_web/(live|views)/.*(ex)$",
+      ~r"lib/syz3d_web/templates/.*(eex)$"
     ]
   ]
 

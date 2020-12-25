@@ -1,12 +1,12 @@
-defmodule MiniputtWeb do
+defmodule Syz3dWeb do
   @moduledoc """
   The entrypoint for defining your web interface, such
   as controllers, views, channels and so on.
 
   This can be used in your application as:
 
-      use MiniputtWeb, :controller
-      use MiniputtWeb, :view
+      use Syz3dWeb, :controller
+      use Syz3dWeb, :view
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused
@@ -19,19 +19,19 @@ defmodule MiniputtWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: MiniputtWeb
+      use Phoenix.Controller, namespace: Syz3dWeb
 
       import Plug.Conn
-      import MiniputtWeb.Gettext
-      alias MiniputtWeb.Router.Helpers, as: Routes
+      import Syz3dWeb.Gettext
+      alias Syz3dWeb.Router.Helpers, as: Routes
     end
   end
 
   def view do
     quote do
       use Phoenix.View,
-        root: "lib/miniputt_web/templates",
-        namespace: MiniputtWeb
+        root: "lib/syz3d_web/templates",
+        namespace: Syz3dWeb
 
       # Import convenience functions from controllers
       import Phoenix.Controller,
@@ -45,7 +45,7 @@ defmodule MiniputtWeb do
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {MiniputtWeb.LayoutView, "live.html"}
+        layout: {Syz3dWeb.LayoutView, "live.html"}
 
       unquote(view_helpers())
     end
@@ -72,7 +72,7 @@ defmodule MiniputtWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import MiniputtWeb.Gettext
+      import Syz3dWeb.Gettext
     end
   end
 
@@ -87,9 +87,9 @@ defmodule MiniputtWeb do
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View
 
-      import MiniputtWeb.ErrorHelpers
-      import MiniputtWeb.Gettext
-      alias MiniputtWeb.Router.Helpers, as: Routes
+      import Syz3dWeb.ErrorHelpers
+      import Syz3dWeb.Gettext
+      alias Syz3dWeb.Router.Helpers, as: Routes
     end
   end
 

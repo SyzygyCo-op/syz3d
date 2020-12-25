@@ -1,6 +1,6 @@
-defmodule Miniputt do
+defmodule Syz3d do
   @moduledoc """
-  Miniputt keeps the contexts that define your domain
+  Syz3d keeps the contexts that define your domain
   and business logic.
 
   Contexts are also responsible for managing your data, regardless

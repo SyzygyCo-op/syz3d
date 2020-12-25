@@ -1,4 +1,4 @@
-defmodule Miniputt.Repo.Migrations.CreateRooms do
+defmodule Syz3d.Repo.Migrations.CreateRooms do
   use Ecto.Migration
 
   def change do

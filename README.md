@@ -1,4 +1,4 @@
-# Miniputt
+# Syz3d
 
 If `postgres` was installed with Homebrew, then run
 

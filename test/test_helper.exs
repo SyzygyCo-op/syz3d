@@ -1,2 +1,2 @@
 ExUnit.start()
-Ecto.Adapters.SQL.Sandbox.mode(Miniputt.Repo, :manual)
+Ecto.Adapters.SQL.Sandbox.mode(Syz3d.Repo, :manual)

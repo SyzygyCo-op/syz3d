@@ -1,4 +1,4 @@
-defmodule Miniputt.DataCase do
+defmodule Syz3d.DataCase do
   @moduledoc """
   This module defines the setup for tests requiring
   access to the application's data layer.
@@ -10,7 +10,7 @@ defmodule Miniputt.DataCase do
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
   PostgreSQL, you can even run database tests asynchronously
-  by setting `use Miniputt.DataCase, async: true`, although
+  by setting `use Syz3d.DataCase, async: true`, although
   this option is not recommended for other databases.
   """
 
@@ -18,20 +18,20 @@ defmodule Miniputt.DataCase do
 
   using do
     quote do
-      alias Miniputt.Repo
+      alias Syz3d.Repo
 
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import Miniputt.DataCase
+      import Syz3d.DataCase
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Miniputt.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Syz3d.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Miniputt.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(Syz3d.Repo, {:shared, self()})
     end
 
     :ok
