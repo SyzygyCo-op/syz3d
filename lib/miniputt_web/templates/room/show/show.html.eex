@@ -1,0 +1,5 @@
+
+<script>
+  window.ROOM_ID = "<%= @slug %>";
+</script>
+<div id="game"><!-- game renders here using JavaScript --></div>

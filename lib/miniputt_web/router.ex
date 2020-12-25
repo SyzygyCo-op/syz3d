@@ -21,7 +21,7 @@ defmodule MiniputtWeb.Router do
 
     scope "/room" do
       live "/new", Room.NewLive, :new, as: :new_room
-      live "/:slug", Room.ShowLive, :show, as: :show_room
+      get "/:slug", Room.Show, :show, as: :show_room
     end
   end
 

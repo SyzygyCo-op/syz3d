@@ -2,6 +2,20 @@
 @import "./phoenix.css";
 @import "../node_modules/nprogress/nprogress.css";
 
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+canvas {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 /* LiveView specific classes for your customizations */
 .phx-no-feedback.invalid-feedback,
 .phx-no-feedback .invalid-feedback {
