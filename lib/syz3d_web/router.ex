@@ -20,7 +20,7 @@ defmodule Syz3dWeb.Router do
     live "/", PageLive, :index
 
     scope "/room" do
-      live "/new", Room.NewLive, :new, as: :new_room
+      # live "/new", Room.NewLive, :new, as: :new_room
       get "/:slug", Room.Show, :show, as: :show_room
     end
   end
