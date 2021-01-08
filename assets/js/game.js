@@ -7,6 +7,7 @@ import ReactDOM from "react-dom";
 import { Canvas } from "react-three-fiber";
 import { Html } from "@react-three/drei";
 import { joinRoom } from "./room";
+import { observer } from "mobx-react-lite";
 
 class Position extends Component {}
 Position.schema = {
@@ -28,24 +29,14 @@ const texture = new THREE.TextureLoader().load("/images/crate.gif");
 
 // TODO refactor using Redux or similar
 
-const App = () => {
-  /** @type [Entity[], (e: Entity[]) => void] */
-  const [entities, setEntities] = React.useState([]);
-
-  React.useEffect(() => {
-    const sub = ReactObserverSystem.subscribe((entities) => {
-      // The spread operator is necessary for React to, erm, react.
-      setEntities([...entities]);
-    });
-    return () => sub.unsubscribe();
-  }, [setEntities]);
+const App = observer(() => {
+  const observerSystem = world.getSystem(ReactObserverSystem);
 
   return (
     <Canvas>
-      {entities.map((entity) => {
+      {Array.from(observerSystem.results).map((entity) => {
         const { value: position } = entity.getComponent(Position);
         const player = entity.getComponent(Player);
-        console.log(player);
 
         return (
           <group position={position} key={entity.id}>
@@ -61,7 +52,7 @@ const App = () => {
       })}
     </Canvas>
   );
-};
+});
 
 ReactDOM.render(<App />, document.getElementById("game"));
 
@@ -78,14 +69,14 @@ export async function handleMount(onLoadCompleted) {
   let playerEntities = {};
   joinRoom(roomId, {
     player_id,
-    onJoin,
+    onSync,
     onLeave,
   });
 
   /**
    * @param {any[]} plist
    */
-  function onJoin(plist) {
+  function onSync(plist) {
     plist.forEach((player) => {
       playerEntities[player.player_id] = world
         .createEntity()

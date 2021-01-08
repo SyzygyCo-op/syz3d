@@ -11,7 +11,7 @@ jest.mock("phoenix", () => {
   }
 
   class Presence {
-    onJoin(fn) {
+    onSync(fn) {
       this.list = () => [{ metas: [{ player_id: "1" }, { player_id: "1" }] }];
       fn();
 
@@ -46,7 +46,7 @@ describe("joinRoom", () => {
     const spy = jest.fn();
     joinRoom("best-fwends", {
       player_id: "moom",
-      onJoin: spy,
+      onSync: spy,
     });
 
     expect(spy.mock.calls).toEqual([
@@ -59,7 +59,7 @@ describe("joinRoom", () => {
     const spy = jest.fn();
     joinRoom("best-fwends", {
       player_id: "moom",
-      onJoin: () => {},
+      onSync: () => {},
       onLeave: spy,
     });
 

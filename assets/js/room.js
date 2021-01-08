@@ -2,7 +2,7 @@ import { Socket, Presence } from "phoenix";
 
 /**
  * @typedef {{player_id: string}} Player
- * @typedef {{player_id?: string, onJoin?: (plist: Player[]) => void, onLeave?: (idlist: string[]) => void}} Options
+ * @typedef {{player_id?: string, onSync?: (plist: Player[]) => void, onLeave?: (idlist: string[]) => void}} Options
  * @param {string} roomId
  * @param {Options} options
  */
@@ -21,7 +21,7 @@ export function joinRoom(roomId, options = {}) {
   const presense = new Presence(channel);
   const playerIdSet = new Set();
 
-  presense.onJoin(() => {
+  presense.onSync(() => {
     const playerList = presense.list();
     const dedupedList = [];
 
@@ -34,7 +34,7 @@ export function joinRoom(roomId, options = {}) {
       }
     });
 
-    options.onJoin && options.onJoin(dedupedList);
+    options.onSync && options.onSync(dedupedList);
   });
 
   presense.onLeave(() => {
