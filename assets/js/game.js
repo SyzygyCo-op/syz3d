@@ -6,7 +6,7 @@ import * as React from "react";
 import ReactDOM from "react-dom";
 import { Canvas } from "react-three-fiber";
 import { Html } from "@react-three/drei";
-import { joinRoom } from "./room";
+import { joinRoomChannel } from "./room";
 import { observer } from "mobx-react-lite";
 
 class Position extends Component {}
@@ -26,8 +26,6 @@ const world = new World()
   .registerSystem(ReactObserverSystem);
 
 const texture = new THREE.TextureLoader().load("/images/crate.gif");
-
-// TODO refactor using Redux or similar
 
 const App = observer(() => {
   const observerSystem = world.getSystem(ReactObserverSystem);
@@ -67,7 +65,7 @@ export async function handleMount(onLoadCompleted) {
 
   onLoadCompleted();
   let playerEntities = {};
-  joinRoom(roomId, {
+  joinRoomChannel(roomId, {
     player_id,
     onSync,
     onLeave,
