@@ -1,7 +1,7 @@
 import * as ECSY from "ecsy";
 import { Socket } from "phoenix";
-import { LocalPlayerTag, PlayerComponent } from "./player";
-import RenderTagComponent from "./RenderTagComponent";
+import { LocalPlayerTag, PlayerComponent, PlayerR3F } from "./player";
+import { RenderR3FComponent } from "./renderer";
 import { PositionComponent, getRandomPosition } from "./position";
 
 /**
@@ -129,7 +129,7 @@ export class RoomSystem extends ECSY.System {
         .createEntity(`player:${player_id}`)
         .addComponent(PlayerComponent, { player_id })
         .addComponent(PositionComponent, { value: getRandomPosition() })
-        .addComponent(RenderTagComponent);
+        .addComponent(RenderR3FComponent, { value: PlayerR3F });
 
       room.playerEntityMap.set(player_id, entity);
     });
