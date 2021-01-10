@@ -65,52 +65,57 @@ export class RoomSystem extends ECSY.System {
   execute() {
     const eLocalPlayer = this.queries.localPlayer.results[0];
 
-    if (eLocalPlayer) {
-      const cPlayer = eLocalPlayer.getComponent(PlayerComponent);
-      const cRoom = eLocalPlayer.getMutableComponent(RoomComponent);
-      /** @type Room */
-      const room = cRoom.value;
-      const localPlayerId = cPlayer.player_id;
+    if (!eLocalPlayer) return;
 
-      if (!this.channel) {
-        const socket = new Socket("/socket", {
-          params: {
-            player_id: localPlayerId,
-          },
-        });
-        socket.connect();
+    const cPlayer = eLocalPlayer.getComponent(PlayerComponent);
 
-        const topic = `room:${room.id}`;
-        this.channel = socket.channel(topic);
-        this.channel.join();
-      }
+    if (!cPlayer) return;
 
-      this.channel.on("presence_state", (response) => {
-        RoomSystem.handleJoins(
-          Object.keys(response),
-          room,
-          this.world,
-          localPlayerId
-        );
+    const cRoom = eLocalPlayer.getMutableComponent(RoomComponent);
+
+    /** @type Room */
+    const room = cRoom.value;
+    const localPlayerId = cPlayer.player_id;
+
+    if (!this.channel) {
+      console.log("connecting", { localPlayerId });
+      const socket = new Socket("/socket", {
+        params: {
+          player_id: localPlayerId,
+        },
       });
+      socket.connect();
 
-      this.channel.on("presence_diff", (response) => {
-        RoomSystem.handleJoins(
-          Object.keys(response.joins),
-          room,
-          this.world,
-          localPlayerId
-        );
-
-        Object.keys(response.leaves).forEach((player_id) => {
-          const entity = room.playerEntityMap.get(player_id);
-          if (entity) {
-            entity.remove();
-          }
-          room.playerEntityMap.delete(player_id);
-        });
-      });
+      const topic = `room:${room.id}`;
+      this.channel = socket.channel(topic);
+      this.channel.join();
     }
+
+    this.channel.on("presence_state", (response) => {
+      RoomSystem.handleJoins(
+        Object.keys(response),
+        room,
+        this.world,
+        localPlayerId
+      );
+    });
+
+    this.channel.on("presence_diff", (response) => {
+      RoomSystem.handleJoins(
+        Object.keys(response.joins),
+        room,
+        this.world,
+        localPlayerId
+      );
+
+      Object.keys(response.leaves).forEach((player_id) => {
+        const entity = room.playerEntityMap.get(player_id);
+        if (entity) {
+          entity.remove();
+        }
+        room.playerEntityMap.delete(player_id);
+      });
+    });
   }
 
   /**

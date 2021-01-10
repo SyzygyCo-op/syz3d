@@ -16,7 +16,7 @@ export class PlayerComponent extends ECSY.Component {
 const texture = new THREE.TextureLoader().load("/images/crate.gif");
 
 /**
- * @type React.ComponentType<{entity: ECSY.Entity}>
+ * @type React.ComponentType<{entity: ECSY.Entity, world: ECSY.World}>
  */
 export const PlayerR3F = ({ entity }) => {
   const { value: position } = entity.getComponent(PositionComponent);
@@ -33,4 +33,26 @@ export const PlayerR3F = ({ entity }) => {
       </mesh>
     </group>
   );
+};
+
+/**
+ * @param {{onSubmit: (data: {player_id: string}) => void}} props
+ */
+export const PlayerFormReact = (props) => {
+  return (
+    <form onSubmit={handleSubmit}>
+      <input name="player_id" type="text" placeholder="Samuel L. Jackson" />
+    </form>
+  );
+
+  /**
+   * @param {React.FormEvent} evt
+   */
+  function handleSubmit(evt) {
+    evt.preventDefault();
+    const data = new FormData(/** @type any */ (evt.target));
+    /** @type string */
+    const player_id = /** @type string */ (data.get("player_id"));
+    props.onSubmit({ player_id });
+  }
 };

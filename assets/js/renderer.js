@@ -10,23 +10,13 @@ export class RenderR3FComponent extends ECSY.Component {
     value: { type: ECSY.Types.Ref },
   };
 }
+export class RenderReactComponent extends ECSY.Component {
+  static schema = {
+    value: { type: ECSY.Types.Ref },
+  };
+}
 
 export class RenderSystem extends ECSY.System {
-  init() {
-    const App = observer(() => {
-      return (
-        <Canvas>
-          {Array.from(this.results).map((entity) => {
-            const R3F = entity.getComponent(RenderR3FComponent).value;
-            return <R3F entity={entity} key={entity.id} />;
-          })}
-        </Canvas>
-      );
-    });
-
-    ReactDOM.render(<App />, document.getElementById("game"));
-  }
-
   static queries = {
     r3f: {
       components: [RenderR3FComponent],
@@ -35,27 +25,96 @@ export class RenderSystem extends ECSY.System {
         removed: true,
       },
     },
+    react: {
+      components: [RenderReactComponent],
+      listen: {
+        added: true,
+        removed: true,
+      },
+    },
   };
+
+  init() {
+    const App = observer(() => {
+      /**
+       * @type React.CSSProperties
+       */
+      const overlayStyle = React.useMemo(
+        () => ({
+          position: "fixed",
+          top: "0",
+          left: "0",
+          zIndex: 1,
+        }),
+        []
+      );
+      return (
+        <>
+          <div style={overlayStyle}>
+            {Array.from(this._observables.reactEntities).map((entity) => {
+              const ReactComponent = entity.getComponent(RenderReactComponent)
+                .value;
+              return (
+                <ReactComponent
+                  entity={entity}
+                  world={this.world}
+                  key={entity.id}
+                />
+              );
+            })}
+          </div>
+          <Canvas>
+            {Array.from(this._observables.r3fEntities).map((entity) => {
+              const R3FComponent = entity.getComponent(RenderR3FComponent)
+                .value;
+              return (
+                <R3FComponent
+                  entity={entity}
+                  world={this.world}
+                  key={entity.id}
+                />
+              );
+            })}
+          </Canvas>
+        </>
+      );
+    });
+
+    ReactDOM.render(<App />, document.getElementById("game"));
+  }
 
   execute() {
     if (
       this.queries.r3f.added.length > 0 ||
-      this.queries.r3f.removed.length > 0
+      this.queries.r3f.removed.length > 0 ||
+      this.queries.react.added.length > 0 ||
+      this.queries.react.removed.length > 0
     ) {
-      this.setEntities(this.queries.r3f.results);
+      this._updateObservables();
     }
   }
 
-  setEntities = MOBX.action(
-    /**
-     * @param {ECSY.Entity[]} entities
-     */
-    (entities) => {
-      this.results.clear();
-      entities.forEach((e) => this.results.add(e));
-    }
-  );
+  /**
+   * @private
+   */
+  _updateObservables = MOBX.action(() => {
+    this._observables.r3fEntities.clear();
+    this._observables.reactEntities.clear();
+    this.queries.r3f.results.forEach((e) =>
+      this._observables.r3fEntities.add(e)
+    );
+    this.queries.react.results.forEach((e) =>
+      this._observables.reactEntities.add(e)
+    );
+  });
 
-  /** @type {Set<ECSY.Entity>} */
-  results = MOBX.observable.set();
+  /**
+   * @private
+   */
+  _observables = {
+    /** @type {MOBX.ObservableSet<ECSY.Entity>} */
+    r3fEntities: MOBX.observable.set(),
+    /** @type {MOBX.ObservableSet<ECSY.Entity>} */
+    reactEntities: MOBX.observable.set(),
+  };
 }

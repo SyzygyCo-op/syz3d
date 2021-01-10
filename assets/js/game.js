@@ -1,11 +1,17 @@
 import { World } from "ecsy";
-import { RenderSystem, RenderR3FComponent } from "./renderer";
+import {
+  RenderSystem,
+  RenderR3FComponent,
+  RenderReactComponent,
+} from "./renderer";
 import { PlayerComponent, LocalPlayerTag } from "./player";
 import { Room, RoomComponent, RoomSystem } from "./room";
 import { PositionComponent } from "./position";
+import { WelcomeScreenReact } from "./welcome";
 
 const world = new World()
   .registerComponent(RenderR3FComponent)
+  .registerComponent(RenderReactComponent)
   .registerComponent(PositionComponent)
   .registerComponent(PlayerComponent)
   .registerComponent(LocalPlayerTag)
@@ -21,7 +27,6 @@ export async function handleMount(onLoadCompleted) {
     world.execute(1000 / 60);
   }, 1000 / 60);
 
-  const player_id = window.prompt("what is your name?", "Karl");
   const roomId = /** @type {any} window */ (window).ROOM_ID;
 
   const room = new Room(roomId);
@@ -30,6 +35,6 @@ export async function handleMount(onLoadCompleted) {
   world
     .createEntity("localPlayer")
     .addComponent(RoomComponent, { value: room })
-    .addComponent(PlayerComponent, { player_id })
+    .addComponent(RenderReactComponent, { value: WelcomeScreenReact })
     .addComponent(LocalPlayerTag);
 }
