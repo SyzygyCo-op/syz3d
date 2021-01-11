@@ -8,11 +8,13 @@ import { PlayerComponent, LocalPlayerTag } from "./player";
 import { Room, RoomComponent, RoomSystem } from "./room";
 import { PositionComponent } from "./position";
 import { WelcomeScreenReact } from "./welcome";
+import { TextureComponent } from "./texture";
 
 const world = new World()
   .registerComponent(RenderR3FComponent)
   .registerComponent(RenderReactComponent)
   .registerComponent(PositionComponent)
+  .registerComponent(TextureComponent)
   .registerComponent(PlayerComponent)
   .registerComponent(LocalPlayerTag)
   .registerComponent(RoomComponent)

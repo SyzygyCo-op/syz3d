@@ -17,7 +17,7 @@ defmodule Syz3dWeb.UserSocket do
   # performing token verification on connect.
   @impl true
   def connect(params, socket, _connect_info) do
-    {:ok, assign(socket, :player_id, params["player_id"])}
+    {:ok, assign(socket, player_id: params["player_id"], texture: params["texture"])}
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:

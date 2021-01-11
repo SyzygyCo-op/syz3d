@@ -10,7 +10,8 @@ defmodule Syz3dWeb.RoomChannel do
   def handle_info(:after_join, socket) do
     {:ok, _} = Presence.track(socket, socket.assigns.player_id, %{
       online_at: inspect(System.system_time(:second)),
-      player_id: socket.assigns.player_id
+      player_id: socket.assigns.player_id,
+      texture: socket.assigns.texture
     })
 
     push(socket, "presence_state", Presence.list(socket))

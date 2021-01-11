@@ -3,6 +3,7 @@ import { Socket } from "phoenix";
 import { LocalPlayerTag, PlayerComponent, PlayerR3F } from "./player";
 import { RenderR3FComponent } from "./renderer";
 import { PositionComponent, getRandomPosition } from "./position";
+import { TextureComponent } from "./texture";
 
 /**
  * @param {Map<any, any>} target
@@ -68,20 +69,20 @@ export class RoomSystem extends ECSY.System {
     if (!eLocalPlayer) return;
 
     const cPlayer = eLocalPlayer.getComponent(PlayerComponent);
-
     if (!cPlayer) return;
-
-    const cRoom = eLocalPlayer.getMutableComponent(RoomComponent);
-
-    /** @type Room */
-    const room = cRoom.value;
     const localPlayerId = cPlayer.player_id;
 
+    const cRoom = eLocalPlayer.getMutableComponent(RoomComponent);
+    /** @type Room */
+    const room = cRoom.value;
+
+    const cTexture = eLocalPlayer.getComponent(TextureComponent);
+
     if (!this.channel) {
-      console.log("connecting", { localPlayerId });
       const socket = new Socket("/socket", {
         params: {
           player_id: localPlayerId,
+          texture: cTexture ? cTexture.url : "",
         },
       });
       socket.connect();
@@ -92,21 +93,11 @@ export class RoomSystem extends ECSY.System {
     }
 
     this.channel.on("presence_state", (response) => {
-      RoomSystem.handleJoins(
-        Object.keys(response),
-        room,
-        this.world,
-        localPlayerId
-      );
+      RoomSystem.handleJoins(response, room, this.world, localPlayerId);
     });
 
     this.channel.on("presence_diff", (response) => {
-      RoomSystem.handleJoins(
-        Object.keys(response.joins),
-        room,
-        this.world,
-        localPlayerId
-      );
+      RoomSystem.handleJoins(response.joins, room, this.world, localPlayerId);
 
       Object.keys(response.leaves).forEach((player_id) => {
         const entity = room.playerEntityMap.get(player_id);
@@ -119,13 +110,13 @@ export class RoomSystem extends ECSY.System {
   }
 
   /**
-   * @param {string[]} joins ids of players who just joined
+   * @param {object} joins info of players who just joined
    * @param {Room} room room they're joining
    * @param {ECSY.World} world
    * @param {string} localPlayerId
    */
   static handleJoins(joins, room, world, localPlayerId) {
-    joins.forEach((player_id) => {
+    Object.keys(joins).forEach((player_id) => {
       if (player_id === localPlayerId || room.playerEntityMap.has(player_id)) {
         return;
       }
@@ -134,7 +125,10 @@ export class RoomSystem extends ECSY.System {
         .createEntity(`player:${player_id}`)
         .addComponent(PlayerComponent, { player_id })
         .addComponent(PositionComponent, { value: getRandomPosition() })
-        .addComponent(RenderR3FComponent, { value: PlayerR3F });
+        .addComponent(RenderR3FComponent, { value: PlayerR3F })
+        .addComponent(TextureComponent, {
+          url: joins[player_id].metas[0].texture,
+        });
 
       room.playerEntityMap.set(player_id, entity);
     });
