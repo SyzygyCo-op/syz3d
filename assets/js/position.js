@@ -6,5 +6,5 @@ export class PositionComponent extends ECSY.Component {
   };
 }
 export function getRandomPosition() {
-  return [Math.random() * 4 - 2, Math.random() * 4 - 2, Math.random() * 4 - 2];
+  return [Math.random() * 4 - 2, Math.random() * 4 - 2, Math.random() * 2 - 1];
 }

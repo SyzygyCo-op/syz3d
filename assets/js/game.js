@@ -25,9 +25,14 @@ const world = new World()
  * @param {() => void} onLoadCompleted
  */
 export async function handleMount(onLoadCompleted) {
+  // Don't need RAF because react-three-fiber has its own render loop that
+  // ensures flicker-free animation.
+  let time = 0;
+  let delta = 1000 / 60;
   setInterval(() => {
-    world.execute(1000 / 60);
-  }, 1000 / 60);
+    world.execute(delta, time);
+    time += delta;
+  }, delta);
 
   const roomId = /** @type {any} window */ (window).ROOM_ID;
 
