@@ -5,6 +5,7 @@ import { RoomComponent } from "./room";
 import { TextureComponent } from "./texture";
 import { RenderR3FComponent } from "./renderer";
 import { PositionComponent } from "./position";
+import { SpinComponent } from "./animation";
 
 /**
  * @param {ECSY.Entity} entity
@@ -34,6 +35,7 @@ export const WelcomeScreenReact = ({ entity }) => {
     if (numberOfRemotePlayers === 0 && playerIsDefined) {
       replaceComponent(entity, RenderR3FComponent, { value: PlayerR3F });
       entity.addComponent(PositionComponent, { value: [0, 0, 0] });
+      entity.addComponent(SpinComponent, { value: [0, 0, 0] });
     } else {
       entity.removeComponent(RenderR3FComponent);
     }
@@ -52,6 +54,9 @@ export const WelcomeScreenReact = ({ entity }) => {
             change soon. Feel free to keep customizing your avatar in the
             meantime.
           </p>
+        )}
+        {playerIsDefined && numberOfRemotePlayers > 0 && (
+          <p>Hey look, it's {cRoom.value.playerIdList.join(" and ")}!</p>
         )}
       </>
     )

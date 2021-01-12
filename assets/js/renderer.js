@@ -4,7 +4,6 @@ import * as React from "react";
 import ReactDOM from "react-dom";
 import { Canvas } from "react-three-fiber";
 import { observer } from "mobx-react-lite";
-import * as RxJs from "rxjs";
 
 export class RenderR3FComponent extends ECSY.Component {
   static schema = {
@@ -70,7 +69,6 @@ export class RenderSystem extends ECSY.System {
                 <R3FComponent
                   entity={entity}
                   world={this.world}
-                  time={this._time}
                   key={entity.id}
                 />
               );
@@ -88,9 +86,6 @@ export class RenderSystem extends ECSY.System {
    * @param {number} time
    */
   execute(delta, time) {
-    MOBX.runInAction(() => {
-      this._time.next(time);
-    });
     if (
       this.queries.r3f.added.length > 0 ||
       this.queries.r3f.removed.length > 0 ||
@@ -100,14 +95,6 @@ export class RenderSystem extends ECSY.System {
       this._updateObservables();
     }
   }
-
-  /**
-   * Wasn't sure how else to acheive pushing updates to elements within a
-   * React component _without_ causing React to re-render, which causes
-   * flicker.
-   * @private
-   */
-  _time = new RxJs.Subject();
 
   /**
    * @private

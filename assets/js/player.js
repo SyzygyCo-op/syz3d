@@ -5,7 +5,8 @@ import { PositionComponent } from "./position";
 import { Html } from "@react-three/drei";
 import * as THREE from "three";
 import { TextureComponent } from "./texture";
-import * as RxJs from "rxjs";
+import * as R3F from "react-three-fiber";
+import { SpinComponent } from "./animation";
 
 export class LocalPlayerTag extends ECSY.TagComponent {}
 
@@ -30,23 +31,23 @@ export const MaterialR3F = ({ entity }) => {
 };
 
 /**
- * @type React.ComponentType<{entity: ECSY.Entity, world: ECSY.World, time: RxJs.Subject}>
+ * @type React.ComponentType<{entity: ECSY.Entity, world: ECSY.World}>
  */
-export const PlayerR3F = ({ entity, time }) => {
+export const PlayerR3F = ({ entity }) => {
   const { value: position } = entity.getComponent(PositionComponent);
   const player = entity.getComponent(PlayerComponent);
 
   const ref = React.useRef(null);
 
-  React.useEffect(() => {
-    const subscription = time.subscribe((currentTime) => {
-      const rotation = /** @type THREE.Euler */ (ref.current &&
-        ref.current.rotation);
-      rotation.y = Math.PI * 2 * ((currentTime % 5000) / 5000);
-      rotation.z = Math.PI * 2 * ((currentTime % 8000) / 8000);
-    });
-    return subscription.unsubscribe;
-  }, [time]);
+  R3F.useFrame(() => {
+    if (ref.current) {
+      const rotation = /** @type THREE.Euler */ (ref.current.rotation);
+      const cSpin = entity.getComponent(SpinComponent);
+      if (cSpin) {
+        rotation.set.apply(rotation, cSpin.value);
+      }
+    }
+  });
 
   return (
     <group position={position}>

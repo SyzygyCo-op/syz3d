@@ -4,6 +4,7 @@ import { LocalPlayerTag, PlayerComponent, PlayerR3F } from "./player";
 import { RenderR3FComponent } from "./renderer";
 import { PositionComponent, getRandomPosition } from "./position";
 import { TextureComponent } from "./texture";
+import { SpinComponent } from "./animation";
 
 /**
  * @param {Map<any, any>} target
@@ -24,6 +25,8 @@ export class Room {
   }
 
   playerEntityMap = new Map();
+  /** @type string[] */
+  playerIdList = [];
 
   clone() {
     const theClone = new Room(this.id);
@@ -37,6 +40,9 @@ export class Room {
   copy(src) {
     this.id = src.id;
     copyMap(this.playerEntityMap, src.playerEntityMap);
+    src.playerIdList.forEach((value, index) => {
+      this.playerIdList[index] = value;
+    });
     return this;
   }
 }
@@ -126,11 +132,13 @@ export class RoomSystem extends ECSY.System {
         .addComponent(PlayerComponent, { player_id })
         .addComponent(PositionComponent, { value: getRandomPosition() })
         .addComponent(RenderR3FComponent, { value: PlayerR3F })
+        .addComponent(SpinComponent, { value: [0, 0, 0] })
         .addComponent(TextureComponent, {
           url: joins[player_id].metas[0].texture,
         });
 
       room.playerEntityMap.set(player_id, entity);
+      room.playerIdList.push(player_id);
     });
   }
 }

@@ -9,6 +9,7 @@ import { Room, RoomComponent, RoomSystem } from "./room";
 import { PositionComponent } from "./position";
 import { WelcomeScreenReact } from "./welcome";
 import { TextureComponent } from "./texture";
+import { SpinComponent, AnimationSystem } from "./animation";
 
 const world = new World()
   .registerComponent(RenderR3FComponent)
@@ -18,8 +19,10 @@ const world = new World()
   .registerComponent(PlayerComponent)
   .registerComponent(LocalPlayerTag)
   .registerComponent(RoomComponent)
+  .registerComponent(SpinComponent)
   .registerSystem(RoomSystem)
-  .registerSystem(RenderSystem);
+  .registerSystem(RenderSystem)
+  .registerSystem(AnimationSystem);
 
 /**
  * @param {() => void} onLoadCompleted
