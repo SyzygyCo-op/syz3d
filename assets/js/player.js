@@ -62,7 +62,7 @@ export const PlayerR3F = ({ entity, time }) => {
 };
 
 /**
- * @param {{onSubmit: (data: {player_id: string, texture: string}) => void}} props
+ * @param {{onSubmit: (data: {player_id: string, texture: string}) => void, onClose: () => void}} props
  */
 export const PlayerFormReact = (props) => {
   return (
@@ -78,7 +78,8 @@ export const PlayerFormReact = (props) => {
           <option value="/images/lava_texture.jpg">Lava</option>
         </select>
       </label>
-      <input type="submit" value="Let's go!" />
+      <input type="submit" value="Save" />
+      <input type="button" value="Let's go!" onClick={props.onClose} />
     </form>
   );
 

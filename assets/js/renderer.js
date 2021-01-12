@@ -40,18 +40,16 @@ export class RenderSystem extends ECSY.System {
       /**
        * @type React.CSSProperties
        */
-      const overlayStyle = React.useMemo(
+      const containerStyle = React.useMemo(
         () => ({
-          position: "fixed",
-          top: "0",
-          left: "0",
-          zIndex: 1,
+          display: "flex",
+          flexDirection: "row",
         }),
         []
       );
       return (
-        <>
-          <div style={overlayStyle}>
+        <div style={containerStyle}>
+          <div>
             {Array.from(this._observables.reactEntities).map((entity) => {
               const ReactComponent = entity.getComponent(RenderReactComponent)
                 .value;
@@ -78,7 +76,7 @@ export class RenderSystem extends ECSY.System {
               );
             })}
           </Canvas>
-        </>
+        </div>
       );
     });
 
