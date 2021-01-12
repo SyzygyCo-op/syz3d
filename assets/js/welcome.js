@@ -47,7 +47,10 @@ export const WelcomeScreenReact = ({ entity }) => {
         <h1>
           {!playerIsDefined ? "Welcome to Syz!" : `Welcome ${playerName}!`}
         </h1>
-        <PlayerFormReact onSubmit={handleSubmit} onClose={handleClose} />
+        <PlayerFormReact
+          onSubmit={handleSubmit}
+          onClose={playerIsDefined && handleClose}
+        />
         {playerIsDefined && numberOfRemotePlayers === 0 && (
           <p>
             Looks like you are the only one here right now, but that's sure to

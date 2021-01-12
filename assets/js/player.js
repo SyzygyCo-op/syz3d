@@ -80,7 +80,9 @@ export const PlayerFormReact = (props) => {
         </select>
       </label>
       <input type="submit" value="Save" />
-      <input type="button" value="Let's go!" onClick={props.onClose} />
+      {props.onClose && (
+        <input type="button" value="Let's go!" onClick={props.onClose} />
+      )}
     </form>
   );
 
