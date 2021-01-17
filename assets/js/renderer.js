@@ -17,6 +17,7 @@ export class RenderReactComponent extends ECSY.Component {
 }
 
 export class RenderSystem extends ECSY.System {
+  /** @todo maybe there is a clean way to eliminate the duplication between React and R3F? */
   static queries = {
     r3f: {
       components: [RenderR3FComponent],
@@ -98,6 +99,7 @@ export class RenderSystem extends ECSY.System {
 
   /**
    * @private
+   * @todo Factor observables into separate class which is instantiated init()?
    */
   _updateObservables = MOBX.action(() => {
     this._observables.r3fEntities.clear();
