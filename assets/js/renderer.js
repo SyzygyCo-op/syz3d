@@ -17,7 +17,7 @@ export class RenderReactComponent extends ECSY.Component {
 }
 
 export class RenderSystem extends ECSY.System {
-  /** @todo maybe there is a clean way to eliminate the duplication between React and R3F? */
+  /** @todo maybe there is a clean way to eliminate the duplication between React and R3F? Maybe split into two separate systems, each with their own ReactDOM.render call? */
   static queries = {
     r3f: {
       components: [RenderR3FComponent],
