@@ -110,6 +110,7 @@ export class RoomSystem extends ECSY.System {
         if (entity) {
           entity.remove();
         }
+        /** @todo playerIdList needs to be updated, too. */
         room.playerEntityMap.delete(player_id);
       });
     });
