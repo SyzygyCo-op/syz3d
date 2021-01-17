@@ -6,19 +6,7 @@ import { TextureComponent } from "./texture";
 import { RenderR3FComponent } from "./renderer";
 import { PositionComponent } from "./position";
 import { SpinComponent } from "./animation";
-
-/**
- * @todo move to utilities file
- * @param {ECSY.Entity} entity
- * @param {ECSY.ComponentConstructor<any>} Component
- * @param {any} data
- */
-function replaceComponent(entity, Component, data) {
-  if (entity.hasComponent(Component)) {
-    entity.removeComponent(Component);
-  }
-  entity.addComponent(Component, data);
-}
+import { replaceComponent } from "./utils";
 
 /**
  * @type React.ComponentType<{entity: ECSY.Entity, world: ECSY.World}>

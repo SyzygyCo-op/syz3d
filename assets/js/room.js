@@ -5,17 +5,7 @@ import { RenderR3FComponent } from "./renderer";
 import { PositionComponent, getRandomPosition } from "./position";
 import { TextureComponent } from "./texture";
 import { SpinComponent } from "./animation";
-
-/**
- * @todo move to utilities file
- * @param {Map<any, any>} target
- * @param {Map<any, any>} source
- */
-function copyMap(target, source) {
-  source.forEach((value, key) => {
-    target.set(key, value);
-  });
-}
+import { copyMap } from "./utils";
 
 export class Room {
   /**
