@@ -8,6 +8,7 @@ import { PositionComponent } from "./position";
 import { SpinComponent } from "./animation";
 
 /**
+ * @todo move to utilities file
  * @param {ECSY.Entity} entity
  * @param {ECSY.ComponentConstructor<any>} Component
  * @param {any} data
