@@ -7,6 +7,7 @@ import { TextureComponent } from "./texture";
 import { SpinComponent } from "./animation";
 
 /**
+ * @todo move to utilities file
  * @param {Map<any, any>} target
  * @param {Map<any, any>} source
  */
