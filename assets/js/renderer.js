@@ -16,6 +16,36 @@ export class RenderReactComponent extends ECSY.Component {
   };
 }
 
+const ReactApp = ({ observables }) => {
+  /**
+   * @type React.CSSProperties
+   */
+  const containerStyle = React.useMemo(
+    () => ({
+      display: "flex",
+      flexDirection: "row",
+    }),
+    []
+  );
+  return (
+    <div style={containerStyle}>
+      <div>
+        {Array.from(observables.reactEntities).map((entity) => {
+          const ReactComponent = entity.getComponent(RenderReactComponent)
+            .value;
+          return <ReactComponent entity={entity} key={entity.id} />;
+        })}
+      </div>
+      <Canvas>
+        {Array.from(observables.r3fEntities).map((entity) => {
+          const R3FComponent = entity.getComponent(RenderR3FComponent).value;
+          return <R3FComponent entity={entity} key={entity.id} />;
+        })}
+      </Canvas>
+    </div>
+  );
+};
+
 export class RenderSystem extends ECSY.System {
   /** @todo maybe there is a clean way to eliminate the duplication between React and R3F? Maybe split into two separate systems, each with their own ReactDOM.render call? */
   static queries = {
@@ -36,50 +66,11 @@ export class RenderSystem extends ECSY.System {
   };
 
   init() {
-    const App = observer(() => {
-      /**
-       * @type React.CSSProperties
-       */
-      const containerStyle = React.useMemo(
-        () => ({
-          display: "flex",
-          flexDirection: "row",
-        }),
-        []
-      );
-      return (
-        <div style={containerStyle}>
-          <div>
-            {Array.from(this._observables.reactEntities).map((entity) => {
-              const ReactComponent = entity.getComponent(RenderReactComponent)
-                .value;
-              return (
-                <ReactComponent
-                  entity={entity}
-                  world={this.world}
-                  key={entity.id}
-                />
-              );
-            })}
-          </div>
-          <Canvas>
-            {Array.from(this._observables.r3fEntities).map((entity) => {
-              const R3FComponent = entity.getComponent(RenderR3FComponent)
-                .value;
-              return (
-                <R3FComponent
-                  entity={entity}
-                  world={this.world}
-                  key={entity.id}
-                />
-              );
-            })}
-          </Canvas>
-        </div>
-      );
-    });
-
-    ReactDOM.render(<App />, document.getElementById("game"));
+    const Observer = observer(ReactApp);
+    ReactDOM.render(
+      <Observer observables={this._observables} />,
+      document.getElementById("game")
+    );
   }
 
   /**
