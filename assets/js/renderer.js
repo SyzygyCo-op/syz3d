@@ -16,6 +16,25 @@ export class RenderReactComponent extends ECSY.Component {
   };
 }
 
+const EntityComponentSet = observer(
+  /**
+   * @param {{entitySet: MOBX.ObservableSet<ECSY.Entity>, ComponentType: ECSY.ComponentConstructor<any>}} props
+   */
+  ({ entitySet, ComponentType }) => {
+    return (
+      <>
+        {Array.from(entitySet).map((entity) => {
+          const ECSComponent = entity.getComponent(ComponentType);
+          const ReactComponent = ECSComponent && ECSComponent.value;
+          return ReactComponent ? (
+            <ReactComponent entity={entity} key={entity.id} />
+          ) : null;
+        })}
+      </>
+    );
+  }
+);
+
 const ReactApp = ({ observables }) => {
   /**
    * @type React.CSSProperties
@@ -30,17 +49,16 @@ const ReactApp = ({ observables }) => {
   return (
     <div style={containerStyle}>
       <div>
-        {Array.from(observables.reactEntities).map((entity) => {
-          const ReactComponent = entity.getComponent(RenderReactComponent)
-            .value;
-          return <ReactComponent entity={entity} key={entity.id} />;
-        })}
+        <EntityComponentSet
+          entitySet={observables.reactEntities}
+          ComponentType={RenderReactComponent}
+        />
       </div>
       <Canvas>
-        {Array.from(observables.r3fEntities).map((entity) => {
-          const R3FComponent = entity.getComponent(RenderR3FComponent).value;
-          return <R3FComponent entity={entity} key={entity.id} />;
-        })}
+        <EntityComponentSet
+          entitySet={observables.reactEntities}
+          ComponentType={RenderR3FComponent}
+        />
       </Canvas>
     </div>
   );
@@ -49,18 +67,20 @@ const ReactApp = ({ observables }) => {
 export class RenderSystem extends ECSY.System {
   /** @todo maybe there is a clean way to eliminate the duplication between React and R3F? Maybe split into two separate systems, each with their own ReactDOM.render call? */
   static queries = {
-    r3f: {
-      components: [RenderR3FComponent],
-      listen: {
-        added: true,
-        removed: true,
-      },
-    },
     react: {
       components: [RenderReactComponent],
       listen: {
         added: true,
         removed: true,
+        changed: true,
+      },
+    },
+    r3f: {
+      components: [RenderR3FComponent],
+      listen: {
+        added: true,
+        removed: true,
+        changed: true,
       },
     },
   };
@@ -79,10 +99,12 @@ export class RenderSystem extends ECSY.System {
    */
   execute(delta, time) {
     if (
+      this.queries.react.added.length > 0 ||
+      this.queries.react.removed.length > 0 ||
+      this.queries.react.changed.length > 0 ||
       this.queries.r3f.added.length > 0 ||
       this.queries.r3f.removed.length > 0 ||
-      this.queries.react.added.length > 0 ||
-      this.queries.react.removed.length > 0
+      this.queries.r3f.changed.length > 0
     ) {
       this._updateObservables();
     }
@@ -93,12 +115,11 @@ export class RenderSystem extends ECSY.System {
    * @todo Factor observables into separate class which is instantiated init()?
    */
   _updateObservables = MOBX.action(() => {
-    this._observables.r3fEntities.clear();
     this._observables.reactEntities.clear();
-    this.queries.r3f.results.forEach((e) =>
-      this._observables.r3fEntities.add(e)
-    );
     this.queries.react.results.forEach((e) =>
+      this._observables.reactEntities.add(e)
+    );
+    this.queries.r3f.results.forEach((e) =>
       this._observables.reactEntities.add(e)
     );
   });
@@ -107,8 +128,6 @@ export class RenderSystem extends ECSY.System {
    * @private
    */
   _observables = {
-    /** @type {MOBX.ObservableSet<ECSY.Entity>} */
-    r3fEntities: MOBX.observable.set(),
     /** @type {MOBX.ObservableSet<ECSY.Entity>} */
     reactEntities: MOBX.observable.set(),
   };
