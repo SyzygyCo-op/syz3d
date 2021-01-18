@@ -3,13 +3,17 @@ import * as ECSY from "ecsy";
 /**
  * @param {ECSY.Entity} entity
  * @param {ECSY.ComponentConstructor<any>} Component
- * @param {any} data
+ * @param {any} [data]
  */
 export function replaceComponent(entity, Component, data) {
   if (entity.hasComponent(Component)) {
     entity.removeComponent(Component);
   }
-  entity.addComponent(Component, data);
+  if (data !== undefined) {
+    entity.addComponent(Component, data);
+  } else {
+    entity.addComponent(Component);
+  }
 }
 
 /**
