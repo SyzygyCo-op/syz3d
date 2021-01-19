@@ -23,12 +23,12 @@ export const WelcomeScreenReact = ({ entity }) => {
   React.useEffect(() => {
     if (numberOfRemotePlayers === 0 && playerIsDefined) {
       replaceComponent(entity, RenderR3FComponent, { value: PlayerR3F });
-      entity.addComponent(PositionComponent, { value: [0, 0, 0] });
-      entity.addComponent(SpinComponent, { value: [0, 0, 0] });
+      replaceComponent(entity, PositionComponent, { value: [0, 0, 0] });
+      replaceComponent(entity, SpinComponent, { value: [0, 0, 0] });
     } else {
       entity.removeComponent(RenderR3FComponent);
     }
-  }, [numberOfRemotePlayers, playerIsDefined]);
+  }, [entity, numberOfRemotePlayers, playerIsDefined]);
 
   return (
     visible && (
