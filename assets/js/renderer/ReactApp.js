@@ -4,6 +4,7 @@ import * as MOBX from "mobx";
 import * as ECSY from "ecsy";
 import { Canvas } from "react-three-fiber";
 import { RenderReactComponent, RenderR3FComponent } from "./components";
+import { RenderState } from "./RenderState";
 
 const EntityComponentSet = observer(
   /**
@@ -24,31 +25,36 @@ const EntityComponentSet = observer(
   }
 );
 
-export const ReactApp = observer(({ observables }) => {
+export const ReactApp = observer(
   /**
-   * @type React.CSSProperties
+   * @param {{observables: RenderState}} props
    */
-  const containerStyle = React.useMemo(
-    () => ({
-      display: "flex",
-      flexDirection: "row",
-    }),
-    []
-  );
-  return (
-    <div style={containerStyle}>
-      <div>
-        <EntityComponentSet
-          entitySet={observables.reactEntities}
-          ComponentType={RenderReactComponent}
-        />
+  ({ observables }) => {
+    /**
+     * @type React.CSSProperties
+     */
+    const containerStyle = React.useMemo(
+      () => ({
+        display: "flex",
+        flexDirection: "row",
+      }),
+      []
+    );
+    return (
+      <div style={containerStyle}>
+        <div>
+          <EntityComponentSet
+            entitySet={observables.entities}
+            ComponentType={RenderReactComponent}
+          />
+        </div>
+        <Canvas>
+          <EntityComponentSet
+            entitySet={observables.entities}
+            ComponentType={RenderR3FComponent}
+          />
+        </Canvas>
       </div>
-      <Canvas>
-        <EntityComponentSet
-          entitySet={observables.reactEntities}
-          ComponentType={RenderR3FComponent}
-        />
-      </Canvas>
-    </div>
-  );
-});
+    );
+  }
+);
