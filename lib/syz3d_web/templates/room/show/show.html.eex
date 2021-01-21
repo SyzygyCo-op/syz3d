@@ -4,5 +4,5 @@
 </script>
 <div id="game"><!-- game renders here using JavaScript --></div>
 <div class="Footer">
-<p>Perhaps the most valuable gifts these days are our <b>Attention</b> &amp; <b>Presence</b>. I think so, at least.
+  <p>Perhaps the most valuable gifts these days are our <b>Attention</b> &amp; <b>Presence</b>. <u>I</u> think so, at least.
 </div>
