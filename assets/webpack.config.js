@@ -12,9 +12,7 @@ module.exports = (env, options) => {
   return {
     optimization: {
       minimizer: [
-        /** @todo */
-        // new TerserPlugin({ cache: true, parallel: true, sourceMap: devMode }),
-        new TerserPlugin({ cache: true, parallel: true, sourceMap: true }),
+        new TerserPlugin({ cache: true, parallel: true, sourceMap: devMode }),
         new OptimizeCSSAssetsPlugin({}),
       ],
     },
@@ -26,9 +24,7 @@ module.exports = (env, options) => {
       path: path.resolve(__dirname, "../priv/static/js"),
       publicPath: "/js/",
     },
-    /** @todo */
-    // devtool: devMode ? 'eval-cheap-module-source-map' : undefined,
-    devtool: true ? "eval-cheap-module-source-map" : undefined,
+    devtool: devMode ? "eval-cheap-module-source-map" : undefined,
     module: {
       rules: [
         {
