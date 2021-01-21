@@ -8,18 +8,18 @@ import { RenderState } from "dreamt";
 
 const EntityComponentSet = observer(
   /**
-   * @param {{entitySet: MOBX.ObservableSet<ECSY.Entity>, ComponentType: ECSY.ComponentConstructor<any>}} props
+   * @param {{observables: RenderState, ComponentType: ECSY.ComponentConstructor<ECSY.Component<{value: React.FunctionComponent<{entity: ECSY.Entity}>}>>}} props
    */
-  ({ entitySet, ComponentType }) => {
+  ({ observables, ComponentType }) => {
     return (
       <>
-        {Array.from(entitySet).map((entity) => {
-          const ECSComponent = entity.getComponent(ComponentType);
-          const ReactComponent = ECSComponent && ECSComponent.value;
-          return ReactComponent ? (
-            <ReactComponent entity={entity} key={entity.id} />
-          ) : null;
-        })}
+        {observables.mapEntities(
+          (entity, ECSComponent) => {
+            const ReactComponent = ECSComponent.value;
+            return <ReactComponent entity={entity} key={entity.id} />;
+          },
+          { withComponent: ComponentType }
+        )}
       </>
     );
   }
@@ -34,13 +34,13 @@ export const ReactApp = observer(
       <div className="App">
         <div>
           <EntityComponentSet
-            entitySet={observables.entities}
+            observables={observables}
             ComponentType={RenderReactComponent}
           />
         </div>
         <Canvas>
           <EntityComponentSet
-            entitySet={observables.entities}
+            observables={observables}
             ComponentType={RenderR3FComponent}
           />
         </Canvas>
