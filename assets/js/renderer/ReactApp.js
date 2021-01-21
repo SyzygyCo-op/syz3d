@@ -30,18 +30,8 @@ export const ReactApp = observer(
    * @param {{observables: RenderState}} props
    */
   ({ observables }) => {
-    /**
-     * @type React.CSSProperties
-     */
-    const containerStyle = React.useMemo(
-      () => ({
-        display: "flex",
-        flexDirection: "row",
-      }),
-      []
-    );
     return (
-      <div style={containerStyle}>
+      <div className="App">
         <div>
           <EntityComponentSet
             entitySet={observables.entities}
