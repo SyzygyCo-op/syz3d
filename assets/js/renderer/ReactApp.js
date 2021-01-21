@@ -4,7 +4,7 @@ import * as MOBX from "mobx";
 import * as ECSY from "ecsy";
 import { Canvas } from "react-three-fiber";
 import { RenderReactComponent, RenderR3FComponent } from "./components";
-import { RenderState } from "./RenderState";
+import { RenderState } from "dreamt";
 
 const EntityComponentSet = observer(
   /**

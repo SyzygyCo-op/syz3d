@@ -1,19 +1,13 @@
-import { World } from "ecsy";
-import {
-  RenderSystem,
-  RenderR3FComponent,
-  RenderReactComponent,
-} from "./renderer";
+import * as ECSY from "ecsy";
 import { PlayerComponent, LocalPlayerTag } from "./player";
 import { Room, RoomComponent, RoomSystem } from "./room";
 import { PositionComponent } from "./position";
 import { WelcomeScreenReact } from "./welcome";
 import { TextureComponent } from "./texture";
 import { SpinComponent, AnimationSystem } from "./animation";
+import { setupRenderer, RenderReactComponent } from "./renderer";
 
-const world = new World()
-  .registerComponent(RenderR3FComponent)
-  .registerComponent(RenderReactComponent)
+const world = new ECSY.World()
   .registerComponent(PositionComponent)
   .registerComponent(TextureComponent)
   .registerComponent(PlayerComponent)
@@ -21,8 +15,9 @@ const world = new World()
   .registerComponent(RoomComponent)
   .registerComponent(SpinComponent)
   .registerSystem(RoomSystem)
-  .registerSystem(RenderSystem)
   .registerSystem(AnimationSystem);
+
+setupRenderer(world);
 
 /**
  * @param {() => void} onLoadCompleted
