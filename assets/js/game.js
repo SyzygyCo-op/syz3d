@@ -4,7 +4,7 @@ import { Room, RoomComponent, RoomSystem } from "./room";
 import { PositionComponent } from "./position";
 import { WelcomeScreenReact } from "./welcome";
 import { TextureComponent } from "./texture";
-import { SpinComponent, AnimationSystem } from "./animation";
+import { SpinComponent, AnimationSystem, BumpComponent } from "./animation";
 import { setupRenderer, RenderReactComponent } from "./renderer";
 
 const world = new ECSY.World()
@@ -14,10 +14,15 @@ const world = new ECSY.World()
   .registerComponent(LocalPlayerTag)
   .registerComponent(RoomComponent)
   .registerComponent(SpinComponent)
+  .registerComponent(BumpComponent)
   .registerSystem(RoomSystem)
   .registerSystem(AnimationSystem);
 
 setupRenderer(world);
+
+/**
+ * @todo add a silly button, maybe a "cheers" or "say hi" button
+ */
 
 /**
  * @param {() => void} onLoadCompleted

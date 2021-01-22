@@ -17,4 +17,9 @@ defmodule Syz3dWeb.RoomChannel do
     push(socket, "presence_state", Presence.list(socket))
     {:noreply, socket}
   end
+
+  def handle_in("change_avatar", %{"body" => body}, socket) do
+    broadcast!(socket, "change_avatar", %{body: body})
+    {:noreply, socket}
+  end
 end

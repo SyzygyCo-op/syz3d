@@ -4,8 +4,13 @@ import { LocalPlayerTag, PlayerComponent, PlayerR3F } from "./player";
 import { RenderR3FComponent } from "./renderer";
 import { PositionComponent, getRandomPosition } from "./position";
 import { TextureComponent } from "./texture";
-import { SpinComponent } from "./animation";
-import { copyMap } from "./utils";
+import { SpinComponent, BumpComponent } from "./animation";
+import { copyMap, replaceComponent } from "./utils";
+
+/** @param {any} cBump */
+function hasBump(cBump) {
+  return !!cBump && cBump.value < 1;
+}
 
 export class Room {
   /**
@@ -16,6 +21,7 @@ export class Room {
   }
 
   playerEntityMap = new Map();
+  networkedComponents = new Map();
   /** @type string[] */
   playerIdList = [];
 
@@ -31,6 +37,7 @@ export class Room {
   copy(src) {
     this.id = src.id;
     copyMap(this.playerEntityMap, src.playerEntityMap);
+    copyMap(this.networkedComponents, src.networkedComponents);
     src.playerIdList.forEach((value, index) => {
       this.playerIdList[index] = value;
     });
@@ -75,6 +82,8 @@ export class RoomSystem extends ECSY.System {
 
     const cTexture = eLocalPlayer.getComponent(TextureComponent);
 
+    const cBump = eLocalPlayer.getComponent(BumpComponent);
+
     if (!this.channel) {
       const socket = new Socket("/socket", {
         params: {
@@ -105,6 +114,49 @@ export class RoomSystem extends ECSY.System {
         room.playerEntityMap.delete(player_id);
       });
     });
+
+    const previousTextureUrl = room.networkedComponents.get("TextureComponent");
+
+    const previousHasBump = room.networkedComponents.get("BumpComponent");
+
+    // Sync networked components
+    if (
+      previousTextureUrl &&
+      (cTexture.url !== previousTextureUrl ||
+        hasBump(cBump) !== previousHasBump)
+    ) {
+      this.channel.push("change_avatar", {
+        body: {
+          texture_url: cTexture.url,
+          has_bump: hasBump(cBump),
+          player_id: localPlayerId,
+        },
+      });
+    }
+
+    this.channel.on("change_avatar", (response) => {
+      if (response.body.player_id === localPlayerId) return;
+
+      const entity = room.playerEntityMap.get(response.body.player_id);
+
+      if (
+        entity &&
+        entity.getComponent(TextureComponent).url !== response.body.texture_url
+      ) {
+        replaceComponent(entity, TextureComponent, {
+          url: response.body.texture_url,
+        });
+      }
+      if (
+        entity &&
+        hasBump(entity.getComponent(BumpComponent)) !== response.body.has_bump
+      ) {
+        replaceComponent(entity, BumpComponent, { value: 0 });
+      }
+    });
+
+    room.networkedComponents.set("TextureComponent", cTexture.url);
+    room.networkedComponents.set("BumpComponent", hasBump(cBump));
   }
 
   /**

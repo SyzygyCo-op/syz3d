@@ -37,8 +37,6 @@ export class AnimationSystem extends ECSY.System {
       const cBump = entity.getMutableComponent(BumpComponent);
       if (cBump.value < 1) {
         cBump.value += 0.01;
-      } else {
-        entity.removeComponent(BumpComponent);
       }
     });
   }

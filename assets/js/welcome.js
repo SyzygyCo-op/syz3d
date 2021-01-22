@@ -25,8 +25,6 @@ export const WelcomeScreenReact = ({ entity }) => {
       replaceComponent(entity, RenderR3FComponent, { value: PlayerR3F });
       replaceComponent(entity, PositionComponent, { value: [0, 0, 0] });
       replaceComponent(entity, SpinComponent, { value: [0, 0, 0] });
-    } else {
-      entity.removeComponent(RenderR3FComponent);
     }
   }, [entity, numberOfRemotePlayers, playerIsDefined]);
 
