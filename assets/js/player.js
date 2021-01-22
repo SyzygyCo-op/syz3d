@@ -6,7 +6,7 @@ import { Html } from "@react-three/drei";
 import * as THREE from "three";
 import { TextureComponent } from "./texture";
 import * as R3F from "react-three-fiber";
-import { SpinComponent } from "./animation";
+import { SpinComponent, BumpComponent } from "./animation";
 
 export class LocalPlayerTag extends ECSY.TagComponent {}
 
@@ -30,6 +30,8 @@ export const MaterialR3F = ({ entity }) => {
   return <meshBasicMaterial {...props} />;
 };
 
+const bumpMaxScale = new THREE.Vector3(2, 2, 2);
+const bumpMinScale = new THREE.Vector3(1, 1, 1);
 /**
  * @type React.ComponentType<{entity: ECSY.Entity, world: ECSY.World}>
  */
@@ -42,9 +44,19 @@ export const PlayerR3F = ({ entity }) => {
   R3F.useFrame(() => {
     if (ref.current) {
       const rotation = /** @type THREE.Euler */ (ref.current.rotation);
+      const scale = /** @type THREE.Vector3 */ (ref.current.scale);
       const cSpin = entity.getComponent(SpinComponent);
+      const cBump = entity.getComponent(BumpComponent);
       if (cSpin) {
         rotation.set.apply(rotation, cSpin.value);
+      }
+      if (cBump) {
+        const alpha =
+          cBump.value < 0.5
+            ? Math.pow(cBump.value * 2, 2)
+            : Math.pow((cBump.value - 0.5) * 2, 2);
+        const v = cBump.value < 0.5 ? bumpMaxScale : bumpMinScale;
+        scale.lerp(v, alpha);
       }
     }
   });
