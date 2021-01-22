@@ -32,12 +32,10 @@ export const ReactApp = observer(
   ({ observables }) => {
     return (
       <div className="App">
-        <div>
-          <EntityComponentSet
-            observables={observables}
-            ComponentType={RenderReactComponent}
-          />
-        </div>
+        <EntityComponentSet
+          observables={observables}
+          ComponentType={RenderReactComponent}
+        />
         <Canvas>
           <EntityComponentSet
             observables={observables}
