@@ -23,13 +23,16 @@
     "three": "^0.123.0"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.12.1",
-    "@babel/preset-react": "^7.12.10",
     "@babel/core": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/plugin-transform-runtime": "^7.12.10",
     "@babel/preset-env": "^7.0.0",
+    "@babel/preset-react": "^7.12.10",
     "@babel/runtime": "^7.12.5",
     "@types/jest": "^26.0.19",
+    "@types/phoenix": "^1.5.1",
+    "@types/react": "^17.0.1",
+    "@types/react-dom": "^17.0.0",
     "babel-loader": "^8.0.0",
     "copy-webpack-plugin": "^5.1.1",
     "css-loader": "^3.4.2",
