@@ -22,10 +22,8 @@ config :syz3d, Syz3dWeb.Endpoint,
   check_origin: false,
   watchers: [
     node: [
-      "node_modules/webpack/bin/webpack.js",
-      "--mode",
-      "development",
-      "--watch-stdin",
+      "node_modules/.bin/webpack-dev-server",
+      "--stdin",
       cd: Path.expand("../assets", __DIR__)
     ]
   ]
