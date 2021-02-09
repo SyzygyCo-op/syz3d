@@ -1,6 +1,6 @@
 import * as ECSY from "ecsy";
 import { PlayerComponent, LocalPlayerTag } from "./player";
-import { Room, RoomComponent, RoomSystem } from "./room";
+import { RoomComponent, RoomSystem } from "./room";
 import { PositionComponent } from "./position";
 import { WelcomeScreenReact } from "./welcome";
 import { TextureComponent } from "./texture";
@@ -37,14 +37,9 @@ export async function handleMount(onLoadCompleted) {
     time += delta;
   }, delta);
 
-  const roomId = /** @type {any} window */ (window).ROOM_ID;
-
-  const room = new Room(roomId);
-
   onLoadCompleted();
   world
     .createEntity("localPlayer")
-    .addComponent(RoomComponent, { value: room })
     .addComponent(RenderReactComponent, { value: WelcomeScreenReact })
     .addComponent(LocalPlayerTag);
 }

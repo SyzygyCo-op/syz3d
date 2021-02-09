@@ -67,10 +67,23 @@ export class RoomSystem extends ECSY.System {
     },
   };
 
+  init() {
+    this.firstPass = true;
+  }
+
   execute() {
     const eLocalPlayer = this.queries.localPlayer.results[0];
 
     if (!eLocalPlayer) return;
+
+    if (this.firstPass) {
+      const roomId = /** @type {any} window */ (window).ROOM_ID;
+
+      const room = new Room(roomId);
+
+      eLocalPlayer.addComponent(RoomComponent, { value: room });
+    }
+    this.firstPass = false;
 
     const cPlayer = eLocalPlayer.getComponent(PlayerComponent);
     if (!cPlayer) return;
