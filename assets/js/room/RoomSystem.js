@@ -1,63 +1,17 @@
 import * as ECSY from "ecsy";
 import { Socket } from "phoenix";
-import { LocalPlayerTag, PlayerComponent, PlayerR3F } from "./player";
-import { RenderR3FComponent } from "./renderer";
-import { PositionComponent, getRandomPosition } from "./position";
-import { TextureComponent } from "./texture";
-import { SpinComponent, BumpComponent } from "./animation";
-import { copyMap, replaceComponent } from "./utils";
+import { LocalPlayerTag, PlayerComponent, PlayerR3F } from "../player";
+import { RenderR3FComponent } from "../renderer";
+import { PositionComponent, getRandomPosition } from "../position";
+import { TextureComponent } from "../texture";
+import { SpinComponent, BumpComponent } from "../animation";
+import { replaceComponent } from "../utils";
+import { Room } from "./Room";
+import { RoomComponent } from "./RoomComponent";
 
 /** @param {any} cBump */
 function hasBump(cBump) {
   return !!cBump && cBump.value < 1;
-}
-
-export class Room {
-  /**
-   * @param {string} id
-   */
-  constructor(id) {
-    this.id = id;
-  }
-
-  playerEntityMap = new Map();
-  networkedComponents = new Map();
-  /** @type string[] */
-  playerIdList = [];
-
-  clone() {
-    const theClone = new Room(this.id);
-    theClone.copy(this);
-    return theClone;
-  }
-
-  /**
-   * @param {Room} src
-   */
-  copy(src) {
-    this.id = src.id;
-    copyMap(this.playerEntityMap, src.playerEntityMap);
-    copyMap(this.networkedComponents, src.networkedComponents);
-    src.playerIdList.forEach((value, index) => {
-      this.playerIdList[index] = value;
-    });
-    return this;
-  }
-}
-
-const RoomType = ECSY.createType({
-  name: "Room",
-  default: new Room("unnamed room"),
-  copy: ECSY.copyCopyable,
-  clone: ECSY.cloneClonable,
-});
-
-export class RoomComponent extends ECSY.Component {
-  static schema = {
-    value: {
-      type: RoomType,
-    },
-  };
 }
 
 export class RoomSystem extends ECSY.System {
