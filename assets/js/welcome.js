@@ -1,32 +1,29 @@
 import * as React from "react";
-import * as ECSY from "ecsy";
-import { PlayerComponent, PlayerFormReact, PlayerR3F } from "./player";
-import { RoomComponent } from "./room";
+import * as DRMT from "dreamt";
+import { UILabelComponent, PlayerFormReact } from "./player";
 import { TextureComponent } from "./texture";
-import { RenderR3FComponent, RenderReactComponent } from "./renderer";
-import { PositionComponent } from "./position";
-import { SpinComponent } from "./animation";
-import { replaceComponent } from "./utils";
+import { RenderReactComponent } from "./renderer";
 import { OverlayControlsReact } from "./OverlayControls";
 
 /**
- * @type React.ComponentType<{entity: ECSY.Entity}>
+ * @type React.ComponentType<{  "entity": DRMT.Entity,
+ *                              entityComponentMap: Map<string,
+ *                              Set<DRMT.Entity>>
+ *                              }>
+ * @example
+ *
  */
-export const WelcomeScreenReact = ({ entity }) => {
+export const WelcomeScreenReact = ({ entity, entityComponentMap }) => {
   const [playerName, setPlayerName] = React.useState("");
-  const cRoom = entity.getComponent(RoomComponent);
+  const [numberOfRemotePlayers, setNumberOfRemotePlayers] = React.useState(0);
 
-  /** @todo make method/function for this */
-  const numberOfRemotePlayers = cRoom.value.playerEntityMap.size;
-  const playerIsDefined = entity.hasComponent(PlayerComponent);
+  const playerIsDefined = entity.hasComponent(UILabelComponent);
 
-  React.useEffect(() => {
-    if (numberOfRemotePlayers === 0 && playerIsDefined) {
-      replaceComponent(entity, RenderR3FComponent, { value: PlayerR3F });
-      replaceComponent(entity, PositionComponent, { value: [0, 0, 0] });
-      replaceComponent(entity, SpinComponent, { value: [0, 0, 0] });
-    }
-  }, [entity, numberOfRemotePlayers, playerIsDefined]);
+  // TODO(fix) MobX doesn't have a way of knowing about changes inside this
+  // map because it's a plain vanilla map?
+  React.useEffect(()=> {
+    setNumberOfRemotePlayers(entityComponentMap.get("PlayerTag")?.size || 0);
+  });
 
   return (
     <div>
@@ -42,25 +39,23 @@ export const WelcomeScreenReact = ({ entity }) => {
           meantime.
         </p>
       )}
-      {playerIsDefined && numberOfRemotePlayers > 0 && (
-        <p>Hey look, it's {cRoom.value.playerIdList.join(" and ")}!</p>
-      )}
     </div>
   );
 
-  /** @param {{player_id: string, texture: string}} data
+  /**
+   * @param {{ player_id: string; texture: string }} data
    */
   function handleSubmit({ player_id, texture }) {
-    replaceComponent(entity, PlayerComponent, { player_id });
-    replaceComponent(entity, TextureComponent, { url: texture });
-    replaceComponent(entity, RenderR3FComponent, { value: PlayerR3F });
+    DRMT.updateComponent(entity, UILabelComponent, { value: player_id });
+    DRMT.updateComponent(entity, TextureComponent, { url: texture });
 
     setPlayerName(player_id);
   }
 
   function handleClose() {
-    replaceComponent(entity, RenderReactComponent, {
+    DRMT.updateComponent(entity, RenderReactComponent, {
       value: OverlayControlsReact,
     });
   }
 };
+

@@ -8,15 +8,28 @@ import { RenderState } from "dreamt";
 
 const EntityComponentSet = observer(
   /**
-   * @param {{observables: RenderState, ComponentType: ECSY.ComponentConstructor<ECSY.Component<{value: React.FunctionComponent<{entity: ECSY.Entity}>}>>}} props
+   * @param {{
+   *   observables: RenderState;
+   *   ComponentType: ECSY.ComponentConstructor<
+   *     ECSY.Component<{
+   *       value: React.FunctionComponent<{ entity: ECSY.Entity }>;
+   *     }>
+   *   >;
+   * }} props
    */
   ({ observables, ComponentType }) => {
     return (
       <>
         {observables.mapEntities(
           (entity, ECSComponent) => {
-            const ReactComponent = ECSComponent.value;
-            return <ReactComponent entity={entity} key={entity.id} />;
+            const ReactComponent = /** @type any */ (ECSComponent).value;
+            return (
+              <ReactComponent
+                entity={entity}
+                key={entity.id}
+                entityComponentMap={observables.entityComponentMap}
+              />
+            );
           },
           { withComponent: ComponentType }
         )}
@@ -26,9 +39,7 @@ const EntityComponentSet = observer(
 );
 
 export const ReactApp = observer(
-  /**
-   * @param {{observables: RenderState}} props
-   */
+  /** @param {{ observables: RenderState }} props */
   ({ observables }) => {
     return (
       <div className="App">

@@ -6,49 +6,68 @@ import { Html } from "@react-three/drei";
 import * as THREE from "three";
 import { TextureComponent } from "./texture";
 import * as R3F from "react-three-fiber";
-import { SpinComponent, BumpComponent } from "./animation";
+import { BumpComponent, RotationComponent } from "./animation";
 
+export class PlayerTag extends ECSY.TagComponent {}
 export class LocalPlayerTag extends ECSY.TagComponent {}
 
-export class PlayerComponent extends ECSY.Component {
+export class UILabelComponent extends ECSY.Component {
   static schema = {
-    player_id: { type: ECSY.Types.String },
+    value: { type: ECSY.Types.String },
   };
 }
 
 /**
- * @type React.ComponentType<{entity: ECSY.Entity}>
+ * @type React.ComponentType<{entity:  ECSY.Entity}>
  */
 export const MaterialR3F = ({ entity }) => {
-  const cTexture = entity.getComponent(TextureComponent);
+  // TODO create a custom hook
+  const [textureUrl, setTextureUrl] = React.useState(
+    entity.getComponent(TextureComponent).url
+  );
+  R3F.useFrame(() => {
+    const newValue = entity.getComponent(TextureComponent).url;
+    if (newValue !== textureUrl) {
+      setTextureUrl(newValue);
+    }
+  });
 
-  const props = {};
-  if (cTexture) {
-    props.map = cTexture.load();
-  }
+  const texture = R3F.useLoader(THREE.TextureLoader, textureUrl);
 
-  return <meshBasicMaterial {...props} />;
+  return <meshBasicMaterial map={texture} />;
 };
 
 const bumpMaxScale = new THREE.Vector3(2, 2, 2);
 const bumpMinScale = new THREE.Vector3(1, 1, 1);
 /**
- * @type React.ComponentType<{entity: ECSY.Entity, world: ECSY.World}>
+ * @type React.ComponentType<{entity:  ECSY.Entity, world: ECSY.World}>
  */
 export const PlayerR3F = ({ entity }) => {
-  const { value: position } = entity.getComponent(PositionComponent);
-  const player = entity.getComponent(PlayerComponent);
+  const cPosition = entity.getComponent(PositionComponent);
+  const [label, setLabel] = React.useState(
+    entity.getComponent(UILabelComponent).value
+  );
+  R3F.useFrame(() => {
+    const newValue = entity.getComponent(UILabelComponent).value;
+    if (newValue !== label) {
+      setLabel(newValue);
+    }
+  });
 
   const ref = React.useRef(null);
 
   R3F.useFrame(() => {
     if (ref.current) {
-      const rotation = /** @type THREE.Euler */ (ref.current.rotation);
-      const scale = /** @type THREE.Vector3 */ (ref.current.scale);
-      const cSpin = entity.getComponent(SpinComponent);
+      const rotation = /**
+       * @type THREE.Euler
+       */ (ref.current.rotation);
+      const scale = /**
+       * @type THREE.Vector3
+       */ (ref.current.scale);
+      const cRotation = entity.getComponent(RotationComponent);
       const cBump = entity.getComponent(BumpComponent);
-      if (cSpin) {
-        rotation.set.apply(rotation, cSpin.value);
+      if (cRotation) {
+        rotation.set.apply(rotation, cRotation.value);
       }
       if (cBump) {
         const alpha =
@@ -61,21 +80,27 @@ export const PlayerR3F = ({ entity }) => {
     }
   });
 
+  const position = cPosition ? cPosition.value : [0, 0, 0];
   return (
     <group position={position}>
       <Html>
-        <h3>{player.player_id || "{anonymous}"}</h3>
+        <h3>{label}</h3>
       </Html>
-      <mesh ref={ref}>
-        <boxBufferGeometry args={[1, 1, 1]} />
-        <MaterialR3F entity={entity} />
-      </mesh>
+      <React.Suspense fallback={null}>
+        <mesh ref={ref}>
+          <boxBufferGeometry args={[1, 1, 1]} />
+          <MaterialR3F entity={entity} />
+        </mesh>
+      </React.Suspense>
     </group>
   );
 };
 
 /**
- * @param {{onSubmit: (data: {player_id: string, texture: string}) => void, onClose: () => void}} props
+ * @param {{
+ *   onSubmit: (data: { player_id: string; texture: string }) => void;
+ *   onClose: () => void;
+ * }} props
  */
 export const PlayerFormReact = (props) => {
   return (
@@ -103,10 +128,20 @@ export const PlayerFormReact = (props) => {
    */
   function handleSubmit(evt) {
     evt.preventDefault();
-    const data = new FormData(/** @type any */ (evt.target));
-    /** @type string */
-    const player_id = /** @type string */ (data.get("player_id"));
-    const texture = /** @type string */ (data.get("texture"));
+    const data = new FormData(
+      /**
+       * @type any
+       */ (evt.target)
+    );
+    /**
+     * @type string
+     */
+    const player_id = /**
+     * @type string
+     */ (data.get("player_id"));
+    const texture = /**
+     * @type string
+     */ (data.get("texture"));
     props.onSubmit({ player_id, texture });
   }
 };

@@ -1,12 +1,11 @@
 import * as React from "react";
-import * as ECSY from "ecsy";
+import * as DRMT from "dreamt";
 import { WelcomeScreenReact } from "./welcome";
-import { replaceComponent } from "./utils";
 import { RenderReactComponent } from "./renderer";
 import { BumpComponent } from "./animation";
 
 /**
- * @type React.ComponentType<{entity: ECSY.Entity}>
+ * @type React.ComponentType<{entity: DRMT.Entity}>
  */
 export const OverlayControlsReact = ({ entity }) => {
   return (
@@ -17,14 +16,20 @@ export const OverlayControlsReact = ({ entity }) => {
   );
 
   function handleClickEdit() {
-    replaceComponent(entity, RenderReactComponent, {
+    DRMT.updateComponent(entity, RenderReactComponent, {
       value: WelcomeScreenReact,
     });
   }
 
   function handleClickBump() {
-    replaceComponent(entity, BumpComponent, {
-      value: 0,
-    });
+    // TODO have updateComponent addComponent if necessary?
+    // or make an upsertComponent helper?
+    if(!entity.hasComponent(BumpComponent)) {
+      entity.addComponent(BumpComponent, {value: 0})
+    } else {
+      DRMT.updateComponent(entity, BumpComponent, {
+        value: 0,
+      });
+    }
   }
 };

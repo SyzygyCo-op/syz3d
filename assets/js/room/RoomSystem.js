@@ -1,20 +1,18 @@
-import * as ECSY from "ecsy";
+import * as DRMT from "dreamt";
 import { Socket } from "phoenix";
-import { LocalPlayerTag, PlayerComponent, PlayerR3F } from "../player";
-import { RenderR3FComponent } from "../renderer";
+import {
+  PlayerTag,
+  LocalPlayerTag,
+  UILabelComponent,
+  PlayerR3F,
+} from "../player";
+import { RenderReactComponent, RenderR3FComponent } from "../renderer";
+import { WelcomeScreenReact } from "../welcome";
 import { PositionComponent, getRandomPosition } from "../position";
 import { TextureComponent } from "../texture";
-import { SpinComponent, BumpComponent } from "../animation";
-import { replaceComponent } from "../utils";
-import { Room } from "./Room";
-import { RoomComponent } from "./RoomComponent";
+import { SpinComponent, BumpComponent, RotationComponent } from "../animation";
 
-/** @param {any} cBump */
-function hasBump(cBump) {
-  return !!cBump && cBump.value < 1;
-}
-
-export class RoomSystem extends ECSY.System {
+export class RoomSystem extends DRMT.System {
   static queries = {
     localPlayer: {
       components: [LocalPlayerTag],
@@ -22,134 +20,108 @@ export class RoomSystem extends ECSY.System {
   };
 
   init() {
-    this.firstPass = true;
-  }
+    const socket = new Socket("/socket");
+    socket.connect();
 
-  execute() {
-    const eLocalPlayer = this.queries.localPlayer.results[0];
+    const roomId = /**
+     * @type {any} window
+     */ (window).ROOM_ID;
+    const topic = `room:${roomId}`;
+    this.channel = socket.channel(topic);
 
-    if (!eLocalPlayer) return;
-
-    if (this.firstPass) {
-      const roomId = /** @type {any} window */ (window).ROOM_ID;
-
-      const room = new Room(roomId);
-
-      eLocalPlayer.addComponent(RoomComponent, { value: room });
-    }
-    this.firstPass = false;
-
-    const cPlayer = eLocalPlayer.getComponent(PlayerComponent);
-    if (!cPlayer) return;
-    const localPlayerId = cPlayer.player_id;
-
-    const cRoom = eLocalPlayer.getMutableComponent(RoomComponent);
-    /** @type Room */
-    const room = cRoom.value;
-
-    const cTexture = eLocalPlayer.getComponent(TextureComponent);
-
-    const cBump = eLocalPlayer.getComponent(BumpComponent);
-
-    if (!this.channel) {
-      const socket = new Socket("/socket", {
-        params: {
-          player_id: localPlayerId,
-          texture: cTexture ? cTexture.url : "",
+    this.correspondent = new DRMT.Correspondent(this.world)
+      .registerComponent("is_player", PlayerTag, {
+        read: () => {},
+        write: (compo) => !!compo,
+      })
+      .registerComponent("label", UILabelComponent)
+      .registerComponent("texture", TextureComponent, {
+        read: (compo, data) => {
+          console.log("reading texture", compo, data);
+          if (compo) {
+            /**
+             * @type any
+             */ (compo).url = data;
+          }
+        },
+        write: (compo) =>
+          compo &&
+          /**
+           * @type any
+           */ (compo).url,
+      })
+      .registerComponent("bump", BumpComponent)
+      .registerComponent("rotation", RotationComponent, {
+        // Only send initial value
+        writeCache: (arr) => !!arr,
+      })
+      .registerComponent("spin", SpinComponent, {
+        writeCache: (arr) => arr && arr.join(","),
+      })
+      .registerComponent("position", PositionComponent, {
+        writeCache: (arr) => arr && arr.join(","),
+      })
+      .registerComponent("avatar", RenderR3FComponent, {
+        write: (compo) => !!compo,
+        read: (compo) => {
+          if (compo) {
+            /**
+             * @type any
+             */ (compo).value = PlayerR3F;
+          }
         },
       });
-      socket.connect();
+    this.worldCache = {};
+    this.timeOfLastPush = 0;
 
-      const topic = `room:${room.id}`;
-      this.channel = socket.channel(topic);
-      this.channel.join();
-    }
-
-    this.channel.on("presence_state", (response) => {
-      RoomSystem.handleJoins(response, room, this.world, localPlayerId);
+    this.channel.on("world_init", (response) => {
+      this.clientId = response.body.client_id;
     });
 
-    this.channel.on("presence_diff", (response) => {
-      RoomSystem.handleJoins(response.joins, room, this.world, localPlayerId);
-
-      Object.keys(response.leaves).forEach((player_id) => {
-        const entity = room.playerEntityMap.get(player_id);
-        if (entity) {
-          entity.remove();
-        }
-        /** @todo playerIdList needs to be updated, too. */
-        room.playerEntityMap.delete(player_id);
-      });
+    this.channel.on("world_diff", (response) => {
+      this.correspondent
+        .consumeDiff(response.body)
+        .updateCache(this.worldCache, response.body);
     });
 
-    const previousTextureUrl = room.networkedComponents.get("TextureComponent");
-
-    const previousHasBump = room.networkedComponents.get("BumpComponent");
-
-    // Sync networked components
-    if (
-      previousTextureUrl &&
-      (cTexture.url !== previousTextureUrl ||
-        hasBump(cBump) !== previousHasBump)
-    ) {
-      this.channel.push("change_avatar", {
-        body: {
-          texture_url: cTexture.url,
-          has_bump: hasBump(cBump),
-          player_id: localPlayerId,
-        },
-      });
-    }
-
-    this.channel.on("change_avatar", (response) => {
-      if (response.body.player_id === localPlayerId) return;
-
-      const entity = room.playerEntityMap.get(response.body.player_id);
-
-      if (
-        entity &&
-        entity.getComponent(TextureComponent).url !== response.body.texture_url
-      ) {
-        replaceComponent(entity, TextureComponent, {
-          url: response.body.texture_url,
-        });
-      }
-      if (
-        entity &&
-        hasBump(entity.getComponent(BumpComponent)) !== response.body.has_bump
-      ) {
-        replaceComponent(entity, BumpComponent, { value: 0 });
-      }
+    this.channel.join().receive("ok", () => {
+      console.log("connected!");
+      this.world
+        .createEntity("localPlayer")
+        .addComponent(PlayerTag)
+        .addComponent(LocalPlayerTag)
+        .addComponent(PositionComponent, { value: getRandomPosition() })
+        .addComponent(SpinComponent, { value: [0, 0.0007, 0.001] })
+        .addComponent(RotationComponent, { value: [0, 0, 0] })
+        .addComponent(RenderReactComponent, { value: WelcomeScreenReact })
+        .addComponent(RenderR3FComponent, { value: PlayerR3F })
+        .addComponent(UILabelComponent, { value: ""})
+        .addComponent(TextureComponent, { url: '/images/water_texture.jpg'})
     });
-
-    room.networkedComponents.set("TextureComponent", cTexture.url);
-    room.networkedComponents.set("BumpComponent", hasBump(cBump));
   }
 
   /**
-   * @param {object} joins info of players who just joined
-   * @param {Room} room room they're joining
-   * @param {ECSY.World} world
-   * @param {string} localPlayerId
+   * @param {number} time
    */
-  static handleJoins(joins, room, world, localPlayerId) {
-    Object.keys(joins).forEach((player_id) => {
-      if (player_id === localPlayerId || room.playerEntityMap.has(player_id)) {
-        return;
+  execute(_delta, time) {
+    const eLocalPlayer = this.queries.localPlayer.results[0];
+
+    if (eLocalPlayer && this.clientId) {
+      this.correspondent.registerEntity(
+        `player:${this.clientId}`,
+        eLocalPlayer
+      );
+
+      const diff = this.correspondent.produceDiff(this.worldCache);
+
+      if (
+        time - this.timeOfLastPush >= 200 &&
+        !DRMT.Correspondent.isEmptyDiff(diff)
+      ) {
+        this.channel.push("world_diff", { body: diff });
+        this.correspondent.updateCache(this.worldCache, diff);
+        this.timeOfLastPush = time;
       }
-
-      const entity = world
-        .createEntity(`player:${player_id}`)
-        .addComponent(PlayerComponent, { player_id })
-        .addComponent(PositionComponent, { value: getRandomPosition() })
-        .addComponent(RenderR3FComponent, { value: PlayerR3F })
-        .addComponent(SpinComponent, { value: [0, 0, 0] })
-        .addComponent(TextureComponent, {
-          url: joins[player_id].metas[0].texture,
-        });
-
-      room.playerEntityMap.set(player_id, entity);
-      room.playerIdList.push(player_id);
-    });
+    }
   }
 }

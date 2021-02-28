@@ -1,28 +1,30 @@
 import * as ECSY from "ecsy";
-import { PlayerComponent, LocalPlayerTag } from "./player";
-import { RoomComponent, RoomSystem } from "./room";
+import { UILabelComponent, LocalPlayerTag, PlayerTag } from "./player";
+import { RoomSystem } from "./room";
 import { PositionComponent } from "./position";
-import { WelcomeScreenReact } from "./welcome";
 import { TextureComponent } from "./texture";
-import { SpinComponent, AnimationSystem, BumpComponent } from "./animation";
-import { setupRenderer, RenderReactComponent } from "./renderer";
+import {
+  SpinComponent,
+  RotationComponent,
+  AnimationSystem,
+  BumpComponent,
+} from "./animation";
+import { setupRenderer } from "./renderer";
 
 const world = new ECSY.World()
   .registerComponent(PositionComponent)
   .registerComponent(TextureComponent)
-  .registerComponent(PlayerComponent)
+  .registerComponent(UILabelComponent)
+  .registerComponent(PlayerTag)
   .registerComponent(LocalPlayerTag)
-  .registerComponent(RoomComponent)
   .registerComponent(SpinComponent)
+  .registerComponent(RotationComponent)
   .registerComponent(BumpComponent)
-  .registerSystem(RoomSystem)
   .registerSystem(AnimationSystem);
 
 setupRenderer(world);
 
-/**
- * @todo add a silly button, maybe a "cheers" or "say hi" button
- */
+world.registerSystem(RoomSystem);
 
 /**
  * @param {() => void} onLoadCompleted
@@ -38,8 +40,4 @@ export async function handleMount(onLoadCompleted) {
   }, delta);
 
   onLoadCompleted();
-  world
-    .createEntity("localPlayer")
-    .addComponent(RenderReactComponent, { value: WelcomeScreenReact })
-    .addComponent(LocalPlayerTag);
 }

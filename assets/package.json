@@ -7,8 +7,9 @@
     "watch": "webpack-dev-server --stdin"
   },
   "dependencies": {
+    "@homer0/prettier-plugin-jsdoc": "^2.0.0",
     "@react-three/drei": "^2.2.12",
-    "dreamt": "0.0.2",
+    "dreamt": "^0.5.0",
     "ecsy": "^0.4.2",
     "mobx": "^6.0.4",
     "mobx-react-lite": "^3.1.6",
@@ -43,10 +44,16 @@
     "jest": "^26.6.3",
     "mini-css-extract-plugin": "^0.9.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
+    "prettier": "^2.2.1",
     "react-refresh": "^0.9.0",
     "terser-webpack-plugin": "^2.3.2",
     "webpack": "4.43",
     "webpack-cli": "^3.3.2",
     "webpack-dev-server": "^3.11.2"
+  },
+  "prettier": {
+    "jsdocPrintWidth": 80,
+    "jsdocEnsureDescriptionsAreSentences": false,
+    "jsdocUseDotForArraysAndObjects": false
   }
 }
