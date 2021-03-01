@@ -55,7 +55,8 @@ defmodule Syz3d.OrganizerTest do
     test "delete_room/1 deletes the room" do
       room = room_fixture()
       assert {:ok, %Room{}} = Organizer.delete_room(room)
-      assert_raise Ecto.NoResultsError, fn -> Organizer.get_room(room.slug) end
+      result = Organizer.get_room(room.slug)
+      assert result == nil
     end
 
     test "change_room/1 returns a room changeset" do
