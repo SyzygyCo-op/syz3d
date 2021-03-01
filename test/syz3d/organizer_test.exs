@@ -24,9 +24,9 @@ defmodule Syz3d.OrganizerTest do
       assert Organizer.list_rooms() == [room]
     end
 
-    test "get_room!/1 returns the room with given id" do
+    test "get_room/1 returns the room with given id" do
       room = room_fixture()
-      assert Organizer.get_room!(room.id) == room
+      assert Organizer.get_room(room.slug) == room
     end
 
     test "create_room/1 with valid data creates a room" do
@@ -49,13 +49,13 @@ defmodule Syz3d.OrganizerTest do
     test "update_room/2 with invalid data returns error changeset" do
       room = room_fixture()
       assert {:error, %Ecto.Changeset{}} = Organizer.update_room(room, @invalid_attrs)
-      assert room == Organizer.get_room!(room.id)
+      assert room == Organizer.get_room(room.slug)
     end
 
     test "delete_room/1 deletes the room" do
       room = room_fixture()
       assert {:ok, %Room{}} = Organizer.delete_room(room)
-      assert_raise Ecto.NoResultsError, fn -> Organizer.get_room!(room.id) end
+      assert_raise Ecto.NoResultsError, fn -> Organizer.get_room(room.slug) end
     end
 
     test "change_room/1 returns a room changeset" do
