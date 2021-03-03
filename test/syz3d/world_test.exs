@@ -12,7 +12,7 @@ defmodule Syz3d.WorldTest do
     }
     {:ok, wid} = World.start_link(initial_data)
 
-    assert World.get(wid) == initial_data
+    assert World.get(wid) === initial_data
   end
 
   test "produce_diff/1 returns complete state when given empty state" do
@@ -49,7 +49,7 @@ defmodule Syz3d.WorldTest do
       remove: %{}
     })
 
-    assert World.get(wid) == %{
+    assert World.get(wid) === %{
       anEntity: %{
         aComponent: %{
           value: "blue"
@@ -95,8 +95,7 @@ defmodule Syz3d.WorldTest do
       }
     })
 
-    # use ===?
-    assert World.get(wid) == %{
+    assert World.get(wid) === %{
       anEntity: %{
         aComponent: %{
           value: "blue"
