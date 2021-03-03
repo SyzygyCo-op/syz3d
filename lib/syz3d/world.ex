@@ -31,13 +31,13 @@ defmodule Syz3d.World do
 
   defp do_removes(map, removes_list, removes_length) when removes_length > 0 do
     [ head | tail ] = removes_list
-    { key, data } = head
-    map_with_removes = if data === true do
-      Map.delete(map, key)
-    else
-      removes_list = Map.to_list(data)
-      submap_with_removes = do_removes(Map.get(map, key), removes_list, length(removes_list))
-      Map.put(map, key, submap_with_removes)
+    map_with_removes = case head do
+      { key, true } -> Map.delete(map, key)
+      { key, data } ->
+        removes_list = Map.to_list(data)
+        submap = Map.get(map, key)
+        submap_with_removes = do_removes(submap, removes_list, length(removes_list))
+        Map.put(map, key, submap_with_removes)
     end
 
     do_removes(map_with_removes, tail, removes_length - 1)
