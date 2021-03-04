@@ -74,8 +74,11 @@ export class RoomSystem extends DRMT.System {
     this.worldCache = {};
     this.timeOfLastPush = 0;
 
-    this.channel.on("world_init", (response) => {
+    this.channel.on("init", (response) => {
+      console.log("on init", response.body);
       this.clientId = response.body.client_id;
+      this.correspondent.consumeDiff(response.body.world_diff)
+        .updateCache(this.worldCache, response.body.world_diff);
     });
 
     this.channel.on("world_diff", (response) => {
@@ -86,7 +89,7 @@ export class RoomSystem extends DRMT.System {
 
     this.channel.join().receive("ok", () => {
       console.log("connected!");
-      this.world
+      this.localPlayerEntity = this.world
         .createEntity("localPlayer")
         .addComponent(PlayerTag)
         .addComponent(LocalPlayerTag)
@@ -97,6 +100,17 @@ export class RoomSystem extends DRMT.System {
         .addComponent(RenderR3FComponent, { value: PlayerR3F })
         .addComponent(UILabelComponent, { value: ""})
         .addComponent(TextureComponent, { url: '/images/water_texture.jpg'})
+
+      window.addEventListener("beforeunload", () => this.unload())
+    });
+  }
+
+  unload() {
+    this.localPlayerEntity.remove();
+    const diff = this.correspondent.produceDiff(this.worldCache);
+    this.correspondent.updateCache(this.worldCache, diff);
+    this.channel.push("world_diff", {body: diff}).receive("ok", () => {
+      this.channel.leave();
     });
   }
 
@@ -121,6 +135,7 @@ export class RoomSystem extends DRMT.System {
         this.channel.push("world_diff", { body: diff });
         this.correspondent.updateCache(this.worldCache, diff);
         this.timeOfLastPush = time;
+
       }
     }
   }

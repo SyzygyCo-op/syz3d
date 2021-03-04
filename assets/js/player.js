@@ -26,9 +26,12 @@ export const MaterialR3F = ({ entity }) => {
     entity.getComponent(TextureComponent).url
   );
   R3F.useFrame(() => {
-    const newValue = entity.getComponent(TextureComponent).url;
-    if (newValue !== textureUrl) {
-      setTextureUrl(newValue);
+    const compo = entity.getComponent(TextureComponent);
+    if (compo) {
+      const newValue = compo.url;
+      if (newValue !== textureUrl) {
+        setTextureUrl(newValue);
+      }
     }
   });
 
@@ -48,9 +51,12 @@ export const PlayerR3F = ({ entity }) => {
     entity.getComponent(UILabelComponent).value
   );
   R3F.useFrame(() => {
-    const newValue = entity.getComponent(UILabelComponent).value;
-    if (newValue !== label) {
-      setLabel(newValue);
+    const compo = entity.getComponent(UILabelComponent);
+    if (compo) {
+      const newValue = compo.value;
+      if (newValue !== label) {
+        setLabel(newValue);
+      }
     }
   });
 

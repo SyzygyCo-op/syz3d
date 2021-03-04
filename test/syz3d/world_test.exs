@@ -2,6 +2,9 @@ defmodule Syz3d.WorldTest do
   use ExUnit.Case, async: true
   alias Syz3d.World
 
+  # TODO support multiple worlds using a GenServer to manage one agent per world,
+  # TODO @docs, fix tests
+
   test "get/1 returns complete state" do
     initial_data = %{
       anEntity: %{

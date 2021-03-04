@@ -16,9 +16,9 @@ defmodule Syz3d.Application do
       # Start our Presence module.
       Syz3dWeb.Presence,
       # Start the Endpoint (http/https)
-      Syz3dWeb.Endpoint
+      Syz3dWeb.Endpoint,
       # Start a worker by calling: Syz3d.Worker.start_link(arg)
-      # {Syz3d.Worker, arg}
+      {Syz3d.World, %{}}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
