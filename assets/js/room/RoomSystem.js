@@ -89,6 +89,7 @@ export class RoomSystem extends DRMT.System {
 
     this.channel.join().receive("ok", () => {
       console.log("connected!");
+      if(this.localPlayerEntity) return; // TODO why?
       this.localPlayerEntity = this.world
         .createEntity("localPlayer")
         .addComponent(PlayerTag)

@@ -8,6 +8,9 @@ import { EntityRenderConnector } from "dreamt";
 
 export { RenderReactComponent, RenderR3FComponent };
 
+// TODO stop using EntityRenderConnector and pattern after
+// https://github.com/nikolajbaer/procgen-bhell/blob/main/src/systems/hud.js
+
 /**
  * @param {RenderState} observables
  */
