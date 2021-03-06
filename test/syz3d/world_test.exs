@@ -3,9 +3,9 @@ defmodule Syz3d.WorldTest do
   alias Syz3d.World
 
   # TODO support multiple worlds using a GenServer to manage one agent per world,
-  # TODO @docs, fix tests
+  # TODO @docs
 
-  test "get/1 returns complete state" do
+  setup do
     initial_data = %{
       anEntity: %{
         aComponent: %{
@@ -13,9 +13,14 @@ defmodule Syz3d.WorldTest do
         }
       }
     }
-    {:ok, wid} = World.start_link(initial_data)
 
-    assert World.get(wid) === initial_data
+    {:ok, _wid} = World.start_link(initial_data, :a)
+
+    %{initial_data: initial_data}
+  end
+
+  test "get/1 returns complete state", %{initial_data: initial_data} do
+    assert World.get(:a) === initial_data
   end
 
   test "produce_diff/1 returns complete state when given empty state" do
@@ -27,16 +32,7 @@ defmodule Syz3d.WorldTest do
   end
 
   test "apply_diff/1 upserts entities/components" do
-    initial_data = %{
-      anEntity: %{
-        aComponent: %{
-          value: "blue"
-        }
-      }
-    }
-    {:ok, wid} = World.start_link(initial_data)
-
-    World.apply_diff(wid, %World.Diff{
+    World.apply_diff(%World.Diff{
       upsert: %{
         anEntity: %{
           anotherComponent: %{
@@ -50,9 +46,9 @@ defmodule Syz3d.WorldTest do
         }
       },
       remove: %{}
-    })
+    }, :a)
 
-    assert World.get(wid) === %{
+    assert World.get(:a) === %{
       anEntity: %{
         aComponent: %{
           value: "blue"
@@ -69,8 +65,8 @@ defmodule Syz3d.WorldTest do
     }
   end
 
-  test "apply_diff/1 removes entities/components" do
-    initial_data = %{
+  test "apply_diff/1 removes entities/components", %{initial_data: initial_data} do
+    data_with_more_stuff = %{
       anEntity: %{
         aComponent: %{
           value: "blue"
@@ -86,9 +82,9 @@ defmodule Syz3d.WorldTest do
       }
     }
 
-    {:ok, wid} = World.start_link(initial_data)
+    {:ok, wid} = World.start_link(data_with_more_stuff, :c)
 
-    World.apply_diff(wid, %{
+    World.apply_diff(%{
       upsert: %{},
       remove: %{
         anEntity: %{
@@ -96,14 +92,8 @@ defmodule Syz3d.WorldTest do
         },
         anotherEntity: true
       }
-    })
+    }, :c)
 
-    assert World.get(wid) === %{
-      anEntity: %{
-        aComponent: %{
-          value: "blue"
-        }
-      }
-    }
+    assert World.get(wid) === initial_data
   end
 end

@@ -13,19 +13,15 @@ defmodule Syz3d.World do
     Agent.start_link(fn -> initial_data end, name: name)
   end
 
-  def get() do
-    Agent.get(__MODULE__, fn map -> map end)
+  def stop(name \\ __MODULE__) do
+    Agent.stop(name)
   end
 
-  def get(wid) do
+  def get(wid \\ __MODULE__) do
     Agent.get(wid, fn map -> map end)
   end
 
-  def apply_diff(diff) do
-    apply_diff(__MODULE__, diff)
-  end
-
-  def apply_diff(wid, diff) do
+  def apply_diff(diff, wid \\ __MODULE__) do
     %{ upsert: upserts, remove: removes } = diff
     Agent.update(wid, fn map ->
       map_with_upserts = do_upserts(map, upserts)

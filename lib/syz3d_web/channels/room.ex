@@ -3,6 +3,9 @@ defmodule Syz3dWeb.RoomChannel do
 
   alias Syz3d.World
 
+  # TODO remove entities when associated channel closes instead of relying on
+  # the client to send a cleanup message
+
   def join("room:" <> room_id, _params, socket) do
     send(self(), {:after_join, room_id})
     {:ok, socket}
