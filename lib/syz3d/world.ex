@@ -1,4 +1,10 @@
 defmodule Syz3d.World do
+  @moduledoc """
+  Either a backend for [my entity diffing wire format]
+  (https://www.patrickcanfield.com/posts/thinking-differently-about-wire-format),
+  a nascent ECS, or both. Not sure yet to be honest.
+  """
+
   use Agent
 
   defmodule Diff do
