@@ -76,7 +76,7 @@ export class RoomSystem extends DRMT.System {
 
     this.channel.on("init", (response) => {
       console.log("on init", response.body);
-      this.clientId = response.body.client_id;
+      this.playerId = response.body.player_id;
       this.correspondent.consumeDiff(response.body.world_diff)
         .updateCache(this.worldCache, response.body.world_diff);
     });
@@ -101,17 +101,6 @@ export class RoomSystem extends DRMT.System {
         .addComponent(RenderR3FComponent, { value: PlayerR3F })
         .addComponent(UILabelComponent, { value: ""})
         .addComponent(TextureComponent, { url: '/images/water_texture.jpg'})
-
-      window.addEventListener("beforeunload", () => this.unload())
-    });
-  }
-
-  unload() {
-    this.localPlayerEntity.remove();
-    const diff = this.correspondent.produceDiff(this.worldCache);
-    this.correspondent.updateCache(this.worldCache, diff);
-    this.channel.push("world_diff", {body: diff}).receive("ok", () => {
-      this.channel.leave();
     });
   }
 
@@ -121,9 +110,9 @@ export class RoomSystem extends DRMT.System {
   execute(_delta, time) {
     const eLocalPlayer = this.queries.localPlayer.results[0];
 
-    if (eLocalPlayer && this.clientId) {
+    if (eLocalPlayer && this.playerId) {
       this.correspondent.registerEntity(
-        `player:${this.clientId}`,
+        this.playerId,
         eLocalPlayer
       );
 

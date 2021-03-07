@@ -2,26 +2,36 @@ defmodule Syz3dWeb.RoomChannel do
   use Phoenix.Channel
 
   alias Syz3d.World
+  alias Syz3dWeb.Presence
 
-  # TODO remove entities when associated channel closes instead of relying on
-  # the client to send a cleanup message
+  # TODO use token auth
+  intercept ["presence_diff"]
 
   def join("room:" <> room_id, _params, socket) do
     send(self(), {:after_join, room_id})
-    {:ok, socket}
+    {:ok, assign(socket, :player_id, "player:#{UUID.uuid4}")}
   end
 
   def handle_info({:after_join, _room_id}, socket) do
     body = %{
-      client_id: UUID.uuid4(),
+      player_id: socket.assigns.player_id,
       world_diff: %World.Diff{
         upsert: World.get(),
         remove: %{}
       }
     }
 
+    {:ok, _} = Presence.track(socket, socket.assigns.player_id, %{})
+
     push(socket, "init", %{body: body})
 
+    {:noreply, socket}
+  end
+
+  def handle_out("presence_diff", payload, socket) do
+    diff = World.Diff.from_presence(payload)
+    World.apply_diff(diff)
+    broadcast!(socket, "world_diff", %{body: diff})
     {:noreply, socket}
   end
 

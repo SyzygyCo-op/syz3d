@@ -96,4 +96,26 @@ defmodule Syz3d.WorldTest do
 
     assert World.get(wid) === initial_data
   end
+
+  test "Diff.from_presence" do
+    presence_diff = %{
+      joins: %{},
+      leaves: %{
+        "player:a385" => %{
+          metas: [%{phx_ref: "FmoyQpF0NpOd8gAF"}]
+        },
+        "player:a386" => %{
+          metas: [%{phx_ref: "FmoyQpF0NpOd8gAF"}]
+        }
+      }
+    }
+
+    assert World.Diff.from_presence(presence_diff) === %World.Diff{
+      upsert: %{},
+      remove: %{
+        "player:a385" => true,
+        "player:a386" => true
+      }
+    }
+  end
 end
