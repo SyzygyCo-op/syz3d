@@ -15,56 +15,32 @@ defmodule Syz3d.World do
       do: %Diff{upsert: upsert, remove: remove}
   end
 
-  def start_link(initial_data, wid \\ __MODULE__) do
-    Agent.start_link(fn -> initial_data end, name: wid)
+  def start_link(initial_data, name \\ __MODULE__) do
+    Agent.start_link(fn -> initial_data end, name: name)
   end
 
-  def stop(wid \\ __MODULE__) do
-    Agent.stop(wid)
+  def stop(name \\ __MODULE__) do
+    Agent.stop(name)
   end
 
   def get(wid \\ __MODULE__) do
     Agent.get(wid, fn map -> map end)
   end
 
-  def apply_diff(diff, options \\ []) do
-    wid = Keyword.get(options, :wid, __MODULE__)
-    hooks = Keyword.drop(options, [:wid])
+  def apply_diff(diff, wid \\ __MODULE__) do
     %{ upsert: upserts, remove: removes } = diff
     Agent.update(wid, fn map ->
-      map_with_upserts = do_upserts(map, upserts, hooks)
+      map_with_upserts = do_upserts(map, upserts)
 
       removes_list = Map.to_list(removes)
       do_removes(map_with_upserts, removes_list, length(removes_list))
     end)
   end
 
-  defp do_upserts(map, upserts, hooks) do
-    map_post_merge = Map.merge(map, upserts, fn _entity_id, component_map_old, component_map_new ->
-      Map.merge(component_map_old, component_map_new)
+  defp do_upserts(map, upserts) do
+    Map.merge(map, upserts, fn _key, v1, v2 ->
+     Map.merge(v1, v2)
     end)
-
-    upsert_key_value_list = List.zip([Map.keys(upserts), Map.values(upserts)])
-    do_upsert_entity_hooks(map_post_merge, upsert_key_value_list, hooks)
-  end
-
-  defp do_upsert_entity_hooks(map, upsert_list, hooks) when length(upsert_list) > 0 and length(hooks) > 0 do
-    on_entity_upsert = Keyword.get(hooks, :on_entity_upsert)
-    [{entity_id, component_map_new} | tail] = upsert_list
-    component_map_old = Map.get(map, entity_id)
-
-    component_map_new_post_hook = if on_entity_upsert do
-      on_entity_upsert.(entity_id, component_map_old, component_map_new)
-    else
-      component_map_new
-    end
-
-    new_map = Map.put(map, entity_id, component_map_new_post_hook)
-    do_upsert_entity_hooks(new_map, tail, hooks)
-  end
-
-  defp do_upsert_entity_hooks(map, _list, []) do
-    map
   end
 
   defp do_removes(map, removes_list, removes_length) when removes_length > 0 do

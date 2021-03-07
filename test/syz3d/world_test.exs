@@ -3,7 +3,7 @@ defmodule Syz3d.WorldTest do
   alias Syz3d.World
 
   # TODO support multiple worlds using a GenServer to manage one agent per world,
-  # TODO use string keys upsert / remove and snake case inside entities
+  # TODO @docs
 
   setup do
     initial_data = %{
@@ -32,24 +32,21 @@ defmodule Syz3d.WorldTest do
   end
 
   test "apply_diff/1 upserts entities/components" do
-    World.apply_diff(
-      %World.Diff{
-        upsert: %{
-          anEntity: %{
-            anotherComponent: %{
-              value: "smurf"
-            }
-          },
-          anotherEntity: %{
-            aComponent: %{
-              value: "red"
-            }
+    World.apply_diff(%World.Diff{
+      upsert: %{
+        anEntity: %{
+          anotherComponent: %{
+            value: "smurf"
           }
         },
-        remove: %{}
+        anotherEntity: %{
+          aComponent: %{
+            value: "red"
+          }
+        }
       },
-      wid: :a
-    )
+      remove: %{}
+    }, :a)
 
     assert World.get(:a) === %{
       anEntity: %{
@@ -85,60 +82,18 @@ defmodule Syz3d.WorldTest do
       }
     }
 
-    {:ok, wid} = World.start_link(data_with_more_stuff, :b)
+    {:ok, wid} = World.start_link(data_with_more_stuff, :c)
 
-    World.apply_diff(
-      %{
-        upsert: %{},
-        remove: %{
-          anEntity: %{
-            anotherComponent: true
-          },
-          anotherEntity: true
-        }
-      },
-      wid: :b
-    )
+    World.apply_diff(%{
+      upsert: %{},
+      remove: %{
+        anEntity: %{
+          anotherComponent: true
+        },
+        anotherEntity: true
+      }
+    }, :c)
 
     assert World.get(wid) === initial_data
-  end
-
-  test "apply_diff/2 provides a callback for when entities are updated" do
-    {:ok, _wid} = World.start_link(%{}, :c)
-
-    World.apply_diff(
-      %World.Diff{
-        upsert: %{
-          npcEntity: %{
-            color: "green"
-          },
-          playerEntity: %{
-            is_player: true
-          },
-        }
-      },
-      on_entity_upsert: fn
-        _entity_id,
-        _component_map_old,
-        component_map_new ->
-          case component_map_new do
-            %{ is_player: true } ->
-              Map.merge(component_map_new, %{updatedAt: "11:11:11"})
-            _ ->
-              component_map_new
-          end
-        end,
-      wid: :c
-    )
-
-    assert World.get(:c) === %{
-      npcEntity: %{
-        color: "green"
-      },
-      playerEntity: %{
-        is_player: true,
-        updatedAt: "11:11:11"
-      }
-    }
   end
 end
