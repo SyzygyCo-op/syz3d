@@ -21,8 +21,13 @@ defmodule Syz3dWeb.Router do
 
     scope "/room" do
       # live "/new", Room.NewLive, :new, as: :new_room
+
+      # TODO drop the as: alias here?
       get "/:slug", Room.Show, :show, as: :show_room
+
+      get "/:slug/overcap", Room.Overcap, :show, as: :room_overcap
     end
+
   end
 
   # Other scopes may use custom stacks.

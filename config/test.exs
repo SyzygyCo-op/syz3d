@@ -1,3 +1,4 @@
+# TODO migrate to https://hexdocs.pm/elixir/master/Config.html?
 use Mix.Config
 
 # Configure your database
@@ -20,3 +21,6 @@ config :syz3d, Syz3dWeb.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+config :syz3d, :player_collection, Syz3d.Player.CollectionMock
+config :syz3d, :dynamic_config, Syz3d.DynamicConfigMock
