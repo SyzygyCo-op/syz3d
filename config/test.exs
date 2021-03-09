@@ -23,4 +23,4 @@ config :syz3d, Syz3dWeb.Endpoint,
 config :logger, level: :warn
 
 config :syz3d, :player_collection, Syz3d.Player.CollectionMock
-config :syz3d, :dynamic_config, Syz3d.DynamicConfigMock
+config :syz3d, :room_config, Syz3d.Room.ConfigMock
