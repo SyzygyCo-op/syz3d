@@ -17,8 +17,12 @@ config :syz3d, Syz3dWeb.Endpoint,
 # Do not print debug messages in production
 config :logger, level: :info
 
+config :syz3d, :player_collection, Syz3d.Player.Collection
+config :syz3d, :room_config, Syz3d.Room.Config
+
 # ## SSL Support
 #
+# TODO
 # To get SSL working, you will need to add the `https` key
 # to the previous section and set your `:url` port to 443:
 #
@@ -54,3 +58,4 @@ config :logger, level: :info
 # Finally import the config/prod.secret.exs which loads secrets
 # and configuration from environment variables.
 import_config "prod.secret.exs"
+

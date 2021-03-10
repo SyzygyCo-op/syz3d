@@ -4,4 +4,8 @@ defmodule Syz3dWeb.Room.Overcap do
   """
 
   use Syz3dWeb, :controller
+
+  def show(conn, _params) do
+    render(conn, "over_capacity.html")
+  end
 end

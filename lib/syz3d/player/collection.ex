@@ -1,19 +1,22 @@
 defmodule Syz3d.Player do
-  @enforce_keys [:name, :room_slug]
+  @moduledoc """
+  For storing and retrieving "player" information.
+  """
+
+  @enforce_keys [:room_slug]
   defstruct [:id, :name, room_slug: "lobby"]
 
   defmodule  Collection do
     defmodule Behaviour do
       alias Syz3d.Player
 
-      @callback size() :: pos_integer()
       @callback size(selection_criteria :: [room_slug: String.t]) :: pos_integer()
 
       @callback get(id :: integer()) :: Player | nil
 
-      @callback select_by_room(slug :: String.t) :: %{optional(String.t) => Player}
+      @callback select_by_room(slug :: String.t) :: %{optional(integer()) => Player}
 
-      @callback insert(new_player :: Player) :: :ok
+      @callback insert(new_player :: Player) :: Player
 
     end
 
@@ -49,10 +52,15 @@ defmodule Syz3d.Player do
     end
 
     def insert(new_player, agent_name \\ __MODULE__) do
-      Agent.update(agent_name, fn map ->
+      Agent.get_and_update(agent_name, fn map ->
         next_id = Map.size(map)
         player_with_id = %{new_player | id: next_id}
-        Map.put(map, next_id, player_with_id)
+        # player_with_id_and_name = case player_with_id do
+        #   %{name: name} when name != nil -> player_with_id
+        #   _ -> %{player_with_id | name: "player#{player_with_id.id + 1}"}
+        # end
+        new_map = Map.put(map, next_id, player_with_id)
+        {new_map, new_map}
       end)
     end
   end
