@@ -12,21 +12,23 @@ import { PositionComponent, getRandomPosition } from "../position";
 import { TextureComponent } from "../texture";
 import { SpinComponent, BumpComponent, RotationComponent } from "../animation";
 
-export class RoomSystem extends DRMT.System {
-  static queries = {
-    localPlayer: {
-      components: [LocalPlayerTag],
-    },
-  };
+function getPlayerId() {
+  return /** @type any */(window).PLAYER_ID
+}
 
+function getPlayerEntityId() {
+  return `player:${getPlayerId()}`;
+}
+
+export class RoomSystem extends DRMT.System {
   init() {
     const socket = new Socket("/socket");
     socket.connect();
 
-    const roomId = /**
+    const roomSlug = /**
      * @type {any} window
-     */ (window).ROOM_ID;
-    const topic = `room:${roomId}`;
+     */ (window).ROOM_SLUG;
+    const topic = `room:${roomSlug}`;
     this.channel = socket.channel(topic);
 
     this.correspondent = new DRMT.Correspondent(this.world)
@@ -76,7 +78,6 @@ export class RoomSystem extends DRMT.System {
 
     this.channel.on("init", (response) => {
       console.log("on init", response.body);
-      this.playerId = response.body.player_id;
       this.correspondent.consumeDiff(response.body.world_diff)
         .updateCache(this.worldCache, response.body.world_diff);
     });
@@ -91,7 +92,7 @@ export class RoomSystem extends DRMT.System {
       console.log("connected!");
       if(this.localPlayerEntity) return; // TODO why?
       this.localPlayerEntity = this.world
-        .createEntity("localPlayer")
+        .createEntity(`${getPlayerEntityId()} (local)`)
         .addComponent(PlayerTag)
         .addComponent(LocalPlayerTag)
         .addComponent(PositionComponent, { value: getRandomPosition() })
@@ -102,18 +103,18 @@ export class RoomSystem extends DRMT.System {
         .addComponent(UILabelComponent, { value: ""})
         .addComponent(TextureComponent, { url: '/images/water_texture.jpg'})
     });
+
+    this.channel.push("player_is_online", { body: { player_id: getPlayerId() } })
   }
 
   /**
    * @param {number} time
    */
   execute(_delta, time) {
-    const eLocalPlayer = this.queries.localPlayer.results[0];
-
-    if (eLocalPlayer && this.playerId) {
+    if (this.localPlayerEntity) {
       this.correspondent.registerEntity(
-        this.playerId,
-        eLocalPlayer
+        getPlayerEntityId(),
+        this.localPlayerEntity
       );
 
       const diff = this.correspondent.produceDiff(this.worldCache);

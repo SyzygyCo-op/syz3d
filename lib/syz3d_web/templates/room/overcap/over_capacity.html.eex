@@ -1,3 +1,5 @@
-You open the door and notice that on the other side is a squirming wall of human bodies.
+Once again, you reach to open the door but notice that the other side is a squirming wall of human bodies.
 
 "I guess I'll check back later, seems a bit too crowded right now" you say to yourself.
+
+<a href="<%= @room_url %>">Check now.</a>

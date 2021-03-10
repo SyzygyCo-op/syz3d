@@ -7,31 +7,41 @@ defmodule Syz3d.Player.CollectionTest do
   setup do
     agent_name = Syz3d.Player.CollectionTest
     Collection.start_link(%{}, agent_name)
-    Collection.insert(%Player{name: "goku", room_slug: "papaya_island"}, agent_name)
+    Collection.insert(%Player{name: "goku", room_slug: "papaya_island", is_online: true}, agent_name)
     Collection.insert(%Player{name: "krillin", room_slug: "papaya_island"}, agent_name)
     Collection.insert(%Player{name: "gohan", room_slug: "heaven"}, agent_name)
     %{agent_name: agent_name}
   end
 
-  test "size/1 returns total CCU", %{agent_name: agent_name} do
+  test "size/1 returns total size", %{agent_name: agent_name} do
     assert Collection.size([], agent_name) == 3
   end
 
-  test "size/1 returns CCU for a given room", %{agent_name: agent_name} do
+  test "size/1 returns size for a given room", %{agent_name: agent_name} do
     assert Collection.size([room_slug: "papaya_island"], agent_name) == 2
   end
 
+  test "size/1 returns CCU for a given room", %{agent_name: agent_name} do
+    assert Collection.size([room_slug: "papaya_island", is_online: true], agent_name) == 1
+  end
+
+  test "update/2 updates row with given :id", %{agent_name: agent_name} do
+    Collection.update(1, fn row -> %{row | name: "Kuririn"} end, agent_name)
+
+    assert %{name: "Kuririn"} = Collection.get(1, agent_name)
+  end
+
   test "select_by_room/1 returns all players in a room", %{agent_name: agent_name} do
-    assert Collection.select_by_room("papaya_island", agent_name) == %{
+    assert %{
       0 => %Player{id: 0, name: "goku", room_slug: "papaya_island"},
-      1 => %Player{id: 1, name: "krillin", room_slug: "papaya_island"},
-    }
+      1 => %Player{id: 1, name: "krillin", room_slug: "papaya_island"}
+    } = Collection.select_by_room("papaya_island", agent_name)
   end
 
   test "insert/1 returns the newly added player", %{agent_name: agent_name} do
     player = Collection.insert(%Player{room_slug: "penguin_village"}, agent_name)
 
-    assert %{ 3 => %Player{room_slug: "penguin_village"} } = player
+    assert %Player{room_slug: "penguin_village"} = player
   end
 
   test "inserting a player with an :id does not overwrite an existing field", %{agent_name: agent_name} do

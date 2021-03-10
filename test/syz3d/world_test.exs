@@ -1,6 +1,7 @@
 defmodule Syz3d.WorldTest do
   use ExUnit.Case, async: true
   alias Syz3d.World
+  alias Syz3d.Player
 
   # TODO support multiple worlds using a GenServer to manage one agent per world,
   # TODO @docs
@@ -101,10 +102,10 @@ defmodule Syz3d.WorldTest do
     presence_diff = %{
       joins: %{},
       leaves: %{
-        "player:a385" => %{
+        "385" => %{
           metas: [%{phx_ref: "FmoyQpF0NpOd8gAF"}]
         },
-        "player:a386" => %{
+        "386" => %{
           metas: [%{phx_ref: "FmoyQpF0NpOd8gAF"}]
         }
       }
@@ -113,8 +114,8 @@ defmodule Syz3d.WorldTest do
     assert World.Diff.from_presence(presence_diff) === %World.Diff{
       upsert: %{},
       remove: %{
-        "player:a385" => true,
-        "player:a386" => true
+        Player.make_entity_id("385") => true,
+        Player.make_entity_id("386") => true
       }
     }
   end

@@ -5,7 +5,7 @@ defmodule Syz3dWeb.Room.Overcap do
 
   use Syz3dWeb, :controller
 
-  def show(conn, _params) do
-    render(conn, "over_capacity.html")
+  def show(conn, params) do
+    render(conn, "over_capacity.html", room_url: Routes.show_room_path(conn, :show, params["slug"]))
   end
 end
