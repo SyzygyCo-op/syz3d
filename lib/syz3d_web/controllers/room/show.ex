@@ -11,12 +11,14 @@ defmodule Syz3dWeb.Room.Show do
     slug_param = params["slug"]
     max_ccu = config.get_max_ccu(slug_param)
     ccu = collection.size(room_slug: slug_param, is_online: true)
-    IO.puts("CCU = #{ccu}")
+
+    IO.puts("CCU for #{slug_param}: #{ccu}")
 
     case ccu do
       x when x < max_ccu ->
         %{ id: player_id } = collection.insert(%Syz3d.Player{room_slug: slug_param})
-        render(conn, slug: slug_param, player_id: player_id)
+        token = Phoenix.Token.sign(conn, "room_auth", player_id)
+        render(conn, slug: slug_param, player_id: player_id, room_token: token)
       _ ->
         conn
         |> put_status(307)

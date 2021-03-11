@@ -2,6 +2,7 @@
 <script>
   window.ROOM_SLUG = "<%= @slug %>";
   window.PLAYER_ID = "<%= @player_id %>";
+  window.ROOM_TOKEN = "<%= @room_token %>";
 </script>
 <div id="game"><!-- game renders here using JavaScript --></div>
 <div class="Footer">

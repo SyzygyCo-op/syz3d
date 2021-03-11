@@ -13,17 +13,21 @@ import { TextureComponent } from "../texture";
 import { SpinComponent, BumpComponent, RotationComponent } from "../animation";
 
 function getPlayerId() {
-  return /** @type any */(window).PLAYER_ID
+  return (/** @type any */(window).PLAYER_ID);
 }
 
 function getPlayerEntityId() {
   return `player:${getPlayerId()}`;
 }
 
+function getRoomToken() {
+  return (/** @type any */(window).ROOM_TOKEN);
+}
+
 export class RoomSystem extends DRMT.System {
   init() {
     const socket = new Socket("/socket");
-    socket.connect();
+    socket.connect({room_token: getRoomToken()});
 
     const roomSlug = /**
      * @type {any} window
@@ -103,8 +107,6 @@ export class RoomSystem extends DRMT.System {
         .addComponent(UILabelComponent, { value: ""})
         .addComponent(TextureComponent, { url: '/images/water_texture.jpg'})
     });
-
-    this.channel.push("player_is_online", { body: { player_id: getPlayerId() } })
   }
 
   /**

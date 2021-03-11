@@ -14,9 +14,13 @@ defmodule Syz3dWeb.RoomChannel do
   end
 
   def handle_info({:after_join, _room_id}, socket) do
+    %{player_id: player_id} = socket.assigns
+
+    Player.Collection.update(player_id, &Map.put(&1, :is_online, true))
+
+    {:ok, _} = Presence.track(socket, player_id, %{})
 
     body = %{
-      # player_id: player_id,
       world_diff: %World.Diff{
         upsert: World.get(),
         remove: %{}
@@ -37,16 +41,6 @@ defmodule Syz3dWeb.RoomChannel do
     World.apply_diff(diff)
     broadcast!(socket, "world_diff", %{body: diff})
     {:noreply, socket}
-  end
-
-  def handle_in("player_is_online", %{"body" => body}, socket) do
-    { player_id, _ } = Integer.parse(body["player_id"])
-
-    Player.Collection.update(player_id, &Map.put(&1, :is_online, true))
-
-    {:ok, _} = Presence.track(socket, player_id, %{})
-
-    {:noreply, assign(socket, :player_id, player_id)}
   end
 
   def handle_in("world_diff", %{"body" => body}, socket) do
