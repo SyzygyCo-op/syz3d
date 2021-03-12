@@ -1,15 +1,14 @@
 import * as React from "react";
 import { observer } from "mobx-react-lite";
-import * as MOBX from "mobx";
 import * as ECSY from "ecsy";
 import { Canvas } from "react-three-fiber";
 import { RenderReactComponent, RenderR3FComponent } from "./components";
-import { RenderState } from "dreamt";
+import { ObservableState } from "../observableState";
 
 const EntityComponentSet = observer(
   /**
    * @param {{
-   *   observables: RenderState;
+   *   observableState: RenderState;
    *   ComponentType: ECSY.ComponentConstructor<
    *     ECSY.Component<{
    *       value: React.FunctionComponent<{ entity: ECSY.Entity }>;
@@ -17,17 +16,17 @@ const EntityComponentSet = observer(
    *   >;
    * }} props
    */
-  ({ observables, ComponentType }) => {
+  ({ observableState, ComponentType }) => {
     return (
       <>
-        {observables.mapEntities(
+        {observableState.mapEntities(
           (entity, ECSComponent) => {
             const ReactComponent = /** @type any */ (ECSComponent).value;
             return (
               <ReactComponent
                 entity={entity}
                 key={entity.id}
-                entityComponentMap={observables.entityComponentMap}
+                entityComponentMap={observableState.entityComponentMap}
               />
             );
           },
@@ -39,17 +38,17 @@ const EntityComponentSet = observer(
 );
 
 export const ReactApp = observer(
-  /** @param {{ observables: RenderState }} props */
-  ({ observables }) => {
+  /** @param {{ observableState: RenderState }} props */
+  ({ observableState }) => {
     return (
       <div className="App">
         <EntityComponentSet
-          observables={observables}
+          observableState={observableState}
           ComponentType={RenderReactComponent}
         />
         <Canvas>
           <EntityComponentSet
-            observables={observables}
+            observableState={observableState}
             ComponentType={RenderR3FComponent}
           />
         </Canvas>

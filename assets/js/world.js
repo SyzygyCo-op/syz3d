@@ -1,4 +1,4 @@
-import * as ECSY from "ecsy";
+import * as DRMT from "dreamt";
 import { UILabelComponent, LocalPlayerTag, PlayerTag } from "./player";
 import { RoomSystem } from "./room";
 import { PositionComponent } from "./position";
@@ -11,7 +11,7 @@ import {
 } from "./animation";
 import { setupRenderer } from "./renderer";
 
-const world = new ECSY.World()
+export const world = new DRMT.World()
   .registerComponent(PositionComponent)
   .registerComponent(TextureComponent)
   .registerComponent(UILabelComponent)
@@ -26,10 +26,7 @@ setupRenderer(world);
 
 world.registerSystem(RoomSystem);
 
-/**
- * @param {() => void} onLoadCompleted
- */
-export async function handleMount(onLoadCompleted) {
+export function startWorldLoop() {
   // Don't need RAF because react-three-fiber has its own render loop that
   // ensures flicker-free animation.
   let time = 0;
@@ -38,6 +35,4 @@ export async function handleMount(onLoadCompleted) {
     world.execute(delta, time);
     time += delta;
   }, delta);
-
-  onLoadCompleted();
 }

@@ -1,9 +1,12 @@
 import "../css/app.css";
 import "phoenix_html";
 import NProgress from "nprogress";
-import { handleMount } from "./game";
+import { startWorldLoop } from "./world";
+import { startRenderObserver } from './renderer';
 
 NProgress.start();
-handleMount(() => {
-  NProgress.done();
-});
+
+startWorldLoop();
+startRenderObserver();
+
+NProgress.done();
