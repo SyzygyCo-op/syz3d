@@ -1,6 +1,8 @@
 defmodule Syz3dWeb.Router do
   use Syz3dWeb, :router
 
+  import Plug.BasicAuth
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -12,6 +14,10 @@ defmodule Syz3dWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+  end
+
+  pipeline :admins_only do
+    plug :basic_auth, username: "syzygy", password: System.get_env("SYZ3D_ADMIN_PASSWORD") || ""
   end
 
   scope "/", Syz3dWeb do
@@ -42,12 +48,10 @@ defmodule Syz3dWeb.Router do
   # If your application does not have an admins-only section yet,
   # you can use Plug.BasicAuth to set up some basic authentication
   # as long as you are also using SSL (which you should anyway).
-  if Mix.env() in [:dev, :test] do
-    import Phoenix.LiveDashboard.Router
+  import Phoenix.LiveDashboard.Router
 
-    scope "/" do
-      pipe_through :browser
-      live_dashboard "/dashboard", metrics: Syz3dWeb.Telemetry
-    end
+  scope "/" do
+    pipe_through [:browser, :admins_only]
+    live_dashboard "/dashboard", metrics: Syz3dWeb.Telemetry
   end
 end

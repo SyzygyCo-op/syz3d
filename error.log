@@ -1,0 +1,29 @@
+
+ Last message: {:after_join, "dead-mouse"}
+ web.1  | 21:13:08.549 [info] JOINED room:dead-mouse in 75µs
+ web.1  | 21:13:08.550 [error] GenServer Syz3d.Player.Collection terminating
+ web.1  |   Parameters: %{}
+ web.1  | ** (BadMapError) expected a map, got: nil
+ web.1  |     (syz3d) lib/syz3d_web/channels/room.ex:19: anonymous fn/1 in Syz3dWeb.RoomChannel.handle_info/2
+ web.1  |     (syz3d) lib/syz3d/player/collection.ex:83: anonymous fn/3 in Syz3d.Player.Collection.update/3
+ web.1  |     (elixir) lib/agent/server.ex:23: Agent.Server.handle_call/3
+ web.1  |     (stdlib) gen_server.erl:661: :gen_server.try_handle_call/4
+ web.1  |     (stdlib) gen_server.erl:690: :gen_server.handle_msg/6
+ web.1  |     (stdlib) proc_lib.erl:249: :proc_lib.init_p_do_apply/3
+ web.1  | Last message (from #PID<0.472.0>): {:update, #Function<5.115119013/1 in Syz3d.Player.Collection.update/3>}
+ web.1  | 21:13:08.552 [error] GenServer #PID<0.472.0> terminating
+ web.1  | ** (stop) exited in: GenServer.call(Syz3d.Player.Collection, {:update, #Function<5.115119013/1 in Syz3d.Player.Collection.update/3>}, 5000)
+ web.1  |     ** (EXIT) an exception was raised:
+ web.1  |         ** (BadMapError) expected a map, got: nil
+ web.1  |             (syz3d) lib/syz3d/player/collection.ex:83: anonymous fn/3 in Syz3d.Player.Collection.update/3
+ web.1  |             (syz3d) lib/syz3d_web/channels/room.ex:19: anonymous fn/1 in Syz3dWeb.RoomChannel.handle_info/2
+ web.1  |             (elixir) lib/agent/server.ex:23: Agent.Server.handle_call/3
+ web.1  |             (stdlib) gen_server.erl:690: :gen_server.handle_msg/6
+ web.1  |             (stdlib) gen_server.erl:661: :gen_server.try_handle_call/4
+ web.1  |             (stdlib) proc_lib.erl:249: :proc_lib.init_p_do_apply/3
+ web.1  |     (elixir) lib/gen_server.ex:989: GenServer.call/3
+ web.1  |     (phoenix) lib/phoenix/channel/server.ex:343: Phoenix.Channel.Server.handle_info/2
+ web.1  |     (syz3d) lib/syz3d_web/channels/room.ex:19: Syz3dWeb.RoomChannel.handle_info/2
+ web.1  |     (stdlib) gen_server.erl:637: :gen_server.try_dispatch/4
+ web.1  |     (stdlib) proc_lib.erl:249: :proc_lib.init_p_do_apply/3
+ web.1  |     (stdlib) gen_server.erl:711: :gen_server.handle_msg/6
