@@ -32,14 +32,14 @@ defmodule Syz3dWeb.RoomChannel do
   end
 
   def handle_info({:kill_zombies, room_slug}, socket) do
-    player_ids = Map.keys(Player.Collection.select_by_room(room_slug))
-    Enum.each(player_ids, fn id ->
-      # TODO DRY
-      if [] == Presence.get_by_key(socket, id) do
-        Player.Collection.update(id, &Map.merge(&1, %{is_online: false, offline_at: DateTime.utc_now()}))
-      end
+    zombie_list = Presence.list_zombies(socket, Map.keys(Player.Collection.select_by_room(room_slug)))
+    Enum.each(zombie_list, fn id ->
+      Player.Collection.update(id, &Map.merge(&1, %{is_online: false, offline_at: DateTime.utc_now()}))
     end)
-    diff = World.Diff.from_presence_socket(socket, player_ids)
+    removes = for player_id <- zombie_list, into: %{} do
+      {Player.make_entity_id(player_id), true}
+    end
+    diff = %World.Diff{remove: removes}
     broadcast!(socket, "world_diff", %{body: diff})
     World.apply_diff(diff)
     {:noreply, socket}

@@ -31,14 +31,6 @@ defmodule Syz3d.World do
 
       %Diff{remove: removes}
     end
-
-    def from_presence_socket(socket, player_ids) do
-      presence = Application.get_env(:syz3d, :presence)
-      removes = for player_id <- player_ids, [] == presence.get_by_key(socket, player_id), into: %{} do
-        {Player.make_entity_id(player_id), true}
-      end
-      %Diff{remove: removes}
-    end
   end
 
   def start_link(initial_data, name \\ __MODULE__) do

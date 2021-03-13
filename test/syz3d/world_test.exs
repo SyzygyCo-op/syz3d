@@ -124,17 +124,4 @@ defmodule Syz3d.WorldTest do
       }
     }
   end
-
-  test "Diff.from_presence_socket" do
-    socket = %{}
-    expect(Syz3dWeb.PresenceMock, :get_by_key, 1, fn ^socket, 0 -> [] end)  # Not present
-    expect(Syz3dWeb.PresenceMock, :get_by_key, 1, fn ^socket, 1 -> %{} end) # Present
-
-    assert %{
-      upsert: %{},
-      remove: %{
-        "player:0" => true
-      }
-    } = World.Diff.from_presence_socket(socket, [0, 1])
-  end
 end
