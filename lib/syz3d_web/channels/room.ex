@@ -11,12 +11,11 @@ defmodule Syz3dWeb.RoomChannel do
     {:ok, socket}
   end
 
-  def handle_info({:after_join, _room_id}, socket) do
+  def handle_info({:after_join, room_slug}, socket) do
     %{player_id: player_id} = socket.assigns
 
-    # TODO upsert player and see if that works for now. If not, may need to
-    # use a real database.
-    Player.Collection.update(player_id, &Map.merge(&1, %{is_online: true, online_at: DateTime.utc_now()}))
+    # Use upsert since if the server restarts connected clients will still have tokens
+    Player.Collection.upsert(player_id, %Player{room_slug: room_slug, is_online: true, online_at: DateTime.utc_now()})
 
     {:ok, _} = Presence.track(socket, player_id, %{})
 
@@ -34,7 +33,7 @@ defmodule Syz3dWeb.RoomChannel do
   def handle_info({:kill_zombies, room_slug}, socket) do
     zombie_list = Presence.list_zombies(socket, Map.keys(Player.Collection.select_by_room(room_slug)))
     Enum.each(zombie_list, fn id ->
-      Player.Collection.update(id, &Map.merge(&1, %{is_online: false, offline_at: DateTime.utc_now()}))
+      Player.Collection.upsert(id, %Player{room_slug: room_slug, is_online: false, offline_at: DateTime.utc_now()})
     end)
     removes = for player_id <- zombie_list, into: %{} do
       {Player.make_entity_id(player_id), true}
