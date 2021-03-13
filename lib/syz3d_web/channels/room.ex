@@ -14,11 +14,9 @@ defmodule Syz3dWeb.RoomChannel do
   def handle_info({:after_join, _room_id}, socket) do
     %{player_id: player_id} = socket.assigns
 
-    # TODO need to come up with a way to handle when the server restarts and
-    # looses all players but clients still have tokens containing player_ids
-    # that do not exist. Maybe clients should be forced to refresh? Or should
-    # players be persisted?
-    Player.Collection.update(player_id, &Map.put(&1, :is_online, true))
+    # TODO upsert player and see if that works for now. If not, may need to
+    # use a real database.
+    Player.Collection.update(player_id, &Map.merge(&1, %{is_online: true, online_at: DateTime.utc_now()}))
 
     {:ok, _} = Presence.track(socket, player_id, %{})
 
@@ -35,6 +33,12 @@ defmodule Syz3dWeb.RoomChannel do
 
   def handle_info({:kill_zombies, room_slug}, socket) do
     player_ids = Map.keys(Player.Collection.select_by_room(room_slug))
+    Enum.each(player_ids, fn id ->
+      # TODO DRY
+      if [] == Presence.get_by_key(socket, id) do
+        Player.Collection.update(id, &Map.merge(&1, %{is_online: false, offline_at: DateTime.utc_now()}))
+      end
+    end)
     diff = World.Diff.from_presence_socket(socket, player_ids)
     broadcast!(socket, "world_diff", %{body: diff})
     World.apply_diff(diff)

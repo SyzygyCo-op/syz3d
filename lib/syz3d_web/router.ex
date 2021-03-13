@@ -50,8 +50,9 @@ defmodule Syz3dWeb.Router do
   # as long as you are also using SSL (which you should anyway).
   import Phoenix.LiveDashboard.Router
 
-  scope "/" do
+  scope "/backstage" do
     pipe_through [:browser, :admins_only]
     live_dashboard "/dashboard", metrics: Syz3dWeb.Telemetry
+    live "/players", Syz3dWeb.Player.IndexLive
   end
 end
