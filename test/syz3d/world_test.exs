@@ -6,6 +6,11 @@ defmodule Syz3d.WorldTest do
   # TODO support multiple worlds using a GenServer to manage one agent per world,
   # TODO @docs
 
+  # 1. Import Mox
+  import Mox
+  # 2. setup fixtures
+  setup :verify_on_exit!
+
   setup do
     initial_data = %{
       anEntity: %{
@@ -118,5 +123,18 @@ defmodule Syz3d.WorldTest do
         Player.make_entity_id("386") => true
       }
     }
+  end
+
+  test "Diff.from_presence_socket" do
+    socket = %{}
+    expect(Syz3dWeb.PresenceMock, :get_by_key, 1, fn ^socket, 0 -> [] end)  # Not present
+    expect(Syz3dWeb.PresenceMock, :get_by_key, 1, fn ^socket, 1 -> %{} end) # Present
+
+    assert %{
+      upsert: %{},
+      remove: %{
+        "player:0" => true
+      }
+    } = World.Diff.from_presence_socket(socket, [0, 1])
   end
 end
