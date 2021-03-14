@@ -103,25 +103,4 @@ defmodule Syz3d.WorldTest do
     assert World.get(wid) === initial_data
   end
 
-  test "Diff.from_presence" do
-    presence_diff = %{
-      joins: %{},
-      leaves: %{
-        "385" => %{
-          metas: [%{phx_ref: "FmoyQpF0NpOd8gAF"}]
-        },
-        "386" => %{
-          metas: [%{phx_ref: "FmoyQpF0NpOd8gAF"}]
-        }
-      }
-    }
-
-    assert World.Diff.from_presence(presence_diff) === %World.Diff{
-      upsert: %{},
-      remove: %{
-        Player.make_entity_id("385") => true,
-        Player.make_entity_id("386") => true
-      }
-    }
-  end
 end
