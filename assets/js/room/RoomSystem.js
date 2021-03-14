@@ -85,6 +85,9 @@ export class RoomSystem extends DRMT.System {
       this.correspondent.consumeDiff(response.body.world_diff)
         .updateCache(this.worldCache, response.body.world_diff);
     });
+    this.channel.on("force_reload", () => {
+      location.reload()
+    });
 
     this.channel.on("world_diff", (response) => {
       this.correspondent

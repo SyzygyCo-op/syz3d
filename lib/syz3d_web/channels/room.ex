@@ -11,22 +11,26 @@ defmodule Syz3dWeb.RoomChannel do
     {:ok, socket}
   end
 
-  def handle_info({:after_join, room_slug}, socket) do
+  def handle_info({:after_join, _room_slug}, socket) do
     %{player_id: player_id} = socket.assigns
 
-    # Use upsert since if the server restarts connected clients will still have tokens
-    Player.Collection.upsert(player_id, %Player{room_slug: room_slug, is_online: true, online_at: DateTime.utc_now()})
+    case Player.Collection.get(player_id) do
+      %Player{} ->
+        Player.Collection.update(player_id, fn p -> %{ p | is_online: true, online_at: DateTime.utc_now()} end)
+        {:ok, _} = Presence.track(socket, player_id, %{})
 
-    {:ok, _} = Presence.track(socket, player_id, %{})
+        body = %{
+          world_diff: %World.Diff{
+            upsert: World.get(),
+            remove: %{}
+          }
+        }
 
-    body = %{
-      world_diff: %World.Diff{
-        upsert: World.get(),
-        remove: %{}
-      }
-    }
+        push(socket, "init", %{body: body})
+      nil ->
+        push(socket, "force_reload", %{})
+    end
 
-    push(socket, "init", %{body: body})
     {:noreply, socket}
   end
 
