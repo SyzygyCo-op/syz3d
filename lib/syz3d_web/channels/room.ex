@@ -33,7 +33,12 @@ defmodule Syz3dWeb.RoomChannel do
   def handle_info({:kill_zombies, room_slug}, socket) do
     zombie_list = Presence.list_zombies(socket, Map.keys(Player.Collection.select_by_room(room_slug)))
     Enum.each(zombie_list, fn id ->
-      Player.Collection.upsert(id, %Player{room_slug: room_slug, is_online: false, offline_at: DateTime.utc_now()})
+      Player.Collection.update(id, fn player ->
+        case player do
+          %{is_online: true} -> Map.merge(player, %{is_online: false, offline_at: DateTime.utc_now()})
+          _ -> player
+        end
+      end)
     end)
     removes = for player_id <- zombie_list, into: %{} do
       {Player.make_entity_id(player_id), true}
