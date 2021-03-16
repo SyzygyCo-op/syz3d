@@ -2,11 +2,11 @@ import "../css/app.css";
 import "phoenix_html";
 import NProgress from "nprogress";
 import { startWorldLoop } from "./world";
-import { startRenderObserver } from './renderer';
+import { startReactApp } from './renderer';
 
 NProgress.start();
 
 startWorldLoop();
-startRenderObserver();
+startReactApp();
 
 NProgress.done();

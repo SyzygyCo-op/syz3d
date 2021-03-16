@@ -7,10 +7,7 @@ import { StateSystem } from '../observableState';
 
 export { RenderR3FComponent };
 
-// TODO stop using EntityRenderConnector and pattern after
-// https://github.com/nikolajbaer/procgen-bhell/blob/main/src/systems/hud.js
-
-export function startRenderObserver() {
+export function startReactApp() {
   const observable = world.getSystem(StateSystem).observable;
 
   ReactDOM.render(
