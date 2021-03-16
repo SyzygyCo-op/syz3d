@@ -6,8 +6,7 @@ import {
   UILabelComponent,
   PlayerR3F,
 } from "../player";
-import { RenderReactComponent, RenderR3FComponent } from "../renderer";
-import { WelcomeScreenReact } from "../welcome";
+import { RenderR3FComponent } from "../renderer";
 import { PositionComponent, getRandomPosition } from "../position";
 import { TextureComponent } from "../texture";
 import { SpinComponent, BumpComponent, RotationComponent } from "../animation";
@@ -26,8 +25,10 @@ function getRoomToken() {
 
 export class RoomSystem extends DRMT.System {
   init() {
-    const socket = new Socket("/socket");
-    socket.connect({room_token: getRoomToken()});
+    const socket = new Socket("/socket", {
+      params: {room_token: getRoomToken()}
+    });
+    socket.connect();
 
     const roomSlug = /**
      * @type {any} window
@@ -102,7 +103,6 @@ export class RoomSystem extends DRMT.System {
         .addComponent(PositionComponent, { value: getRandomPosition() })
         .addComponent(SpinComponent, { value: [0, 0.0007, 0.001] })
         .addComponent(RotationComponent, { value: [0, 0, 0] })
-        .addComponent(RenderReactComponent, { value: WelcomeScreenReact })
         .addComponent(RenderR3FComponent, { value: PlayerR3F })
         .addComponent(UILabelComponent, { value: ""})
         .addComponent(TextureComponent, { url: '/images/water_texture.jpg'})
@@ -128,7 +128,6 @@ export class RoomSystem extends DRMT.System {
         this.channel.push("world_diff", { body: diff });
         this.correspondent.updateCache(this.worldCache, diff);
         this.timeOfLastPush = time;
-
       }
     }
   }

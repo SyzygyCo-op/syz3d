@@ -1,13 +1,11 @@
 import * as React from "react";
-import * as ECSY from "ecsy";
 import ReactDOM from "react-dom";
-import { RenderReactComponent, RenderR3FComponent } from "./components";
-import { RenderState } from "dreamt";
+import { RenderR3FComponent } from "./components";
 import { ReactApp } from "./ReactApp";
 import { world } from '../world';
 import { StateSystem } from '../observableState';
 
-export { RenderReactComponent, RenderR3FComponent };
+export { RenderR3FComponent };
 
 // TODO stop using EntityRenderConnector and pattern after
 // https://github.com/nikolajbaer/procgen-bhell/blob/main/src/systems/hud.js

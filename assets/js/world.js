@@ -9,7 +9,8 @@ import {
   AnimationSystem,
   BumpComponent,
 } from "./animation";
-import { setupRenderer } from "./renderer";
+import {RenderR3FComponent} from "./renderer";
+import {StateSystem} from "./observableState"
 
 export const world = new DRMT.World()
   .registerComponent(PositionComponent)
@@ -20,11 +21,10 @@ export const world = new DRMT.World()
   .registerComponent(SpinComponent)
   .registerComponent(RotationComponent)
   .registerComponent(BumpComponent)
-  .registerSystem(AnimationSystem);
-
-setupRenderer(world);
-
-world.registerSystem(RoomSystem);
+  .registerComponent(RenderR3FComponent)
+  .registerSystem(AnimationSystem)
+  .registerSystem(StateSystem)
+  .registerSystem(RoomSystem);
 
 export function startWorldLoop() {
   // Don't need RAF because react-three-fiber has its own render loop that
