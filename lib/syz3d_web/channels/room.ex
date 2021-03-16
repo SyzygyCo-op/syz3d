@@ -5,41 +5,51 @@ defmodule Syz3dWeb.RoomChannel do
   alias Syz3d.Player
   alias Syz3dWeb.Presence
 
-  # TODO use token auth
-  intercept ["presence_diff"]
-
-  def join("room:" <> room_id, _params, socket) do
-    send(self(), {:after_join, room_id})
+  def join("room:" <> room_slug, _params, socket) do
+    send(self(), {:after_join, room_slug})
+    :timer.send_interval(1000, {:kill_zombies, room_slug})
     {:ok, socket}
   end
 
-  def handle_info({:after_join, _room_id}, socket) do
+  def handle_info({:after_join, _room_slug}, socket) do
     %{player_id: player_id} = socket.assigns
 
-    Player.Collection.update(player_id, &Map.put(&1, :is_online, true))
+    case Player.Collection.get(player_id) do
+      %Player{} ->
+        Player.Collection.update(player_id, fn p -> %{ p | is_online: true, online_at: DateTime.utc_now()} end)
+        {:ok, _} = Presence.track(socket, player_id, %{})
 
-    {:ok, _} = Presence.track(socket, player_id, %{})
+        body = %{
+          world_diff: %World.Diff{
+            upsert: World.get(),
+            remove: %{}
+          }
+        }
 
-    body = %{
-      world_diff: %World.Diff{
-        upsert: World.get(),
-        remove: %{}
-      }
-    }
+        push(socket, "init", %{body: body})
+      nil ->
+        push(socket, "force_reload", %{})
+    end
 
-    push(socket, "init", %{body: body})
     {:noreply, socket}
   end
 
-  def handle_out("presence_diff", payload, socket) do
-    Enum.each(Map.keys(payload.leaves), fn player_key ->
-      { player_id, _ } = Integer.parse(player_key)
-      Player.Collection.update(player_id, &Map.put(&1, :is_online, false))
+  def handle_info({:kill_zombies, room_slug}, socket) do
+    zombie_list = Presence.list_zombies(socket, Map.keys(Player.Collection.select_by_room(room_slug)))
+    Enum.each(zombie_list, fn id ->
+      Player.Collection.update(id, fn player ->
+        case player do
+          %{is_online: true} -> Map.merge(player, %{is_online: false, offline_at: DateTime.utc_now()})
+          _ -> player
+        end
+      end)
     end)
-
-    diff = World.Diff.from_presence(payload)
-    World.apply_diff(diff)
+    removes = for player_id <- zombie_list, into: %{} do
+      {Player.make_entity_id(player_id), true}
+    end
+    diff = %World.Diff{remove: removes}
     broadcast!(socket, "world_diff", %{body: diff})
+    World.apply_diff(diff)
     {:noreply, socket}
   end
 

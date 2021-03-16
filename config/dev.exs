@@ -76,3 +76,4 @@ config :phoenix, :plug_init_mode, :runtime
 
 config :syz3d, :player_collection, Syz3d.Player.Collection
 config :syz3d, :room_config, Syz3d.Room.Config
+config :syz3d, :presence, Syz3dWeb.Presence

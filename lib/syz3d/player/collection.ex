@@ -4,7 +4,7 @@ defmodule Syz3d.Player do
   """
 
   @enforce_keys [:room_slug]
-  defstruct [:id, :name, is_online: false, room_slug: "lobby"]
+  defstruct [:id, :name, :online_at, :offline_at, is_online: false, room_slug: "lobby"]
 
   def make_entity_id(player_id) do
     "player:#{player_id}"
@@ -68,20 +68,34 @@ defmodule Syz3d.Player do
       Agent.get_and_update(agent_name, fn map ->
         # This assumes the rows are never removed
         next_id = Map.size(map)
-        player_with_id = %{new_player | id: next_id}
-        # player_with_id_and_name = case player_with_id do
-        #   %{name: name} when name != nil -> player_with_id
-        #   _ -> %{player_with_id | name: "player#{player_with_id.id + 1}"}
-        # end
-        new_map = Map.put(map, next_id, player_with_id)
+        new_map = map_insert(map, new_player, next_id)
         {new_map[next_id], new_map}
       end)
+    end
+
+    defp map_insert(map, new_player, id) do
+      player_with_id = %{new_player | id: id}
+      if map[id] != nil do
+        raise "Player with id #{id} exists!"
+      end
+      Map.put(map, id, player_with_id)
     end
 
     def update(id, update_fn, agent_name \\ __MODULE__) do
       Agent.update(agent_name, fn map ->
         Map.put(map, id, update_fn.(map[id]))
       end)
+    end
+
+    def upsert(id, row, agent_name \\ __MODULE__) do
+      if get(id, agent_name) == nil do
+        Agent.get_and_update(agent_name, fn map ->
+          new_map = map_insert(map, row, id)
+          {new_map[id], new_map}
+        end)
+      else
+        update(id, &(Map.merge(&1, row)), agent_name)
+      end
     end
   end
 end

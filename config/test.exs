@@ -24,3 +24,4 @@ config :logger, level: :warn
 
 config :syz3d, :player_collection, Syz3d.Player.CollectionMock
 config :syz3d, :room_config, Syz3d.Room.ConfigMock
+config :syz3d, :presence, Syz3dWeb.PresenceMock
