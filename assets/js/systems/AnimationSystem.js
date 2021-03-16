@@ -1,32 +1,7 @@
-import * as ECSY from "ecsy";
+import * as DRMT from "dreamt";
+import { SpinComponent, RotationComponent, BumpComponent } from "../components";
 
-export class RotationComponent extends ECSY.Component {
-  static schema = {
-    value: { type: ECSY.Types.Array },
-  };
-}
-
-export class SpinComponent extends ECSY.Component {
-  static schema = {
-    value: { type: ECSY.Types.Array },
-  };
-}
-
-/** @param {number} time
-  * @param {number} radiansPerTimeUnit
-  * @returns number radians
-  */
-function getSpinAt(time, radiansPerTimeUnit) {
-  return Math.PI * time * radiansPerTimeUnit;
-}
-
-export class BumpComponent extends ECSY.Component {
-  static schema = {
-    value: { type: ECSY.Types.Number },
-  };
-}
-
-export class AnimationSystem extends ECSY.System {
+export class AnimationSystem extends DRMT.System {
   static queries = {
     spinners: {
       components: [SpinComponent, RotationComponent],
@@ -55,4 +30,12 @@ export class AnimationSystem extends ECSY.System {
       }
     });
   }
+}
+/**
+ * @param {number} time
+ * @param {number} radiansPerTimeUnit
+ * @returns number radians
+ */
+function getSpinAt(time, radiansPerTimeUnit) {
+  return Math.PI * time * radiansPerTimeUnit;
 }

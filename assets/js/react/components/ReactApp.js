@@ -1,8 +1,8 @@
 import * as React from "react";
 import { observer } from "mobx-react-lite";
 import { Canvas } from "react-three-fiber";
-import { RenderR3FComponent } from "./components";
-import { ObservableState } from "../observableState";
+import { R3FComponent } from "../../components";
+import { ObservableState } from "../../state";
 
 const EntitySet = observer(
   /**
@@ -15,7 +15,7 @@ const EntitySet = observer(
     entities.forEach((entity) => {
       const ReactComponent = /**
        * @type any
-       */ entity.getComponent(RenderR3FComponent).value;
+       */ entity.getComponent(R3FComponent).value;
       components.push(<ReactComponent entity={entity} key={entity.id} />);
     });
     return <>{components}</>;

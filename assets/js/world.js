@@ -1,16 +1,16 @@
 import * as DRMT from "dreamt";
-import { UILabelComponent, LocalPlayerTag, PlayerTag } from "./player";
-import { RoomSystem } from "./room";
-import { PositionComponent } from "./position";
-import { TextureComponent } from "./texture";
+import { StateSystem, ClientSystem, AnimationSystem } from "./systems";
 import {
+  UILabelComponent,
+  LocalPlayerTag,
+  PlayerTag,
   SpinComponent,
   RotationComponent,
-  AnimationSystem,
+  PositionComponent,
+  TextureComponent,
   BumpComponent,
-} from "./animation";
-import {RenderR3FComponent} from "./renderer";
-import {StateSystem} from "./observableState"
+  R3FComponent,
+} from "./components";
 
 export const world = new DRMT.World()
   .registerComponent(PositionComponent)
@@ -21,10 +21,10 @@ export const world = new DRMT.World()
   .registerComponent(SpinComponent)
   .registerComponent(RotationComponent)
   .registerComponent(BumpComponent)
-  .registerComponent(RenderR3FComponent)
+  .registerComponent(R3FComponent)
   .registerSystem(AnimationSystem)
   .registerSystem(StateSystem)
-  .registerSystem(RoomSystem);
+  .registerSystem(ClientSystem);
 
 export function startWorldLoop() {
   // Don't need RAF because react-three-fiber has its own render loop that

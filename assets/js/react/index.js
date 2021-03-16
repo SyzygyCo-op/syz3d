@@ -1,11 +1,8 @@
 import * as React from "react";
 import ReactDOM from "react-dom";
-import { RenderR3FComponent } from "./components";
-import { ReactApp } from "./ReactApp";
+import { ReactApp } from "./components/ReactApp";
 import { world } from '../world';
-import { StateSystem } from '../observableState';
-
-export { RenderR3FComponent };
+import { StateSystem } from '../systems';
 
 export function startReactApp() {
   const observable = world.getSystem(StateSystem).observable;

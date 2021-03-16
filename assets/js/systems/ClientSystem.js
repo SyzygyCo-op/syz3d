@@ -4,15 +4,18 @@ import {
   PlayerTag,
   LocalPlayerTag,
   UILabelComponent,
-  PlayerR3F,
-} from "../player";
-import { RenderR3FComponent } from "../renderer";
-import { PositionComponent, getRandomPosition } from "../position";
-import { TextureComponent } from "../texture";
-import { SpinComponent, BumpComponent, RotationComponent } from "../animation";
+  R3FComponent,
+  PositionComponent,
+  TextureComponent,
+  SpinComponent,
+  BumpComponent,
+  RotationComponent,
+} from "../components";
+import { Entity } from "../react/components";
 
 function getPlayerId() {
-  return (/** @type any */(window).PLAYER_ID);
+  // @ts-ignore
+  return (window).PLAYER_ID;
 }
 
 function getPlayerEntityId() {
@@ -20,13 +23,14 @@ function getPlayerEntityId() {
 }
 
 function getRoomToken() {
-  return (/** @type any */(window).ROOM_TOKEN);
+  // @ts-ignore
+  return (window).ROOM_TOKEN;
 }
 
-export class RoomSystem extends DRMT.System {
+export class ClientSystem extends DRMT.System {
   init() {
     const socket = new Socket("/socket", {
-      params: {room_token: getRoomToken()}
+      params: { room_token: getRoomToken() },
     });
     socket.connect();
 
@@ -68,13 +72,13 @@ export class RoomSystem extends DRMT.System {
       .registerComponent("position", PositionComponent, {
         writeCache: (arr) => arr && arr.join(","),
       })
-      .registerComponent("avatar", RenderR3FComponent, {
+      .registerComponent("avatar", R3FComponent, {
         write: (compo) => !!compo,
         read: (compo) => {
           if (compo) {
             /**
              * @type any
-             */ (compo).value = PlayerR3F;
+             */ (compo).value = Entity;
           }
         },
       });
@@ -83,11 +87,12 @@ export class RoomSystem extends DRMT.System {
 
     this.channel.on("init", (response) => {
       console.log("on init", response.body);
-      this.correspondent.consumeDiff(response.body.world_diff)
+      this.correspondent
+        .consumeDiff(response.body.world_diff)
         .updateCache(this.worldCache, response.body.world_diff);
     });
     this.channel.on("force_reload", () => {
-      location.reload()
+      location.reload();
     });
 
     this.channel.on("world_diff", (response) => {
@@ -98,17 +103,19 @@ export class RoomSystem extends DRMT.System {
 
     this.channel.join().receive("ok", () => {
       console.log("connected!");
-      if(this.localPlayerEntity) return; // TODO why?
+      if (this.localPlayerEntity) return; // TODO why?
       this.localPlayerEntity = this.world
         .createEntity(`${getPlayerEntityId()} (local)`)
         .addComponent(PlayerTag)
         .addComponent(LocalPlayerTag)
-        .addComponent(PositionComponent, { value: getRandomPosition() })
+        .addComponent(PositionComponent, {
+          value: PositionComponent.randomValue(),
+        })
         .addComponent(SpinComponent, { value: [0, 0.0007, 0.001] })
         .addComponent(RotationComponent, { value: [0, 0, 0] })
-        .addComponent(RenderR3FComponent, { value: PlayerR3F })
-        .addComponent(UILabelComponent, { value: ""})
-        .addComponent(TextureComponent, { url: '/images/water_texture.jpg'})
+        .addComponent(R3FComponent, { value: Entity })
+        .addComponent(UILabelComponent, { value: "" })
+        .addComponent(TextureComponent, { url: "/images/water_texture.jpg" });
     });
   }
 

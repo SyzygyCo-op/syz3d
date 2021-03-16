@@ -1,24 +1,18 @@
-import * as ECSY from "ecsy";
-
+import * as DRMT from "dreamt";
 import * as React from "react";
-import { PositionComponent } from "./position";
-import { Html } from "@react-three/drei";
 import * as THREE from "three";
-import { TextureComponent } from "./texture";
 import * as R3F from "react-three-fiber";
-import { BumpComponent, RotationComponent } from "./animation";
-
-export class PlayerTag extends ECSY.TagComponent {}
-export class LocalPlayerTag extends ECSY.TagComponent {}
-
-export class UILabelComponent extends ECSY.Component {
-  static schema = {
-    value: { type: ECSY.Types.String },
-  };
-}
+import {
+  PositionComponent,
+  TextureComponent,
+  RotationComponent,
+  BumpComponent,
+  UILabelComponent,
+} from "../../components";
+import { Html } from "@react-three/drei";
 
 /**
- * @type React.ComponentType<{entity:  ECSY.Entity}>
+ * @type React.ComponentType<{entity:  DRMT.Entity}>
  */
 export const MaterialR3F = ({ entity }) => {
   // TODO create a custom hook
@@ -42,10 +36,13 @@ export const MaterialR3F = ({ entity }) => {
 
 const bumpMaxScale = new THREE.Vector3(2, 2, 2);
 const bumpMinScale = new THREE.Vector3(1, 1, 1);
+
 /**
- * @type React.ComponentType<{entity:  ECSY.Entity, world: ECSY.World}>
+ * React-THREE-Fiber component that renders an entity.
+ *
+ * @type React.ComponentType<{entity:  DRMT.Entity, world: DRMT.World}>
  */
-export const PlayerR3F = ({ entity }) => {
+export const Entity = ({ entity }) => {
   const cPosition = entity.getComponent(PositionComponent);
   const [label, setLabel] = React.useState(
     entity.getComponent(UILabelComponent).value
@@ -100,54 +97,4 @@ export const PlayerR3F = ({ entity }) => {
       </React.Suspense>
     </group>
   );
-};
-
-/**
- * @param {{
- *   onSubmit: (data: { player_id: string; texture: string }) => void;
- *   onClose: () => void;
- * }} props
- */
-export const PlayerFormReact = (props) => {
-  return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        What should your name tag say?
-        <input name="player_id" type="text" placeholder="Samuel L. Jackson" />
-      </label>
-      <label>
-        Choose a texture (for your avatar.)
-        <select name="texture" defaultValue="">
-          <option value="/images/water_texture.jpg">Water</option>
-          <option value="/images/lava_texture.jpg">Lava</option>
-        </select>
-      </label>
-      <input type="submit" value="Save" />
-      {props.onClose && (
-        <input type="button" value="Let's go!" onClick={props.onClose} />
-      )}
-    </form>
-  );
-
-  /**
-   * @param {React.FormEvent} evt
-   */
-  function handleSubmit(evt) {
-    evt.preventDefault();
-    const data = new FormData(
-      /**
-       * @type any
-       */ (evt.target)
-    );
-    /**
-     * @type string
-     */
-    const player_id = /**
-     * @type string
-     */ (data.get("player_id"));
-    const texture = /**
-     * @type string
-     */ (data.get("texture"));
-    props.onSubmit({ player_id, texture });
-  }
 };

@@ -1,6 +1,6 @@
 import * as DRMT from "dreamt";
 import * as MOBX from "mobx";
-import { RenderR3FComponent } from "../renderer/index";
+import { R3FComponent } from "../components"
 
 export class ObservableState {
   /**
@@ -15,7 +15,7 @@ export class ObservableState {
 export class StateSystem extends DRMT.System {
   static queries = {
     entities: {
-      components: [RenderR3FComponent],
+      components: [R3FComponent],
       listen: {
         added: true,
         removed: true,
