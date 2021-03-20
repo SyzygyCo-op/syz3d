@@ -8,7 +8,7 @@ export function startReactApp() {
   const observable = world.getSystem(StateSystem).observable;
 
   ReactDOM.render(
-    <ReactApp observableState={observable} />,
+    <ReactApp state={observable} />,
     document.getElementById("game")
   );
 }

@@ -1,9 +1,19 @@
 /* This file is for your main application css. */
-@import "./phoenix.css";
 @import "../node_modules/nprogress/nprogress.css";
+@import "~antd/dist/antd.dark.css";
 
 * {
   box-sizing: border-box;
+}
+
+button {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  display: inline-block;
+  cursor: pointer;
+  text-align: center;
+  border: none;
+  background: transparent;
 }
 
 html,

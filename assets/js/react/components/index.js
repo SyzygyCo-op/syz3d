@@ -1,6 +1,6 @@
 import * as React from "react";
-export { Entity } from './Entity'
-export { ReactApp } from './ReactApp'
+export { Entity } from "./Entity";
+export { ReactApp } from "./ReactApp";
 
 /**
  * @param {{

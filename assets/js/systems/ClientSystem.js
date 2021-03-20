@@ -15,7 +15,7 @@ import { Entity } from "../react/components";
 
 function getPlayerId() {
   // @ts-ignore
-  return (window).PLAYER_ID;
+  return window.PLAYER_ID;
 }
 
 function getPlayerEntityId() {
@@ -24,7 +24,7 @@ function getPlayerEntityId() {
 
 function getRoomToken() {
   // @ts-ignore
-  return (window).ROOM_TOKEN;
+  return window.ROOM_TOKEN;
 }
 
 export class ClientSystem extends DRMT.System {
@@ -129,15 +129,13 @@ export class ClientSystem extends DRMT.System {
         this.localPlayerEntity
       );
 
-      const diff = this.correspondent.produceDiff(this.worldCache);
-
-      if (
-        time - this.timeOfLastPush >= 200 &&
-        !DRMT.Correspondent.isEmptyDiff(diff)
-      ) {
-        this.channel.push("world_diff", { body: diff });
-        this.correspondent.updateCache(this.worldCache, diff);
-        this.timeOfLastPush = time;
+      if (time - this.timeOfLastPush >= 200) {
+        const diff = this.correspondent.produceDiff(this.worldCache);
+        if (!DRMT.Correspondent.isEmptyDiff(diff)) {
+          this.channel.push("world_diff", { body: diff });
+          this.correspondent.updateCache(this.worldCache, diff);
+          this.timeOfLastPush = time;
+        }
       }
     }
   }

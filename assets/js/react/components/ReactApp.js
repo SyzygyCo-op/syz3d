@@ -2,12 +2,14 @@ import * as React from "react";
 import { observer } from "mobx-react-lite";
 import { Canvas } from "react-three-fiber";
 import { R3FComponent } from "../../components";
+import * as UI from "./ui";
+import * as AntD from "antd";
 import { ObservableState } from "../../state";
 
 const EntitySet = observer(
   /**
    * @param {{
-   *   entities: ObservableState['entities'];
+   *   entities: ObservableState['entitiesToRender'];
    * }} props
    */
   ({ entities }) => {
@@ -24,15 +26,55 @@ const EntitySet = observer(
 
 export const ReactApp = observer(
   /**
-   * @param {{ observableState: ObservableState }} props
+   * @param {{ state: ObservableState }} props
    */
-  ({ observableState }) => {
+  ({ state }) => {
     return (
-      <div className="App">
-        <Canvas>
-          <EntitySet entities={observableState.entities} />
-        </Canvas>
-      </div>
+      <>
+        <div className="App">
+          <UI.HeadsUp
+            onAvatarEdit={handleAvatarEdit}
+            onSettingsOpen={handleSettingsOpen}
+          />
+          <Canvas>
+            <EntitySet entities={state.entitiesToRender} />
+          </Canvas>
+        </div>
+        <UI.Drawer
+          title="settings"
+          placement="left"
+          onClose={handleModalClose}
+          bodyStyle={{ padding: 0 }}
+          visible={state.openModalId === "SETTINGS"}
+        >
+          <UI.SettingsModalBody onAvatarEdit={handleAvatarEdit} />
+        </UI.Drawer>
+        <UI.Drawer
+          title="edit name & avatar"
+          placement="bottom"
+          visible={state.openModalId === "EDIT_MY_AVATAR"}
+          onClose={handleModalClose}
+        >
+          <UI.AvatarForm
+            initialValues={state.localPlayerOut}
+            onValuesChange={(data) => state.inputLocalPlayer(data)}
+            validating={state.localPlayerDirty}
+            validateTrigger="onChange"
+          />
+        </UI.Drawer>
+      </>
     );
+
+    function handleSettingsOpen() {
+      state.setOpenModal("SETTINGS");
+    }
+
+    function handleModalClose() {
+      state.setOpenModal(null);
+    }
+
+    function handleAvatarEdit() {
+      state.setOpenModal("EDIT_MY_AVATAR");
+    }
   }
 );

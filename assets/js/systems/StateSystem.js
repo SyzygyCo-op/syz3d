@@ -1,27 +1,72 @@
 import * as DRMT from "dreamt";
 import * as MOBX from "mobx";
-import { R3FComponent } from "../components";
+import { R3FComponent, UILabelComponent, LocalPlayerTag } from "../components";
 import { ObservableState } from "../state";
 
 export class StateSystem extends DRMT.System {
   static queries = {
-    entities: {
+    toRender: {
       components: [R3FComponent],
       listen: {
         added: true,
         removed: true,
-        changed: true, // Detect that any of the components on the query (Box, Transform) has changed
+        changed: true, // Detect that any of the components on the query has changed
+      },
+    },
+    localPlayer: {
+      components: [LocalPlayerTag],
+      listen: {
+        added: true,
+        removed: true,
+        changed: true,
       },
     },
   };
 
   observable = new ObservableState();
 
+  init() {
+    this.correspondent = new DRMT.Correspondent(this.world).registerComponent(
+      "player_name",
+      UILabelComponent
+    );
+  }
+
   execute(delta, time) {
-    if (queryHasChanges(this.queries.entities)) {
+    const localPlayer = this.queries.localPlayer.results[0];
+
+    if (queryHasChanges(this.queries.toRender)) {
+      // TODO(refactor): action method
       MOBX.runInAction(() => {
-        resetSet(this.observable.entities, this.queries.entities.results);
+        resetSet(
+          this.observable.entitiesToRender,
+          this.queries.toRender.results
+        );
       });
+    }
+
+    if (localPlayer) {
+      this.correspondent.registerEntity("local_player", localPlayer);
+    }
+
+    if (queryHasChanges(this.queries.localPlayer)) {
+      this.observable.outputLocalPlayer(
+        /**
+         * @type any
+         */ (this.correspondent.produceDiff({}))
+      );
+    }
+
+    if (this.observable.localPlayerDirty) {
+      this.correspondent.consumeDiff({
+        upsert: {
+          local_player: this.observable.localPlayerIn,
+        },
+        remove: {},
+      });
+
+      // Make sure the spinner is shown for >=1 sec so user knows it's doing something
+      this.observable.resetLocalPlayerDebounced();
     }
   }
 }

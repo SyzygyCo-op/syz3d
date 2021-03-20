@@ -9,6 +9,7 @@
   "dependencies": {
     "@homer0/prettier-plugin-jsdoc": "^2.0.0",
     "@react-three/drei": "^2.2.12",
+    "antd": "^4.14.0",
     "dreamt": "^0.5.0",
     "ecsy": "^0.4.2",
     "mobx": "^6.0.4",
@@ -19,7 +20,9 @@
     "phoenix_live_view": "file:../deps/phoenix_live_view",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-draggable": "^4.4.3",
     "react-three-fiber": "^5.3.10",
+    "reset-css": "^5.0.1",
     "rxjs": "^6.6.3",
     "style-loader": "^2.0.0",
     "three": "^0.123.0"
