@@ -35,6 +35,7 @@ export const ReactApp = observer(
           <UI.HeadsUp
             onAvatarEdit={handleAvatarEdit}
             onSettingsOpen={handleSettingsOpen}
+            localPlayerName={state.localPlayerOut.player_name}
           />
           <Canvas>
             <EntitySet entities={state.entitiesToRender} />
@@ -47,10 +48,10 @@ export const ReactApp = observer(
           bodyStyle={{ padding: 0 }}
           visible={state.openModalId === "SETTINGS"}
         >
-          <UI.SettingsModalBody onAvatarEdit={handleAvatarEdit} />
+          <UI.SettingsModalBody onAvatarEdit={handleAvatarEdit} localPlayerName={state.localPlayerOut.player_name}/>
         </UI.Drawer>
         <UI.Drawer
-          title="edit name & avatar"
+          title="lewks"
           placement="bottom"
           visible={state.openModalId === "EDIT_MY_AVATAR"}
           onClose={handleModalClose}

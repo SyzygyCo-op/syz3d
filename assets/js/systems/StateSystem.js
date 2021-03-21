@@ -113,21 +113,19 @@ export class StateSystem extends DRMT.System {
         this.worldDiff = diff;
         this.correspondent.updateCache(this.worldCache, diff);
         this.worldDiffTimestamp = time;
+
+        const localPlayerData = diff.upsert[getPlayerEntityId()];
+        if(localPlayerData) {
+          this.observable.outputLocalPlayer(/** @type any */(localPlayerData))
+        }
       } else {
         this.worldDirty = false;
       }
     }
 
-    if (queryHasChanges(this.queries.localPlayer)) {
-      this.observable.outputLocalPlayer(
-        /**
-         * @type any
-         */ (this.correspondent.produceDiff({}))
-      );
-    }
-
     if (this.observable.localPlayerDirty) {
       this.correspondent.consumeDiff({
+        // TODO make methods for generating diffs
         upsert: {
           [getPlayerEntityId()]: this.observable.localPlayerIn,
         },

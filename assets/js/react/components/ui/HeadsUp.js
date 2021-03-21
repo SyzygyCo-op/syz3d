@@ -5,7 +5,7 @@ import { NameTag } from "./NameTag";
 
 
 /**
-  * @param {{onAvatarEdit: () => void, onSettingsOpen: () => void}} props
+  * @param {{onAvatarEdit: () => void, onSettingsOpen: () => void, localPlayerName: string}} props
   *
  */
 export const HeadsUp = (props) => {
@@ -17,7 +17,7 @@ export const HeadsUp = (props) => {
         </button>
 
         <button onClick={props.onAvatarEdit}>
-          <NameTag name="Buster" />
+          <NameTag name={props.localPlayerName} />
         </button>
       </AntD.Space>
     </>

@@ -11,17 +11,17 @@ const smallHeading = {
 };
 
 /**
- * @param {{ onAvatarEdit: () => void }} props
+  * @param {{ onAvatarEdit: () => void, localPlayerName: string }} props
  */
 export const SettingsModalBody = (props) => {
   return (
     <>
       <AntD.Divider orientation="left" style={{ margin: 0 }}>
-        <span style={smallHeading}>my name & avatar</span>
+        <span style={smallHeading}>lewks</span>
       </AntD.Divider>
       <AntD.Row style={{ margin: "1rem" }}>
         <AntD.Col flex="auto">
-          <NameTag name="Buster" />
+          <NameTag name={props.localPlayerName} />
         </AntD.Col>
         <AntD.Col>
           <AntD.Button type="text" onClick={props.onAvatarEdit}>
