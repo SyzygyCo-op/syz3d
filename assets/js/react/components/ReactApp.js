@@ -54,6 +54,7 @@ export const ReactApp = observer(
           placement="bottom"
           visible={state.openModalId === "EDIT_MY_AVATAR"}
           onClose={handleModalClose}
+          maskStyle={{backgroundColor: "transparent"}}
         >
           <UI.AvatarForm
             initialValues={state.localPlayerOut}
