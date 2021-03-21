@@ -8,26 +8,32 @@ import {
   PositionComponent,
   TextureComponent,
   SpinComponent,
-  BumpComponent,
   RotationComponent,
 } from "../components";
 import { Entity } from "../react/components";
-
-function getPlayerId() {
-  // @ts-ignore
-  return window.PLAYER_ID;
-}
-
-function getPlayerEntityId() {
-  return `player:${getPlayerId()}`;
-}
-
-function getRoomToken() {
-  // @ts-ignore
-  return window.ROOM_TOKEN;
-}
+import { StateSystem } from "./StateSystem";
+import { getPlayerEntityId, getRoomToken } from "../utils";
 
 export class ClientSystem extends DRMT.System {
+  _getState() {
+    return this.world.getSystem(StateSystem);
+  }
+
+  /**
+   * @param {import("dreamt/dist/Correspondent").IEntityComponentDiff} diff
+   */
+  _updateWorld(diff) {
+    this._getState().updateWorld(diff)
+  }
+
+  _worldIsDirty() {
+    return this._getState().worldDirty;
+  }
+
+  _getWorldDiff() {
+    return this._getState().worldDiff;
+  }
+
   init() {
     const socket = new Socket("/socket", {
       params: { room_token: getRoomToken() },
@@ -40,68 +46,20 @@ export class ClientSystem extends DRMT.System {
     const topic = `room:${roomSlug}`;
     this.channel = socket.channel(topic);
 
-    this.correspondent = new DRMT.Correspondent(this.world)
-      .registerComponent("is_player", PlayerTag, {
-        read: () => {},
-        write: (compo) => !!compo,
-      })
-      .registerComponent("label", UILabelComponent)
-      .registerComponent("texture", TextureComponent, {
-        read: (compo, data) => {
-          console.log("reading texture", compo, data);
-          if (compo) {
-            /**
-             * @type any
-             */ (compo).url = data;
-          }
-        },
-        write: (compo) =>
-          compo &&
-          /**
-           * @type any
-           */ (compo).url,
-      })
-      .registerComponent("bump", BumpComponent)
-      .registerComponent("rotation", RotationComponent, {
-        // Only send initial value
-        writeCache: (arr) => !!arr,
-      })
-      .registerComponent("spin", SpinComponent, {
-        writeCache: (arr) => arr && arr.join(","),
-      })
-      .registerComponent("position", PositionComponent, {
-        writeCache: (arr) => arr && arr.join(","),
-      })
-      .registerComponent("avatar", R3FComponent, {
-        write: (compo) => !!compo,
-        read: (compo) => {
-          if (compo) {
-            /**
-             * @type any
-             */ (compo).value = Entity;
-          }
-        },
-      });
-    this.worldCache = {};
-    this.timeOfLastPush = 0;
-
     this.channel.on("init", (response) => {
-      console.log("on init", response.body);
-      this.correspondent
-        .consumeDiff(response.body.world_diff)
-        .updateCache(this.worldCache, response.body.world_diff);
+      this._updateWorld(response.body.world_diff);
     });
     this.channel.on("force_reload", () => {
       location.reload();
     });
 
     this.channel.on("world_diff", (response) => {
-      this.correspondent
-        .consumeDiff(response.body)
-        .updateCache(this.worldCache, response.body);
+      this._updateWorld(response.body);
     });
 
     this.channel.join().receive("ok", () => {
+      // TODO the backend should create the player entity and send it in a diff like any other
+      // entity
       console.log("connected!");
       if (this.localPlayerEntity) return; // TODO why?
       this.localPlayerEntity = this.world
@@ -123,20 +81,8 @@ export class ClientSystem extends DRMT.System {
    * @param {number} time
    */
   execute(_delta, time) {
-    if (this.localPlayerEntity) {
-      this.correspondent.registerEntity(
-        getPlayerEntityId(),
-        this.localPlayerEntity
-      );
-
-      if (time - this.timeOfLastPush >= 200) {
-        const diff = this.correspondent.produceDiff(this.worldCache);
-        if (!DRMT.Correspondent.isEmptyDiff(diff)) {
-          this.channel.push("world_diff", { body: diff });
-          this.correspondent.updateCache(this.worldCache, diff);
-          this.timeOfLastPush = time;
-        }
-      }
+    if (this._worldIsDirty()) {
+      this.channel.push("world_diff", { body: this._getWorldDiff() });
     }
   }
 }
