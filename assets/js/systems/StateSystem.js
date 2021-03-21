@@ -114,6 +114,7 @@ export class StateSystem extends DRMT.System {
         this.correspondent.updateCache(this.worldCache, diff);
         this.worldDiffTimestamp = time;
 
+        // TODO make methods for analyzing diffs
         const localPlayerData = diff.upsert[getPlayerEntityId()];
         if(localPlayerData) {
           this.observable.outputLocalPlayer(/** @type any */(localPlayerData))
@@ -125,7 +126,7 @@ export class StateSystem extends DRMT.System {
 
     if (this.observable.localPlayerDirty) {
       this.correspondent.consumeDiff({
-        // TODO make methods for generating diffs
+        // TODO make methods for sythesizing diffs
         upsert: {
           [getPlayerEntityId()]: this.observable.localPlayerIn,
         },
@@ -139,7 +140,7 @@ export class StateSystem extends DRMT.System {
 
   /**
    * @param {import("dreamt/dist/Correspondent").IEntityComponentDiff} diff
-   * TODO make this interface easier to import
+   * TODO make this interface easier to import? or put StateSystem in library?
    */
   updateWorld(diff) {
     this.correspondent.consumeDiff(diff).updateCache(this.worldCache, diff);
