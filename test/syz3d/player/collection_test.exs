@@ -7,9 +7,9 @@ defmodule Syz3d.Player.CollectionTest do
   setup do
     agent_name = Syz3d.Player.CollectionTest
     Collection.start_link(%{}, agent_name)
-    Collection.insert(%Player{name: "goku", room_slug: "papaya_island", is_online: true}, agent_name)
-    Collection.insert(%Player{name: "krillin", room_slug: "papaya_island"}, agent_name)
-    Collection.insert(%Player{name: "gohan", room_slug: "heaven"}, agent_name)
+    Collection.insert(%Player{name: "goku", room_slug: "papaya_island", is_online: true}, [], agent_name)
+    Collection.insert(%Player{name: "krillin", room_slug: "papaya_island"}, [], agent_name)
+    Collection.insert(%Player{name: "gohan", room_slug: "heaven"}, [], agent_name)
     %{agent_name: agent_name}
   end
 
@@ -39,13 +39,13 @@ defmodule Syz3d.Player.CollectionTest do
   end
 
   test "insert/1 returns the newly added player", %{agent_name: agent_name} do
-    player = Collection.insert(%Player{room_slug: "penguin_village"}, agent_name)
+    player = Collection.insert(%Player{room_slug: "penguin_village"}, [], agent_name)
 
     assert %Player{room_slug: "penguin_village"} = player
   end
 
   test "inserting a player with an :id does not overwrite an existing field", %{agent_name: agent_name} do
-    Collection.insert(%Player{id: 0, name: "arale", room_slug: "penguin_village"}, agent_name)
+    Collection.insert(%Player{id: 0, name: "arale", room_slug: "penguin_village"}, [], agent_name)
 
     assert Collection.get(0, agent_name).name == "goku"
 
@@ -55,10 +55,28 @@ defmodule Syz3d.Player.CollectionTest do
     }
   end
 
-  # test "inserting a player without a :name causes a unique name to be assigned", %{agent_name: agent_name} do
-  #   Collection.insert(%Player{room_slug: "penguin_village"}, agent_name)
-  #   assert %{
-  #     3 => %Player{name: "player4"},
-  #   } = Collection.select_by_room("penguin_village", agent_name)
-  # end
+  test "inserting a player without a :name causes a unique name to be assigned", %{agent_name: agent_name} do
+    names = {
+      "Bulbasaur",
+      "Ivysaur",
+      "Venusaur",
+      "Charmander",
+    }
+    Collection.insert(%Player{room_slug: "penguin_village"}, [unique_autofill_names: names], agent_name)
+    Collection.insert(%Player{room_slug: "penguin_village"}, [unique_autofill_names: names], agent_name)
+    Collection.insert(%Player{room_slug: "penguin_village"}, [unique_autofill_names: names], agent_name)
+    Collection.insert(%Player{room_slug: "penguin_village"}, [unique_autofill_names: names], agent_name)
+    Collection.insert(%Player{room_slug: "penguin_village"}, [unique_autofill_names: names], agent_name)
+    Collection.insert(%Player{room_slug: "penguin_village"}, [unique_autofill_names: names], agent_name)
+    Collection.insert(%Player{room_slug: "penguin_village"}, [unique_autofill_names: names], agent_name)
+
+    assert %{
+      3 => %Player{name: "Charmander"},
+      4 => %Player{name: "Bulbasaur2"},
+      5 => %Player{name: "Ivysaur2"},
+      6 => %Player{name: "Venusaur2"},
+      7 => %Player{name: "Charmander2"},
+      8 => %Player{name: "Bulbasaur3"},
+    } = Collection.select_by_room("penguin_village", agent_name)
+  end
 end

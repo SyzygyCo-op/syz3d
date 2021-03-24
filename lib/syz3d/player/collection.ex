@@ -3,6 +3,7 @@ defmodule Syz3d.Player do
   For storing and retrieving "player" information.
   """
 
+
   @enforce_keys [:room_slug]
   defstruct [:id, :name, :online_at, :offline_at, is_online: false, room_slug: "lobby"]
 
@@ -31,6 +32,58 @@ defmodule Syz3d.Player do
     @behaviour Behaviour
 
     use Agent
+
+    @unique_name_tuple {
+      "Bulbasaur",
+      "Ivysaur",
+      "Venusaur",
+      "Charmander",
+      "Charmeleon",
+      "Charizard",
+      "Squirtle",
+      "Wartortle",
+      "Blastoise",
+      "Caterpie",
+      "Metapod",
+      "Butterfree",
+      "Weedle",
+      "Kakuna",
+      "Beedrill",
+      "Pidgey",
+      "Pidgeotto",
+      "Pidgeot",
+      "Rattata",
+      "Raticate",
+      "Spearow",
+      "Fearow",
+      "Ekans",
+      "Arbok",
+      "Pikachu",
+      "Raichu",
+      "Sandshrew",
+      "Sandslash",
+      "Nidoran",
+      "Nidorina",
+      "Nidoqueen",
+      "Nidorino",
+      "Nidoking",
+      "Clefairy",
+      "Clefable",
+      "Vulpix",
+      "Ninetales",
+      "Jigglypuff",
+      "Wigglytuff",
+      "Zubat",
+      "Golbat",
+      "Oddish",
+      "Gloom",
+      "Vileplume",
+      "Paras",
+      "Parasect",
+      "Venonat",
+      "Venomoth",
+      "Diglett"
+      }
 
     def start_link(initial_data, name \\ __MODULE__) do
       Agent.start_link(fn -> initial_data end, name: name)
@@ -64,21 +117,22 @@ defmodule Syz3d.Player do
       select_by([room_slug: slug], agent_name)
     end
 
-    def insert(new_player, agent_name \\ __MODULE__) do
+    def insert(new_player, options \\ [], agent_name \\ __MODULE__) do
+      unique_names = Keyword.get(options, :unique_autofill_names, @unique_name_tuple)
       Agent.get_and_update(agent_name, fn map ->
         # This assumes the rows are never removed
         next_id = Map.size(map)
-        new_map = map_insert(map, new_player, next_id)
+        new_map = map_insert(map, new_player, next_id, get_unique_name(unique_names, next_id))
         {new_map[next_id], new_map}
       end)
     end
 
-    defp map_insert(map, new_player, id) do
-      player_with_id = %{new_player | id: id}
+    defp map_insert(map, new_player, id, name) do
+      complete_row = %{new_player | id: id, name: name}
       if map[id] != nil do
         raise "Player with id #{id} exists!"
       end
-      Map.put(map, id, player_with_id)
+      Map.put(map, id, complete_row)
     end
 
     def update(id, update_fn, agent_name \\ __MODULE__) do
@@ -90,11 +144,19 @@ defmodule Syz3d.Player do
     def upsert(id, row, agent_name \\ __MODULE__) do
       if get(id, agent_name) == nil do
         Agent.get_and_update(agent_name, fn map ->
-          new_map = map_insert(map, row, id)
+          new_map = map_insert(map, row, id, row.name)
           {new_map[id], new_map}
         end)
       else
         update(id, &(Map.merge(&1, row)), agent_name)
+      end
+    end
+
+    def get_unique_name(tuple, index) do
+      size = tuple_size(tuple)
+      case index do
+        x when x >= size -> "#{elem(tuple, rem(x, size))}#{div(x, size) + 1}"
+        _ -> elem(tuple, index)
       end
     end
   end
