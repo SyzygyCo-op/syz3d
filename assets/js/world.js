@@ -51,6 +51,5 @@ export function createLocalPlayer() {
     .addComponent(SpinComponent, { value: [0, 0.0007, 0.001] })
     .addComponent(RotationComponent, { value: [0, 0, 0] })
     .addComponent(R3FComponent, { value: Entity })
-    .addComponent(UILabelComponent, { value: "" })
     .addComponent(TextureComponent, { url: "/images/water_texture.jpg" });
 }
