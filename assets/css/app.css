@@ -1,10 +1,8 @@
 /* This file is for your main application css. */
 @import "../node_modules/nprogress/nprogress.css";
 @import "~antd/dist/antd.dark.css";
+@import "./ImageCarousel.css";
 
-* {
-  box-sizing: border-box;
-}
 
 button {
   -moz-appearance: none;
@@ -37,11 +35,3 @@ canvas {
   flex-direction: row;
 }
 
-.Footer {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  padding: 0 2rem;
-  opacity: 0.5;
-  font-size: 1rem;
-}

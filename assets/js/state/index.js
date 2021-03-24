@@ -3,6 +3,7 @@ import * as MOBX from "mobx";
 
 class PlayerState {
   player_name = "";
+  texture = "";
 }
 
 /**
@@ -20,6 +21,7 @@ export class ObservableState {
    */
   openModalId = null;
 
+  // TODO tests
   localPlayerOut = MOBX.makeAutoObservable(new PlayerState());
   localPlayerIn = MOBX.makeAutoObservable(new PlayerState());
   localPlayerDirty = false;
@@ -46,33 +48,30 @@ export class ObservableState {
    * @param {PlayerState} data
    */
   inputLocalPlayerSync(data) {
-    this.localPlayerIn.player_name = data.player_name;
-    this.localPlayerDirty =
-      this.localPlayerIn.player_name !== this.localPlayerOut.player_name;
-    if(this.localPlayerDirty) {
-      clearTimeout(this._resetDebounce)
-      this._resetDebounce = null;
-    }
+    Object.assign(this.localPlayerIn, data);
+    this.localPlayerDirty = true;
+    clearTimeout(this._resetDebounce);
+    this._resetDebounce = null;
   }
 
   /**
    * @param {PlayerState} data
    */
   outputLocalPlayer(data) {
-    this.localPlayerOut.player_name = data.player_name;
+    Object.assign(this.localPlayerOut, data)
     this.localPlayerDirty = false;
   }
 
   resetLocalPlayer() {
-    this.localPlayerIn.player_name = this.localPlayerOut.player_name;
+    Object.assign(this.localPlayerIn, this.localPlayerOut)
     this.localPlayerDirty = false;
   }
 
   resetLocalPlayerDebounced() {
-    if(!this._resetDebounce) {
-    this._resetDebounce = setTimeout(() => {
-      this.resetLocalPlayer();
-    }, 1000);
+    if (!this._resetDebounce) {
+      this._resetDebounce = setTimeout(() => {
+        this.resetLocalPlayer();
+      }, 1000);
     }
   }
 

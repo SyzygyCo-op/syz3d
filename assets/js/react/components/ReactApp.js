@@ -48,14 +48,18 @@ export const ReactApp = observer(
           bodyStyle={{ padding: 0 }}
           visible={state.openModalId === "SETTINGS"}
         >
-          <UI.SettingsModalBody onAvatarEdit={handleAvatarEdit} localPlayerName={state.localPlayerOut.player_name}/>
+          <UI.SettingsModalBody
+            onAvatarEdit={handleAvatarEdit}
+            localPlayerName={state.localPlayerOut.player_name}
+          />
         </UI.Drawer>
         <UI.Drawer
+          height="50%"
           title="lewks"
           placement="bottom"
           visible={state.openModalId === "EDIT_MY_AVATAR"}
           onClose={handleModalClose}
-          maskStyle={{backgroundColor: "transparent"}}
+          maskStyle={{ backgroundColor: "transparent" }}
         >
           <UI.AvatarForm
             initialValues={state.localPlayerOut}
