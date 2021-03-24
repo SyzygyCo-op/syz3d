@@ -63,7 +63,7 @@ export const ReactApp = observer(
         >
           <UI.AvatarForm
             initialValues={state.localPlayerOut}
-            onValuesChange={(data) => state.inputLocalPlayer(data)}
+            onValuesChange={(data) => state.inputLocalPlayer(Object.assign(state.localPlayerIn, data))}
             validating={state.localPlayerDirty}
             validateTrigger="onChange"
           />

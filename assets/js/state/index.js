@@ -48,7 +48,7 @@ export class ObservableState {
    * @param {PlayerState} data
    */
   inputLocalPlayerSync(data) {
-    Object.assign(this.localPlayerIn, data);
+    this.localPlayerIn = data;
     this.localPlayerDirty = true;
     clearTimeout(this._resetDebounce);
     this._resetDebounce = null;
@@ -58,13 +58,20 @@ export class ObservableState {
    * @param {PlayerState} data
    */
   outputLocalPlayer(data) {
-    Object.assign(this.localPlayerOut, data)
-    this.localPlayerDirty = false;
+    this.localPlayerOut = data;
   }
 
   resetLocalPlayer() {
-    Object.assign(this.localPlayerIn, this.localPlayerOut)
+    this.localPlayerIn = this.localPlayerOut;
     this.localPlayerDirty = false;
+  }
+
+  reconcileLocalPlayer() {
+    Object.keys(this.localPlayerOut).forEach((key)=>{
+      if(!this.localPlayerIn[key]) {
+        this.localPlayerIn[key] = this.localPlayerOut[key];
+      }
+    })
   }
 
   resetLocalPlayerDebounced() {

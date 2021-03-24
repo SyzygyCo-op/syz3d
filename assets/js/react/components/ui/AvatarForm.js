@@ -18,7 +18,8 @@ export const AvatarForm = (props) => {
     if (carouselRef.current) {
       /** @type {{goTo: any}} */
       const carousel = carouselRef.current;
-      carousel.goTo(textures.indexOf(props.initialValues.texture));
+      const index = textures.indexOf(props.initialValues.texture);
+      carousel.goTo(index > -1 ? index : 0);
     }
   }, [props.initialValues.texture]);
 

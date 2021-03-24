@@ -51,7 +51,6 @@ export class StateSystem extends DRMT.System {
       .registerComponent("player_name", UILabelComponent)
       .registerComponent("texture", TextureComponent, {
         read: (compo, data) => {
-          console.log("reading texture", compo, data);
           if (compo) {
             /**
              * @type any
@@ -87,6 +86,7 @@ export class StateSystem extends DRMT.System {
       });
     this.worldCache = {};
     this.worldDiffTimestamp = 0;
+    this.observable.reconcileLocalPlayer();
   }
 
   execute(delta, time) {
@@ -113,15 +113,19 @@ export class StateSystem extends DRMT.System {
         this.worldDiff = diff;
         this.correspondent.updateCache(this.worldCache, diff);
         this.worldDiffTimestamp = time;
-
-        // TODO make methods for analyzing diffs
-        const localPlayerData = diff.upsert[getPlayerEntityId()];
-        if(localPlayerData) {
-          this.observable.outputLocalPlayer(/** @type any */(localPlayerData))
-        }
       } else {
         this.worldDirty = false;
       }
+
+
+      const worldState = this.correspondent.produceDiff({});
+      // TODO make methods for analyzing diffs
+      const localPlayerData = worldState.upsert[getPlayerEntityId()];
+      if(localPlayerData) {
+        this.observable.outputLocalPlayer(/** @type any */(localPlayerData))
+      }
+
+      this.observable.reconcileLocalPlayer();
     }
 
     if (this.observable.localPlayerDirty) {
@@ -136,6 +140,7 @@ export class StateSystem extends DRMT.System {
       // Make sure the spinner is shown for >=1 sec so user knows it's doing something
       this.observable.resetLocalPlayerDebounced();
     }
+
   }
 
   /**
