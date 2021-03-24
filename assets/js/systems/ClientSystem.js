@@ -1,18 +1,7 @@
 import * as DRMT from "dreamt";
 import { Socket } from "phoenix";
-import {
-  PlayerTag,
-  LocalPlayerTag,
-  UILabelComponent,
-  R3FComponent,
-  PositionComponent,
-  TextureComponent,
-  SpinComponent,
-  RotationComponent,
-} from "../components";
-import { Entity } from "../react/components";
 import { StateSystem } from "./StateSystem";
-import { getPlayerEntityId, getRoomToken } from "../utils";
+import { getRoomToken } from "../utils";
 
 export class ClientSystem extends DRMT.System {
   _getState() {
@@ -23,7 +12,7 @@ export class ClientSystem extends DRMT.System {
    * @param {import("dreamt/dist/Correspondent").IEntityComponentDiff} diff
    */
   _updateWorld(diff) {
-    this._getState().updateWorld(diff)
+    this._getState().updateWorld(diff);
   }
 
   _worldIsDirty() {
@@ -50,6 +39,7 @@ export class ClientSystem extends DRMT.System {
       this._updateWorld(response.body.world_diff);
     });
     this.channel.on("force_reload", () => {
+      // TODO display a modal before actually reloading?
       location.reload();
     });
 
@@ -57,24 +47,12 @@ export class ClientSystem extends DRMT.System {
       this._updateWorld(response.body);
     });
 
-    this.channel.join().receive("ok", () => {
-      // TODO the backend should create the player entity and send it in a diff like any other
-      // entity
-      console.log("connected!");
-      if (this.localPlayerEntity) return; // TODO why?
-      this.localPlayerEntity = this.world
-        .createEntity(`${getPlayerEntityId()} (local)`)
-        .addComponent(PlayerTag)
-        .addComponent(LocalPlayerTag)
-        .addComponent(PositionComponent, {
-          value: PositionComponent.randomValue(),
-        })
-        .addComponent(SpinComponent, { value: [0, 0.0007, 0.001] })
-        .addComponent(RotationComponent, { value: [0, 0, 0] })
-        .addComponent(R3FComponent, { value: Entity })
-        .addComponent(UILabelComponent, { value: "" })
-        .addComponent(TextureComponent, { url: "/images/water_texture.jpg" });
-    });
+    this.channel
+      .join()
+      .receive("ok", () => console.log("connected!"))
+      .receive("error", (response) =>
+        console.warn("connection error", response)
+      );
   }
 
   /**

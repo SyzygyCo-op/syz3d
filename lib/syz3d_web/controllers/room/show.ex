@@ -16,9 +16,9 @@ defmodule Syz3dWeb.Room.Show do
 
     case ccu do
       x when x < max_ccu ->
-        %{ id: player_id } = collection.insert(%Syz3d.Player{room_slug: slug_param})
+        %{ name: name, id: player_id } = collection.insert(%Syz3d.Player{room_slug: slug_param})
         token = Phoenix.Token.sign(conn, "room_auth", player_id)
-        render(conn, slug: slug_param, player_id: player_id, room_token: token)
+        render(conn, slug: slug_param, player_id: player_id, player_name: name, room_token: token)
       _ ->
         conn
         |> put_status(307)
