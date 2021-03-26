@@ -3,7 +3,6 @@ import { observer } from "mobx-react-lite";
 import { Canvas } from "react-three-fiber";
 import { R3FComponent } from "../../components";
 import * as UI from "./ui";
-import * as AntD from "antd";
 import { ObservableState } from "../../state";
 
 const EntitySet = observer(
@@ -50,6 +49,7 @@ export const ReactApp = observer(
         >
           <UI.SettingsModalBody
             onAvatarEdit={handleAvatarEdit}
+            // TODO use selectors
             localPlayerName={state.localPlayerOut.player_name}
           />
         </UI.Drawer>
@@ -63,7 +63,10 @@ export const ReactApp = observer(
         >
           <UI.AvatarForm
             initialValues={state.localPlayerOut}
-            onValuesChange={(data) => state.inputLocalPlayer(Object.assign(state.localPlayerIn, data))}
+            onValuesChange={(data) => {
+              // state.inputLocalPlayer(Object.assign(state.localPlayerIn, data))
+              state.inputLocalPlayer(data)
+            }}
             validating={state.localPlayerDirty}
             validateTrigger="onChange"
           />

@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as AntD from "antd";
-import { ImageCarousel } from "./ImageCarousel";
 
 /**
  * @type {React.ComponentType<
@@ -10,18 +9,7 @@ import { ImageCarousel } from "./ImageCarousel";
 export const AvatarForm = (props) => {
   const { validating, ...restProps } = props;
 
-  const carouselRef = React.useRef();
-
   const textures = ["/images/water_texture.jpg", "/images/lava_texture.jpg"];
-
-  React.useEffect(() => {
-    if (carouselRef.current) {
-      /** @type {{goTo: any}} */
-      const carousel = carouselRef.current;
-      const index = textures.indexOf(props.initialValues.texture);
-      carousel.goTo(index > -1 ? index : 0);
-    }
-  }, [props.initialValues.texture]);
 
   return (
     <>
@@ -35,17 +23,18 @@ export const AvatarForm = (props) => {
         >
           <AntD.Input placeholder="Samuel L Jackson" type="text" />
         </AntD.Form.Item>
+        <AntD.Form.Item label="texture" name="texture">
+          <AntD.Radio.Group size="large">
+            {textures.map((imageUrl) => {
+              return (
+                <AntD.Radio.Button value={imageUrl}>
+                  <img style={{ maxHeight: "100%" }} src={imageUrl} />
+                </AntD.Radio.Button>
+              );
+            })}
+          </AntD.Radio.Group>
+        </AntD.Form.Item>
       </AntD.Form>
-      <ImageCarousel
-        ref={carouselRef}
-        images={textures}
-        afterChange={handleChangeTexture}
-      />
     </>
   );
-
-  /** @param {number} index */
-  function handleChangeTexture(index) {
-    props.onValuesChange({ texture: textures[index] });
-  }
 };
