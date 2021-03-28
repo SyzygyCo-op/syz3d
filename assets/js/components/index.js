@@ -4,6 +4,13 @@ export class PlayerTag extends DRMT.TagComponent {}
 
 export class LocalPlayerTag extends DRMT.TagComponent {}
 
+/** Stores a URL pointing to an asset that can be loaded as a THREE.Object3D */
+export class Object3DComponent extends DRMT.Component {
+  static schema = {
+    url: { type: DRMT.Types.String },
+  };
+}
+
 export class UILabelComponent extends DRMT.Component {
   static schema = {
     value: { type: DRMT.Types.String },
@@ -31,15 +38,6 @@ export class SpinComponent extends DRMT.Component {
 export class BumpComponent extends DRMT.Component {
   static schema = {
     value: { type: DRMT.Types.Number },
-  };
-}
-
-export class TextureComponent extends DRMT.Component {
-  /** @type string */
-  url;
-
-  static schema = {
-    url: { type: DRMT.Types.String },
   };
 }
 

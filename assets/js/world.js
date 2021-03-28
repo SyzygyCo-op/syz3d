@@ -7,16 +7,16 @@ import {
   SpinComponent,
   RotationComponent,
   PositionComponent,
-  TextureComponent,
   BumpComponent,
   R3FComponent,
+  Object3DComponent,
 } from "./components";
 import { Entity } from "./react/components";
 import { getPlayerEntityId, getPlayerName } from "./utils";
 
 export const world = new DRMT.World()
   .registerComponent(PositionComponent)
-  .registerComponent(TextureComponent)
+  .registerComponent(Object3DComponent)
   .registerComponent(UILabelComponent)
   .registerComponent(PlayerTag)
   .registerComponent(LocalPlayerTag)
@@ -25,8 +25,8 @@ export const world = new DRMT.World()
   .registerComponent(BumpComponent)
   .registerComponent(R3FComponent)
   .registerSystem(AnimationSystem)
-  .registerSystem(StateSystem)
-  .registerSystem(ClientSystem);
+  .registerSystem(StateSystem);
+  // .registerSystem(ClientSystem);
 
 export function startWorldLoop() {
   // Don't need RAF because react-three-fiber has its own render loop that
@@ -44,12 +44,12 @@ export function createLocalPlayer() {
     .createEntity(`${getPlayerEntityId()} (local)`)
     .addComponent(PlayerTag)
     .addComponent(LocalPlayerTag)
-    .addComponent(UILabelComponent, { value: getPlayerName()})
+    .addComponent(UILabelComponent, { value: getPlayerName() })
     .addComponent(PositionComponent, {
-      value: PositionComponent.randomValue(),
+      value: [0, 0, 0]
     })
-    .addComponent(SpinComponent, { value: [0, 0.0007, 0.001] })
+    .addComponent(SpinComponent, { value: [0, 0.001, 0] })
     .addComponent(RotationComponent, { value: [0, 0, 0] })
     .addComponent(R3FComponent, { value: Entity })
-    .addComponent(TextureComponent, { url: "/images/water_texture.jpg" });
+    .addComponent(Object3DComponent, { url: "/3d/PokemonHaunter/model-fixed.glb" });
 }

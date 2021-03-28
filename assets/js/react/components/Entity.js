@@ -4,38 +4,17 @@ import * as THREE from "three";
 import * as R3F from "react-three-fiber";
 import {
   PositionComponent,
-  TextureComponent,
   RotationComponent,
   BumpComponent,
   UILabelComponent,
+  Object3DComponent,
 } from "../../components";
-import { Html } from "@react-three/drei";
-
-/**
- * @type React.ComponentType<{entity:  DRMT.Entity}>
- */
-export const MaterialR3F = ({ entity }) => {
-  // TODO create a custom hook
-  const [textureUrl, setTextureUrl] = React.useState(
-    entity.getComponent(TextureComponent).url
-  );
-  R3F.useFrame(() => {
-    const compo = entity.getComponent(TextureComponent);
-    if (compo) {
-      const newValue = compo.url;
-      if (newValue !== textureUrl) {
-        setTextureUrl(newValue);
-      }
-    }
-  });
-
-  const texture = R3F.useLoader(THREE.TextureLoader, textureUrl);
-
-  return <meshBasicMaterial map={texture} />;
-};
+import { Html, useGLTF } from "@react-three/drei";
 
 const bumpMaxScale = new THREE.Vector3(2, 2, 2);
 const bumpMinScale = new THREE.Vector3(1, 1, 1);
+const tempBBox = new THREE.Box3();
+const tempBBoxSizeVec3 = new THREE.Vector3();
 
 /**
  * React-THREE-Fiber component that renders an entity.
@@ -44,6 +23,7 @@ const bumpMinScale = new THREE.Vector3(1, 1, 1);
  */
 export const Entity = ({ entity }) => {
   const cPosition = entity.getComponent(PositionComponent);
+
   const [label, setLabel] = React.useState(
     entity.getComponent(UILabelComponent).value
   );
@@ -57,6 +37,21 @@ export const Entity = ({ entity }) => {
     }
   });
 
+  const [object3DUrl, setObject3DUrl] = React.useState(
+    entity.getComponent(Object3DComponent).url
+  );
+  R3F.useFrame(() => {
+    const compo = entity.getComponent(Object3DComponent);
+    if (compo) {
+      const url = compo.url;
+      if (url !== object3DUrl) {
+        setObject3DUrl(url);
+      }
+    }
+  });
+
+  const gltf = useGLTF(object3DUrl);
+
   const ref = React.useRef(null);
 
   R3F.useFrame(() => {
@@ -67,11 +62,13 @@ export const Entity = ({ entity }) => {
       const scale = /**
        * @type THREE.Vector3
        */ (ref.current.scale);
+
       const cRotation = entity.getComponent(RotationComponent);
       const cBump = entity.getComponent(BumpComponent);
       if (cRotation) {
         rotation.set.apply(rotation, cRotation.value);
       }
+
       if (cBump) {
         const alpha =
           cBump.value < 0.5
@@ -83,18 +80,26 @@ export const Entity = ({ entity }) => {
     }
   });
 
+  const { camera } = R3F.useThree();
+
+  camera.position.set(0, 0, 5);
+
   const position = cPosition ? cPosition.value : [0, 0, 0];
+  tempBBox.setFromObject(gltf.scene);
+  tempBBox.getSize(tempBBoxSizeVec3);
+
   return (
-    <group position={position}>
-      <Html>
-        <h3>{label}</h3>
+    <group position={position} castShadow receiveShadow>
+      <Html position={[0, tempBBoxSizeVec3.y / 2, 0]}>
+        <h3
+          style={{
+            transform: "translate(-50%, -100%)",
+          }}
+        >
+          {label}
+        </h3>
       </Html>
-      <React.Suspense fallback={null}>
-        <mesh ref={ref}>
-          <boxBufferGeometry args={[1, 1, 1]} />
-          <MaterialR3F entity={entity} />
-        </mesh>
-      </React.Suspense>
+      <primitive object={gltf.scene} ref={ref} />
     </group>
   );
 };

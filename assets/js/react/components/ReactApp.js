@@ -5,6 +5,30 @@ import { R3FComponent } from "../../components";
 import * as UI from "./ui";
 import { ObservableState } from "../../state";
 
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    // Update state so the next render will show the fallback UI.
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    // You can also log the error to an error reporting service
+    console.error(error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      // You can render any custom fallback UI
+      return <h1>Something went wrong.</h1>;
+    }
+    return this.props.children;
+  }
+}
+
 const EntitySet = observer(
   /**
    * @param {{
@@ -28,8 +52,9 @@ export const ReactApp = observer(
    * @param {{ state: ObservableState }} props
    */
   ({ state }) => {
+
     return (
-      <>
+      <ErrorBoundary>
         <div className="App">
           <UI.HeadsUp
             onAvatarEdit={handleAvatarEdit}
@@ -37,7 +62,10 @@ export const ReactApp = observer(
             localPlayerName={state.localPlayerOut.player_name}
           />
           <Canvas>
-            <EntitySet entities={state.entitiesToRender} />
+            <pointLight args={[0xFFFFFF, 1, 100]} position={[3, 3, 3]}/>
+            <React.Suspense fallback={null}>
+              <EntitySet entities={state.entitiesToRender} />
+            </React.Suspense>
           </Canvas>
         </div>
         <UI.Drawer
@@ -64,14 +92,13 @@ export const ReactApp = observer(
           <UI.AvatarForm
             initialValues={state.localPlayerOut}
             onValuesChange={(data) => {
-              // state.inputLocalPlayer(Object.assign(state.localPlayerIn, data))
-              state.inputLocalPlayer(data)
+              state.inputLocalPlayer(data);
             }}
             validating={state.localPlayerDirty}
             validateTrigger="onChange"
           />
         </UI.Drawer>
-      </>
+      </ErrorBoundary>
     );
 
     function handleSettingsOpen() {
