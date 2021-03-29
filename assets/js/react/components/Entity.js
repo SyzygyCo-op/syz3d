@@ -82,7 +82,7 @@ export const Entity = ({ entity }) => {
 
   const { camera } = R3F.useThree();
 
-  camera.position.set(0, 0, 5);
+  camera.position.set(0, 0, 2);
 
   const position = cPosition ? cPosition.value : [0, 0, 0];
   tempBBox.setFromObject(gltf.scene);
@@ -90,10 +90,10 @@ export const Entity = ({ entity }) => {
 
   return (
     <group position={position} castShadow receiveShadow>
-      <Html position={[0, tempBBoxSizeVec3.y / 2, 0]}>
+      <Html position={[0, tempBBoxSizeVec3.y, 0]}>
         <h3
           style={{
-            transform: "translate(-50%, -100%)",
+            transform: "translateX(-50%)",
           }}
         >
           {label}

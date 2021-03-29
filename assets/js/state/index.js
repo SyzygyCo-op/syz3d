@@ -3,8 +3,34 @@ import * as MOBX from "mobx";
 
 class PlayerState {
   player_name = "";
-  texture = "";
+  avatar_asset_url = null;
 }
+
+export class GameAsset {
+  previewImageUrl = "/images/missing_asset_preview.png";
+  assetUrl = null;
+
+  /** @param {string} previewImageUrl
+    * @param {string} assetUrl
+    */
+  constructor(previewImageUrl, assetUrl) {
+    this.previewImageUrl = previewImageUrl;
+    this.assetUrl = assetUrl;
+  }
+}
+
+export const avatars = [
+  new GameAsset(
+    "/3d/GrimReaper/preview.png",
+    "/3d/GrimReaper/model-fixed.glb"
+  ),
+  new GameAsset(
+    "/3d/PokemonHaunter/preview.png",
+    "/3d/PokemonHaunter/model-fixed.glb"
+  ),
+]
+
+
 
 /**
  * @typedef {'EDIT_MY_AVATAR' | 'SETTINGS'} ModalID

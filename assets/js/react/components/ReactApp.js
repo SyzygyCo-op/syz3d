@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { Canvas } from "react-three-fiber";
 import { R3FComponent } from "../../components";
 import * as UI from "./ui";
-import { ObservableState } from "../../state";
+import { ObservableState, avatars } from "../../state";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -90,6 +90,7 @@ export const ReactApp = observer(
           maskStyle={{ backgroundColor: "transparent" }}
         >
           <UI.AvatarForm
+            avatars={avatars}
             initialValues={state.localPlayerOut}
             onValuesChange={(data) => {
               state.inputLocalPlayer(data);

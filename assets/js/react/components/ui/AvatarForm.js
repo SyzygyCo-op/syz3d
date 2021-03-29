@@ -1,15 +1,14 @@
 import * as React from "react";
 import * as AntD from "antd";
+import { GameAsset } from "../../../state";
 
 /**
  * @type {React.ComponentType<
- *   AntD.FormProps<any> & { validating: boolean }
+     *   AntD.FormProps<any> & { validating: boolean, avatars: GameAsset[] }
  * >}
  */
 export const AvatarForm = (props) => {
-  const { validating, ...restProps } = props;
-
-  const textures = ["/images/water_texture.jpg", "/images/lava_texture.jpg"];
+  const { validating, avatars, ...restProps } = props;
 
   return (
     <>
@@ -23,12 +22,12 @@ export const AvatarForm = (props) => {
         >
           <AntD.Input placeholder="Samuel L Jackson" type="text" />
         </AntD.Form.Item>
-        <AntD.Form.Item label="texture" name="texture">
+        <AntD.Form.Item label="avatar" name="avatar_asset_url">
           <AntD.Radio.Group size="large">
-            {textures.map((imageUrl) => {
+            {avatars.map(({ previewImageUrl, assetUrl }) => {
               return (
-                <AntD.Radio.Button value={imageUrl}>
-                  <img style={{ maxHeight: "100%" }} src={imageUrl} />
+                <AntD.Radio.Button value={assetUrl} key={assetUrl}>
+                  <img style={{ maxHeight: "100%" }} src={previewImageUrl} />
                 </AntD.Radio.Button>
               );
             })}
