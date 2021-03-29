@@ -1,5 +1,5 @@
 import * as DRMT from "dreamt";
-import { StateSystem, ClientSystem, AnimationSystem } from "./systems";
+import { StateSystem, ClientSystem, AnimationSystem, LoaderSystem } from "./systems";
 import {
   UILabelComponent,
   LocalPlayerTag,
@@ -9,14 +9,16 @@ import {
   PositionComponent,
   BumpComponent,
   R3FComponent,
-  Object3DComponent,
+  GltfComponent,
+  GltfUrlComponent,
 } from "./components";
 import { Entity } from "./react/components";
 import { getPlayerEntityId, getPlayerName } from "./utils";
 
 export const world = new DRMT.World()
   .registerComponent(PositionComponent)
-  .registerComponent(Object3DComponent)
+  .registerComponent(GltfUrlComponent)
+  .registerComponent(GltfComponent)
   .registerComponent(UILabelComponent)
   .registerComponent(PlayerTag)
   .registerComponent(LocalPlayerTag)
@@ -24,9 +26,10 @@ export const world = new DRMT.World()
   .registerComponent(RotationComponent)
   .registerComponent(BumpComponent)
   .registerComponent(R3FComponent)
+  .registerSystem(LoaderSystem)
   .registerSystem(AnimationSystem)
-  .registerSystem(StateSystem);
-  // .registerSystem(ClientSystem);
+  .registerSystem(StateSystem)
+  .registerSystem(ClientSystem);
 
 export function startWorldLoop() {
   // Don't need RAF because react-three-fiber has its own render loop that
@@ -51,5 +54,5 @@ export function createLocalPlayer() {
     .addComponent(SpinComponent, { value: [0, 0.001, 0] })
     .addComponent(RotationComponent, { value: [0, 0, 0] })
     .addComponent(R3FComponent, { value: Entity })
-    .addComponent(Object3DComponent, { url: "/3d/PokemonHaunter/model-fixed.glb" });
+    .addComponent(GltfUrlComponent, { value: "/3d/PokemonHaunter/model-fixed.glb" });
 }

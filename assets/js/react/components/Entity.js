@@ -7,9 +7,9 @@ import {
   RotationComponent,
   BumpComponent,
   UILabelComponent,
-  Object3DComponent,
+  GltfComponent,
 } from "../../components";
-import { Html, useGLTF } from "@react-three/drei";
+import { Html } from "@react-three/drei";
 
 const bumpMaxScale = new THREE.Vector3(2, 2, 2);
 const bumpMinScale = new THREE.Vector3(1, 1, 1);
@@ -37,20 +37,19 @@ export const Entity = ({ entity }) => {
     }
   });
 
-  const [object3DUrl, setObject3DUrl] = React.useState(
-    entity.getComponent(Object3DComponent).url
-  );
+
+  const [gltf, setGltf] = React.useState();
   R3F.useFrame(() => {
-    const compo = entity.getComponent(Object3DComponent);
+    const compo = entity.getComponent(GltfComponent);
     if (compo) {
-      const url = compo.url;
-      if (url !== object3DUrl) {
-        setObject3DUrl(url);
+      const value = compo.value;
+      if (value !== gltf) {
+        setGltf(value);
+        tempBBox.setFromObject(value.scene);
+        tempBBox.getSize(tempBBoxSizeVec3);
       }
     }
   });
-
-  const gltf = useGLTF(object3DUrl);
 
   const ref = React.useRef(null);
 
@@ -85,8 +84,7 @@ export const Entity = ({ entity }) => {
   camera.position.set(0, 0, 2);
 
   const position = cPosition ? cPosition.value : [0, 0, 0];
-  tempBBox.setFromObject(gltf.scene);
-  tempBBox.getSize(tempBBoxSizeVec3);
+
 
   return (
     <group position={position} castShadow receiveShadow>
@@ -99,7 +97,7 @@ export const Entity = ({ entity }) => {
           {label}
         </h3>
       </Html>
-      <primitive object={gltf.scene} ref={ref} />
+      { gltf && <primitive object={gltf.scene} ref={ref} />}
     </group>
   );
 };

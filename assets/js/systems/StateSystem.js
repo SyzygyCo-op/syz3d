@@ -6,7 +6,7 @@ import {
   UILabelComponent,
   R3FComponent,
   PositionComponent,
-  TextureComponent,
+  GltfUrlComponent,
   SpinComponent,
   BumpComponent,
   RotationComponent,
@@ -49,19 +49,19 @@ export class StateSystem extends DRMT.System {
         write: (compo) => !!compo,
       })
       .registerComponent("player_name", UILabelComponent)
-      .registerComponent("texture", TextureComponent, {
+      .registerComponent("avatar_asset_url", GltfUrlComponent, {
         read: (compo, data) => {
-          if (compo) {
+          if (compo && /** @type any */(compo).value !== data) {
             /**
              * @type any
-             */ (compo).url = data;
+             */ (compo).value = data;
           }
         },
         write: (compo) =>
           compo &&
           /**
            * @type any
-           */ (compo).url,
+           */ (compo).value,
       })
       .registerComponent("bump", BumpComponent)
       .registerComponent("rotation", RotationComponent, {

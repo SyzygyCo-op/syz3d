@@ -4,10 +4,15 @@ export class PlayerTag extends DRMT.TagComponent {}
 
 export class LocalPlayerTag extends DRMT.TagComponent {}
 
-/** Stores a URL pointing to an asset that can be loaded as a THREE.Object3D */
-export class Object3DComponent extends DRMT.Component {
+/** Stores a URL pointing to a GLTF/GLB file */
+export class GltfUrlComponent extends DRMT.Component {
   static schema = {
-    url: { type: DRMT.Types.String },
+    value: { type: DRMT.Types.String },
+  };
+}
+export class GltfComponent extends DRMT.Component {
+  static schema = {
+    value: { type: DRMT.Types.Ref },
   };
 }
 
