@@ -43,6 +43,7 @@ export function startWorldLoop() {
 }
 
 export function createLocalPlayer() {
+  // TODO use correspondent/state
   world
     .createEntity(`${getPlayerEntityId()} (local)`)
     .addComponent(PlayerTag)
@@ -54,5 +55,5 @@ export function createLocalPlayer() {
     .addComponent(SpinComponent, { value: [0, 0.001, 0] })
     .addComponent(RotationComponent, { value: [0, 0, 0] })
     .addComponent(R3FComponent, { value: Entity })
-    .addComponent(GltfUrlComponent, { value: "/3d/PokemonHaunter/model-fixed.glb" });
+    .addComponent(GltfUrlComponent, { value: "/3d/PokemonHaunter/model.glb" });
 }

@@ -21,11 +21,12 @@ export class GameAsset {
 }
 
 export const avatars = [
-  new GameAsset("/3d/GrimReaper/preview.png", "/3d/GrimReaper/model-fixed.glb"),
+  new GameAsset("/3d/GrimReaper/preview.png", "/3d/GrimReaper/model.glb"),
   new GameAsset(
     "/3d/PokemonHaunter/preview.png",
-    "/3d/PokemonHaunter/model-fixed.glb"
+    "/3d/PokemonHaunter/model.glb"
   ),
+  new GameAsset("/3d/ShenLong/preview.png", "/3d/ShenLong/model.glb"),
 ];
 
 /**
