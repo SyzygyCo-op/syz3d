@@ -10,9 +10,10 @@ export class GameAsset {
   previewImageUrl = "/images/missing_asset_preview.png";
   assetUrl = null;
 
-  /** @param {string} previewImageUrl
-    * @param {string} assetUrl
-    */
+  /**
+   * @param {string} previewImageUrl
+   * @param {string} assetUrl
+   */
   constructor(previewImageUrl, assetUrl) {
     this.previewImageUrl = previewImageUrl;
     this.assetUrl = assetUrl;
@@ -20,17 +21,12 @@ export class GameAsset {
 }
 
 export const avatars = [
-  new GameAsset(
-    "/3d/GrimReaper/preview.png",
-    "/3d/GrimReaper/model-fixed.glb"
-  ),
+  new GameAsset("/3d/GrimReaper/preview.png", "/3d/GrimReaper/model-fixed.glb"),
   new GameAsset(
     "/3d/PokemonHaunter/preview.png",
     "/3d/PokemonHaunter/model-fixed.glb"
   ),
-]
-
-
+];
 
 /**
  * @typedef {'EDIT_MY_AVATAR' | 'SETTINGS'} ModalID
@@ -59,6 +55,13 @@ export class ObservableState {
    * @type any?
    */
   _resetDebounce = null;
+
+  /**
+   * @param {DRMT.Entity[]} entities
+   */
+  setEntitiesToRender(entities) {
+    replaceSetContents(this.entitiesToRender, entities);
+  }
 
   /**
    * @param {PlayerState} data
@@ -93,11 +96,11 @@ export class ObservableState {
   }
 
   reconcileLocalPlayer() {
-    Object.keys(this.localPlayerOut).forEach((key)=>{
-      if(!this.localPlayerIn[key]) {
+    Object.keys(this.localPlayerOut).forEach((key) => {
+      if (!this.localPlayerIn[key]) {
         this.localPlayerIn[key] = this.localPlayerOut[key];
       }
-    })
+    });
   }
 
   resetLocalPlayerDebounced() {
@@ -118,4 +121,15 @@ export class ObservableState {
   setOpenModal(modalId) {
     this.openModalId = modalId;
   }
+}
+
+/**
+ * @param {Set}   set
+ * @param {any[]} source
+ */
+function replaceSetContents(set, source) {
+  set.clear();
+  source.forEach((entity) => {
+    set.add(entity);
+  });
 }

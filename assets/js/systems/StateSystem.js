@@ -37,9 +37,9 @@ export class StateSystem extends DRMT.System {
 
   observable = new ObservableState();
   worldDirty = false;
-  /** 
-    * @type {import("dreamt/dist/Correspondent").IEntityComponentDiff?}
-    */
+  /**
+   * @type {?import("dreamt/dist/Correspondent").IEntityComponentDiff}
+   */
   worldDiff = null;
 
   init() {
@@ -51,7 +51,12 @@ export class StateSystem extends DRMT.System {
       .registerComponent("player_name", UILabelComponent)
       .registerComponent("avatar_asset_url", GltfUrlComponent, {
         read: (compo, data) => {
-          if (compo && /** @type any */(compo).value !== data) {
+          if (
+            compo &&
+            /**
+             * @type any
+             */ (compo).value !== data
+          ) {
             /**
              * @type any
              */ (compo).value = data;
@@ -93,13 +98,7 @@ export class StateSystem extends DRMT.System {
     const localPlayer = this.queries.localPlayer.results[0];
 
     if (queryHasChanges(this.queries.toRender)) {
-      // TODO(refactor): action method
-      MOBX.runInAction(() => {
-        resetSet(
-          this.observable.entitiesToRender,
-          this.queries.toRender.results
-        );
-      });
+      this.observable.setEntitiesToRender(this.queries.toRender.results);
     }
 
     if (localPlayer) {
@@ -117,12 +116,15 @@ export class StateSystem extends DRMT.System {
         this.worldDirty = false;
       }
 
-
       const worldState = this.correspondent.produceDiff({});
       // TODO make methods for analyzing diffs
       const localPlayerData = worldState.upsert[getPlayerEntityId()];
-      if(localPlayerData) {
-        this.observable.outputLocalPlayer(/** @type any */(localPlayerData))
+      if (localPlayerData) {
+        this.observable.outputLocalPlayer(
+          /**
+           * @type any
+           */ (localPlayerData)
+        );
       }
 
       this.observable.reconcileLocalPlayer();
@@ -140,7 +142,6 @@ export class StateSystem extends DRMT.System {
       // Make sure the spinner is shown for >=1 sec so user knows it's doing something
       this.observable.resetLocalPlayerDebounced();
     }
-
   }
 
   /**
@@ -152,16 +153,6 @@ export class StateSystem extends DRMT.System {
   }
 }
 
-/**
- * @param {Set}   set
- * @param {any[]} source
- */
-function resetSet(set, source) {
-  set.clear();
-  source.forEach((entity) => {
-    set.add(entity);
-  });
-}
 /**
  * @param {DRMT.System['queries'][""]} query
  */
