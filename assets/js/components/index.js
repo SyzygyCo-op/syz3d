@@ -22,11 +22,7 @@ export class UILabelComponent extends DRMT.Component {
   };
 }
 
-export class R3FComponent extends DRMT.Component {
-  static schema = {
-    value: { type: DRMT.Types.Ref },
-  };
-}
+export class RenderToCanvasTag extends DRMT.TagComponent {}
 
 export class RotationComponent extends DRMT.Component {
   static schema = {

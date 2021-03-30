@@ -8,7 +8,7 @@ import { startReactApp } from "./react";
 NProgress.start();
 
 startWorldLoop();
-startReactApp();
 createLocalPlayer();
+startReactApp();
 
 NProgress.done();

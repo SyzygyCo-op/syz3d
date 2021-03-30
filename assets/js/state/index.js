@@ -1,9 +1,13 @@
 import * as DRMT from "dreamt";
 import * as MOBX from "mobx";
 
-class PlayerState {
+export class PlayerState {
+  render_to_canvas = true;
   player_name = "";
   avatar_asset_url = null;
+  position = [0, 0, 0];
+  rotation = [0, 0, 0];
+  spin = [0, 0, 0];
 }
 
 export class GameAsset {
@@ -67,7 +71,7 @@ export class ObservableState {
   /**
    * @param {PlayerState} data
    */
-  inputLocalPlayer(data) {
+  inputLocalPlayerDebounced(data) {
     clearTimeout(this._localPlayerInDebounce);
     this._localPlayerInDebounce = setTimeout(() => {
       this.inputLocalPlayerSync(data);
@@ -82,6 +86,14 @@ export class ObservableState {
     this.localPlayerDirty = true;
     clearTimeout(this._resetDebounce);
     this._resetDebounce = null;
+  }
+
+  /**
+   * @param {Partial<PlayerState>} data
+   */
+  inputPartialLocalPlayer(data) {
+    const completeData = Object.assign({}, this.localPlayerIn, data);
+    this.inputLocalPlayerSync(/** @type any */(completeData));
   }
 
   /**

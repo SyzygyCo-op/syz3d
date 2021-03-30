@@ -4,21 +4,21 @@ import {
   PlayerTag,
   LocalPlayerTag,
   UILabelComponent,
-  R3FComponent,
+  RenderToCanvasTag,
   PositionComponent,
   GltfUrlComponent,
   SpinComponent,
   BumpComponent,
   RotationComponent,
 } from "../components";
-import { ObservableState } from "../state";
+import { ObservableState, PlayerState } from "../state";
 import { getPlayerEntityId } from "../utils";
 import { Entity } from "../react/components";
 
 export class StateSystem extends DRMT.System {
   static queries = {
     toRender: {
-      components: [R3FComponent],
+      components: [RenderToCanvasTag],
       listen: {
         added: true,
         removed: true,
@@ -44,7 +44,15 @@ export class StateSystem extends DRMT.System {
 
   init() {
     this.correspondent = new DRMT.Correspondent(this.world)
+      .registerComponent("render_to_canvas", RenderToCanvasTag, {
+        read: () => {},
+        write: (compo) => !!compo,
+      })
       .registerComponent("is_player", PlayerTag, {
+        read: () => {},
+        write: (compo) => !!compo,
+      })
+      .registerComponent("is_local", LocalPlayerTag, {
         read: () => {},
         write: (compo) => !!compo,
       })
@@ -79,16 +87,6 @@ export class StateSystem extends DRMT.System {
       .registerComponent("position", PositionComponent, {
         writeCache: (arr) => arr && arr.join(","),
       })
-      .registerComponent("avatar", R3FComponent, {
-        write: (compo) => !!compo,
-        read: (compo) => {
-          if (compo) {
-            /**
-             * @type any
-             */ (compo).value = Entity;
-          }
-        },
-      });
     this.worldCache = {};
     this.worldDiffTimestamp = 0;
     this.observable.reconcileLocalPlayer();
@@ -99,10 +97,6 @@ export class StateSystem extends DRMT.System {
 
     if (queryHasChanges(this.queries.toRender)) {
       this.observable.setEntitiesToRender(this.queries.toRender.results);
-    }
-
-    if (localPlayer) {
-      this.correspondent.registerEntity(getPlayerEntityId(), localPlayer);
     }
 
     if (time - this.worldDiffTimestamp >= 200) {
@@ -134,7 +128,11 @@ export class StateSystem extends DRMT.System {
       this.correspondent.consumeDiff({
         // TODO make methods for sythesizing diffs
         upsert: {
-          [getPlayerEntityId()]: this.observable.localPlayerIn,
+          [getPlayerEntityId()]: {
+            is_player: true,
+            is_local: true,
+            ...this.observable.localPlayerIn,
+          }
         },
         remove: {},
       });
@@ -142,6 +140,12 @@ export class StateSystem extends DRMT.System {
       // Make sure the spinner is shown for >=1 sec so user knows it's doing something
       this.observable.resetLocalPlayerDebounced();
     }
+  }
+
+  /** @param {Partial<PlayerState>} partialPlayerData */
+  createLocalPlayer(partialPlayerData) {
+    this.correspondent.createEntity(`${getPlayerEntityId()} (local)`).addComponent(LocalPlayerTag);
+    this.observable.inputPartialLocalPlayer(partialPlayerData);
   }
 
   /**

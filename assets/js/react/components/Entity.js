@@ -19,7 +19,7 @@ const tempBBoxSizeVec3 = new THREE.Vector3();
 /**
  * React-THREE-Fiber component that renders an entity.
  *
- * @type React.ComponentType<{entity:  DRMT.Entity, world: DRMT.World}>
+ * @type React.ComponentType<{entity:  DRMT.Entity}>
  */
 export const Entity = ({ entity }) => {
   const cPosition = entity.getComponent(PositionComponent);
@@ -81,7 +81,8 @@ export const Entity = ({ entity }) => {
 
   const { camera } = R3F.useThree();
 
-  camera.position.set(0, 0, 2);
+  // TODO position camera accounting for size of avatar bounding box
+  camera.position.set(0, 0, 4);
 
   const position = cPosition ? cPosition.value : [0, 0, 0];
 
