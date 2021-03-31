@@ -1,9 +1,14 @@
 import * as DRMT from "dreamt";
 import * as MOBX from "mobx";
+import debounce from "debounce";
+import * as config from "../config";
 
 export class PlayerState {
   render_to_canvas = true;
   player_name = "";
+  /**
+   * @type string?
+   */
   avatar_asset_url = null;
   position = [0, 0, 0];
   rotation = [0, 0, 0];
@@ -12,6 +17,9 @@ export class PlayerState {
 
 export class GameAsset {
   previewImageUrl = "/images/missing_asset_preview.png";
+  /**
+   * @type string?
+   */
   assetUrl = null;
 
   /**
@@ -52,14 +60,6 @@ export class ObservableState {
   localPlayerOut = MOBX.makeAutoObservable(new PlayerState());
   localPlayerIn = MOBX.makeAutoObservable(new PlayerState());
   localPlayerDirty = false;
-  /**
-   * @type any?
-   */
-  _localPlayerInDebounce = null;
-  /**
-   * @type any?
-   */
-  _resetDebounce = null;
 
   /**
    * @param {DRMT.Entity[]} entities
@@ -68,17 +68,10 @@ export class ObservableState {
     replaceSetContents(this.entitiesToRender, entities);
   }
 
-  /**
-   * @param {PlayerState} data
-   */
-  inputLocalPlayerDebounced(data) {
-    clearTimeout(this._localPlayerInDebounce);
-    this._localPlayerInDebounce = setTimeout(() => {
-      this.inputLocalPlayerSync(data);
-      clearTimeout(this._resetDebounce);
-      this._resetDebounce = null;
-    }, 800);
-  }
+  inputLocalPlayerDebounced = debounce(
+    this.inputLocalPlayerSync,
+    config.DEBOUNCE_MS_ON_CHANGE_INPUT
+  );
 
   /**
    * @param {PlayerState} data
@@ -93,7 +86,11 @@ export class ObservableState {
    */
   inputPartialLocalPlayer(data) {
     const completeData = Object.assign({}, this.localPlayerIn, data);
-    this.inputLocalPlayerSync(/** @type any */(completeData));
+    this.inputLocalPlayerSync(
+      /**
+       * @type any
+       */ (completeData)
+    );
   }
 
   /**
@@ -116,13 +113,7 @@ export class ObservableState {
     });
   }
 
-  resetLocalPlayerDebounced() {
-    if (!this._resetDebounce) {
-      this._resetDebounce = setTimeout(() => {
-        this.resetLocalPlayer();
-      }, 1000);
-    }
-  }
+  resetLocalPlayerDebounced = debounce(this.resetLocalPlayer, config.DEBOUNCE_MS_ON_SAVE_INPUT)
 
   constructor() {
     MOBX.makeAutoObservable(this);
