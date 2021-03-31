@@ -10,7 +10,7 @@
     "@homer0/prettier-plugin-jsdoc": "^2.0.0",
     "@react-three/drei": "^2.2.12",
     "antd": "^4.14.0",
-    "dreamt": "^0.5.0",
+    "dreamt": "^0.5.2",
     "ecsy": "^0.4.2",
     "mobx": "^6.0.4",
     "mobx-react-lite": "^3.1.6",

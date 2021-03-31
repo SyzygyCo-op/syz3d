@@ -75,6 +75,8 @@ export class ObservableState {
     clearTimeout(this._localPlayerInDebounce);
     this._localPlayerInDebounce = setTimeout(() => {
       this.inputLocalPlayerSync(data);
+      clearTimeout(this._resetDebounce);
+      this._resetDebounce = null;
     }, 800);
   }
 
@@ -84,8 +86,6 @@ export class ObservableState {
   inputLocalPlayerSync(data) {
     this.localPlayerIn = data;
     this.localPlayerDirty = true;
-    clearTimeout(this._resetDebounce);
-    this._resetDebounce = null;
   }
 
   /**

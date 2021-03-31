@@ -1,5 +1,4 @@
 import * as DRMT from "dreamt";
-import * as MOBX from "mobx";
 import {
   PlayerTag,
   LocalPlayerTag,
@@ -13,7 +12,6 @@ import {
 } from "../components";
 import { ObservableState, PlayerState } from "../state";
 import { getPlayerEntityId } from "../utils";
-import { Entity } from "../react/components";
 
 export class StateSystem extends DRMT.System {
   static queries = {
@@ -38,7 +36,7 @@ export class StateSystem extends DRMT.System {
   observable = new ObservableState();
   worldDirty = false;
   /**
-   * @type {?import("dreamt/dist/Correspondent").IEntityComponentDiff}
+   * @type {?DRMT.IEntityComponentDiff}
    */
   worldDiff = null;
 
@@ -144,12 +142,12 @@ export class StateSystem extends DRMT.System {
 
   /** @param {Partial<PlayerState>} partialPlayerData */
   createLocalPlayer(partialPlayerData) {
-    this.correspondent.createEntity(`${getPlayerEntityId()} (local)`).addComponent(LocalPlayerTag);
+    this.correspondent.createEntity(getPlayerEntityId()).addComponent(LocalPlayerTag);
     this.observable.inputPartialLocalPlayer(partialPlayerData);
   }
 
   /**
-   * @param {import("dreamt/dist/Correspondent").IEntityComponentDiff} diff
+   * @param {DRMT.IEntityComponentDiff} diff
    * TODO make this interface easier to import? or put StateSystem in library?
    */
   updateWorld(diff) {
