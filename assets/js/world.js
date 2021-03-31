@@ -18,6 +18,7 @@ import {
   GltfUrlComponent,
 } from "./components";
 import { getPlayerName } from "./utils";
+import {GAME_LOOP_MIN_FREQUENCY_HZ} from "./config";
 
 export const world = new DRMT.World()
   .registerComponent(PositionComponent)
@@ -35,16 +36,9 @@ export const world = new DRMT.World()
   .registerSystem(StateSystem)
   .registerSystem(ClientSystem);
 
-export function startWorldLoop() {
-  // Don't need RAF because react-three-fiber has its own render loop that
-  // ensures flicker-free animation.
-  let time = 0;
-  let delta = 1000 / 60;
-  setInterval(() => {
-    world.execute(delta, time);
-    time += delta;
-  }, delta);
-}
+// Don't need RAF because react-three-fiber has its own render loop that
+// ensures flicker-free animation.
+export const gameLoop = new DRMT.GameLoop(world.execute.bind(world), 1, {pauseOnWindowBlur: true})
 
 export function createLocalPlayer() {
   world.getSystem(StateSystem).createLocalPlayer({
