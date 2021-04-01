@@ -57,8 +57,8 @@ export class ObservableState {
   openModalId = null;
 
   // TODO tests, also find the right abstraction to reduce LoC
-  localPlayerOut = MOBX.makeAutoObservable(new PlayerState());
-  localPlayerIn = MOBX.makeAutoObservable(new PlayerState());
+  localPlayerOut = new PlayerState();
+  localPlayerIn = new PlayerState();
   localPlayerDirty = false;
 
   /**
