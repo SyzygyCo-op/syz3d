@@ -69,7 +69,7 @@ export class ObservableState {
   }
 
   inputLocalPlayerDebounced = debounce(
-    this.inputLocalPlayerSync,
+    this.inputLocalPlayerSync.bind(this),
     config.DEBOUNCE_MS_ON_CHANGE_INPUT
   );
 
@@ -113,7 +113,7 @@ export class ObservableState {
     });
   }
 
-  resetLocalPlayerDebounced = debounce(this.resetLocalPlayer, config.DEBOUNCE_MS_ON_SAVE_INPUT)
+  resetLocalPlayerDebounced = debounce(this.resetLocalPlayer.bind(this), config.DEBOUNCE_MS_ON_SAVE_INPUT)
 
   constructor() {
     MOBX.makeAutoObservable(this);
