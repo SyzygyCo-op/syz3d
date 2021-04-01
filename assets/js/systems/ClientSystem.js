@@ -20,7 +20,7 @@ export class ClientSystem extends DRMT.System {
   }
 
   _getWorldDiff() {
-    return this._getState().worldDiff;
+    return this._getState().worldDiffFromLastFrame;
   }
 
   init() {
