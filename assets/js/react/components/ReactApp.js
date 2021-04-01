@@ -1,9 +1,10 @@
 import * as React from "react";
 import { observer } from "mobx-react-lite";
-import { Canvas } from "react-three-fiber";
+import { Canvas, invalidate } from "react-three-fiber";
 import * as UI from "./ui";
 import { ObservableState, avatars } from "../../state";
-import { Entity } from './Entity';
+import { Entity } from "./Entity";
+import { gameLoop } from '../../world';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -44,12 +45,14 @@ const EntitySet = observer(
   }
 );
 
+const invalidateTick = () => invalidate()
+
 export const ReactApp = observer(
   /**
    * @param {{ state: ObservableState }} props
    */
   ({ state }) => {
-
+    gameLoop.useTick(invalidateTick)
     return (
       <ErrorBoundary>
         <div className="App">
@@ -58,8 +61,8 @@ export const ReactApp = observer(
             onSettingsOpen={handleSettingsOpen}
             localPlayerName={state.localPlayerOut.player_name}
           />
-          <Canvas>
-            <pointLight args={[0xFFFFFF, 1, 100]} position={[3, 3, 3]}/>
+          <Canvas invalidateFrameloop>
+            <pointLight args={[0xffffff, 1, 100]} position={[3, 3, 3]} />
             <React.Suspense fallback={null}>
               <EntitySet entities={state.entitiesToRender} />
             </React.Suspense>
