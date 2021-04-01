@@ -10,6 +10,7 @@ import {
   GltfComponent,
 } from "../../components";
 import { Html } from "@react-three/drei";
+import { gameLoop } from '../../world';
 
 const bumpMaxScale = new THREE.Vector3(2, 2, 2);
 const bumpMinScale = new THREE.Vector3(1, 1, 1);
@@ -27,7 +28,8 @@ export const Entity = ({ entity }) => {
   const [label, setLabel] = React.useState(
     entity.getComponent(UILabelComponent).value
   );
-  R3F.useFrame(() => {
+
+  gameLoop.useTick(() => {
     const compo = entity.getComponent(UILabelComponent);
     if (compo) {
       const newValue = compo.value;
@@ -39,7 +41,7 @@ export const Entity = ({ entity }) => {
 
 
   const [gltf, setGltf] = React.useState();
-  R3F.useFrame(() => {
+  gameLoop.useTick(() => {
     const compo = entity.getComponent(GltfComponent);
     if (compo) {
       const value = compo.value;
@@ -53,7 +55,7 @@ export const Entity = ({ entity }) => {
 
   const ref = React.useRef(null);
 
-  R3F.useFrame(() => {
+  gameLoop.useTick(() => {
     if (ref.current) {
       const rotation = /**
        * @type THREE.Euler
