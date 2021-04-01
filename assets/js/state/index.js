@@ -59,7 +59,7 @@ export class ObservableState {
   // TODO tests, also find the right abstraction to reduce LoC
   localPlayerOut = new PlayerState();
   localPlayerIn = new PlayerState();
-  localPlayerDirty = false;
+  localPlayerInDirty = false;
 
   /**
    * @param {DRMT.Entity[]} entities
@@ -79,7 +79,7 @@ export class ObservableState {
    */
   inputLocalPlayerSync(data) {
     this.localPlayerIn = data;
-    this.localPlayerDirty = true;
+    this.localPlayerInDirty = true;
   }
 
   /**
@@ -103,7 +103,7 @@ export class ObservableState {
 
   resetLocalPlayer() {
     this.localPlayerIn = this.localPlayerOut;
-    this.localPlayerDirty = false;
+    this.localPlayerInDirty = false;
   }
 
   reconcileLocalPlayer() {

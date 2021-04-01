@@ -123,7 +123,7 @@ export class StateSystem extends DRMT.System {
       }
     }
 
-    if (this.observable.localPlayerDirty) {
+    if (this.observable.localPlayerInDirty) {
       this.correspondent.consumeDiff({
         // TODO make methods for sythesizing diffs
         upsert: {
@@ -137,7 +137,7 @@ export class StateSystem extends DRMT.System {
       });
 
       // Make sure the spinner is shown for >=1 sec so user knows it's doing something
-      this.observable.resetLocalPlayerDebounced();
+      this.observable.resetLocalPlayer();
     }
   }
 
