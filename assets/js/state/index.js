@@ -1,7 +1,7 @@
 import * as DRMT from "dreamt";
 import * as MOBX from "mobx";
-import debounce from "debounce";
 import * as config from "../config";
+import { debounceBoundFn } from "../utils";
 
 export class PlayerState {
   render_to_canvas = true;
@@ -68,8 +68,9 @@ export class ObservableState {
     replaceSetContents(this.entitiesToRender, entities);
   }
 
-  inputLocalPlayerDebounced = debounce(
-    this.inputLocalPlayerSync.bind(this),
+  inputLocalPlayerDebounced = debounceBoundFn(
+    this.inputLocalPlayerSync,
+    this,
     config.DEBOUNCE_MS_ON_CHANGE_INPUT
   );
 
@@ -113,7 +114,11 @@ export class ObservableState {
     });
   }
 
-  resetLocalPlayerDebounced = debounce(this.resetLocalPlayer.bind(this), config.DEBOUNCE_MS_ON_SAVE_INPUT)
+  resetLocalPlayerDebounced = debounceBoundFn(
+    this.resetLocalPlayer,
+    this,
+    config.DEBOUNCE_MS_ON_SAVE_INPUT
+  );
 
   constructor() {
     MOBX.makeAutoObservable(this);
