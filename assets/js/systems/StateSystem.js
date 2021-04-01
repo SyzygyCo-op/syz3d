@@ -38,7 +38,7 @@ export class StateSystem extends DRMT.System {
   /**
    * @type {?DRMT.IEntityComponentDiff}
    */
-  worldDiff = null;
+  worldDiffFromLastFrame = null;
 
   init() {
     this.correspondent = new DRMT.Correspondent(this.world)
@@ -84,7 +84,7 @@ export class StateSystem extends DRMT.System {
       })
       .registerComponent("position", PositionComponent, {
         writeCache: (arr) => arr && arr.join(","),
-      })
+      });
     this.worldCache = {};
     this.worldDiffTimestamp = 0;
     this.observable.reconcileLocalPlayer();
@@ -101,25 +101,26 @@ export class StateSystem extends DRMT.System {
       const diff = this.correspondent.produceDiff(this.worldCache);
       if (!DRMT.Correspondent.isEmptyDiff(diff)) {
         this.worldDirty = true;
-        this.worldDiff = diff;
+        this.worldDiffFromLastFrame = diff;
         this.correspondent.updateCache(this.worldCache, diff);
         this.worldDiffTimestamp = time;
+
+        // TODO add target parameter
+        const worldState = this.correspondent.produceDiff({});
+        // TODO make methods for analyzing diffs
+        const localPlayerData = worldState.upsert[getPlayerEntityId()];
+        if (localPlayerData) {
+          this.observable.outputLocalPlayer(
+            /**
+             * @type any
+             */ (localPlayerData)
+          );
+        }
+
+        this.observable.reconcileLocalPlayer();
       } else {
         this.worldDirty = false;
       }
-
-      const worldState = this.correspondent.produceDiff({});
-      // TODO make methods for analyzing diffs
-      const localPlayerData = worldState.upsert[getPlayerEntityId()];
-      if (localPlayerData) {
-        this.observable.outputLocalPlayer(
-          /**
-           * @type any
-           */ (localPlayerData)
-        );
-      }
-
-      this.observable.reconcileLocalPlayer();
     }
 
     if (this.observable.localPlayerDirty) {
@@ -130,7 +131,7 @@ export class StateSystem extends DRMT.System {
             is_player: true,
             is_local: true,
             ...this.observable.localPlayerIn,
-          }
+          },
         },
         remove: {},
       });
@@ -140,9 +141,13 @@ export class StateSystem extends DRMT.System {
     }
   }
 
-  /** @param {Partial<PlayerState>} partialPlayerData */
+  /**
+   * @param {Partial<PlayerState>} partialPlayerData
+   */
   createLocalPlayer(partialPlayerData) {
-    this.correspondent.createEntity(getPlayerEntityId()).addComponent(LocalPlayerTag);
+    this.correspondent
+      .createEntity(getPlayerEntityId())
+      .addComponent(LocalPlayerTag);
     this.observable.inputPartialLocalPlayer(partialPlayerData);
   }
 
