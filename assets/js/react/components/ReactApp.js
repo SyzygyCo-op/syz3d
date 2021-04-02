@@ -95,7 +95,7 @@ export const ReactApp = observer(
             onValuesChange={(data) => {
               state.inputLocalPlayerDebounced(data);
             }}
-            validating={state.localPlayerDirty}
+            validating={state.localPlayerInDirty}
             validateTrigger="onChange"
           />
         </UI.Drawer>
