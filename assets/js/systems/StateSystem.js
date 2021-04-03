@@ -87,12 +87,9 @@ export class StateSystem extends DRMT.System {
       });
     this.worldCache = {};
     this.worldDiffTimestamp = 0;
-    this.observable.reconcileLocalPlayer();
   }
 
   execute(delta, time) {
-    const localPlayer = this.queries.localPlayer.results[0];
-
     if (queryHasChanges(this.queries.toRender)) {
       this.observable.setEntitiesToRender(this.queries.toRender.results);
     }
@@ -110,34 +107,32 @@ export class StateSystem extends DRMT.System {
         // TODO make methods for analyzing diffs
         const localPlayerData = worldState.upsert[getPlayerEntityId()];
         if (localPlayerData) {
-          this.observable.outputLocalPlayer(
+          this.observable.localPlayer.setActual(
             /**
              * @type any
              */ (localPlayerData)
           );
         }
-
-        this.observable.reconcileLocalPlayer();
       } else {
         this.worldDirty = false;
       }
     }
 
-    if (this.observable.localPlayerInDirty) {
+    if (this.observable.localPlayer.isDirty) {
       this.correspondent.consumeDiff({
         // TODO make methods for sythesizing diffs
         upsert: {
           [getPlayerEntityId()]: {
             is_player: true,
             is_local: true,
-            ...this.observable.localPlayerIn,
+            ...this.observable.localPlayer.request,
           },
         },
         remove: {},
       });
 
       // Make sure the spinner is shown for >=1 sec so user knows it's doing something
-      this.observable.resetLocalPlayer();
+      this.observable.localPlayer.clean();
     }
   }
 
@@ -148,7 +143,7 @@ export class StateSystem extends DRMT.System {
     this.correspondent
       .createEntity(getPlayerEntityId())
       .addComponent(LocalPlayerTag);
-    this.observable.inputPartialLocalPlayer(partialPlayerData);
+    this.observable.localPlayer.setRequestPart(partialPlayerData);
   }
 
   /**

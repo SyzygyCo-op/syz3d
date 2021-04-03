@@ -36,8 +36,6 @@ export const world = new DRMT.World()
   .registerSystem(StateSystem)
   .registerSystem(ClientSystem);
 
-// Don't need RAF because react-three-fiber has its own render loop that
-// ensures flicker-free animation.
 export const gameLoop = new DRMT.GameLoop(world.execute.bind(world), GAME_LOOP_MIN_FREQUENCY_HZ, {pauseOnWindowBlur: true})
 
 export function createLocalPlayer() {

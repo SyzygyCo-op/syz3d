@@ -45,21 +45,21 @@ const EntitySet = observer(
   }
 );
 
-const invalidateTick = () => invalidate()
+const invalidateOnTick = () => invalidate()
 
 export const ReactApp = observer(
   /**
    * @param {{ state: ObservableState }} props
    */
   ({ state }) => {
-    gameLoop.useTick(invalidateTick)
+    gameLoop.useTick(invalidateOnTick)
     return (
       <ErrorBoundary>
         <div className="App">
           <UI.HeadsUp
             onAvatarEdit={handleAvatarEdit}
             onSettingsOpen={handleSettingsOpen}
-            localPlayerName={state.localPlayerOut.player_name}
+            localPlayerName={state.localPlayer.actual.player_name}
           />
           <Canvas invalidateFrameloop>
             <pointLight args={[0xffffff, 1, 100]} position={[3, 3, 3]} />
@@ -78,7 +78,7 @@ export const ReactApp = observer(
           <UI.SettingsModalBody
             onAvatarEdit={handleAvatarEdit}
             // TODO use selectors
-            localPlayerName={state.localPlayerOut.player_name}
+            localPlayerName={state.localPlayer.actual.player_name}
           />
         </UI.Drawer>
         <UI.Drawer
@@ -91,11 +91,11 @@ export const ReactApp = observer(
         >
           <UI.AvatarForm
             avatars={avatars}
-            initialValues={state.localPlayerOut}
+            initialValues={state.localPlayer.actual}
             onValuesChange={(data) => {
-              state.inputLocalPlayerDebounced(data);
+              state.localPlayer.setRequest(data);
             }}
-            validating={state.localPlayerInDirty}
+            validating={state.localPlayer.isDirty}
             validateTrigger="onChange"
           />
         </UI.Drawer>

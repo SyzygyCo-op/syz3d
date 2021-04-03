@@ -2,6 +2,8 @@ import * as DRMT from 'dreamt';
 import {GltfComponent, GltfUrlComponent} from '../components';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
+// TODO set bounding box on component, use custom types in component schema
+
 export class LoaderSystem extends DRMT.System {
   static queries = {
     glftInit: {
