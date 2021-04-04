@@ -1,13 +1,16 @@
 import * as DRMT from 'dreamt';
-import {GltfComponent, GltfUrlComponent} from '../components';
+import * as THREE from 'three';
+import {Object3DComponent, GltfUrlComponent, BoundingBoxComponent} from '../components';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
-// TODO set bounding box on component, use custom types in component schema
+const tempBox3 = new THREE.Box3();
+
+const tempVec3 = new THREE.Vector3();
 
 export class LoaderSystem extends DRMT.System {
   static queries = {
     glftInit: {
-      components: [GltfUrlComponent, DRMT.Not(GltfComponent)]
+      components: [GltfUrlComponent, DRMT.Not(Object3DComponent)]
     },
     glftChanged: {
       components: [GltfUrlComponent],
@@ -29,8 +32,12 @@ function entityLoadGltf (entity) {
   const loader = new GLTFLoader()
   loader.load(url, onLoad, onProgress, onError);
 
-  function onLoad (value) {
-    entity.addComponent(GltfComponent, { value } )
+  function onLoad (result) {
+    tempBox3.setFromObject(result.scene);
+    tempBox3.getSize(tempVec3);
+
+    entity.addComponent(Object3DComponent, { value: result.scene } )
+    entity.addComponent(BoundingBoxComponent, { value: tempVec3 })
   }
 
   function onProgress () {}
@@ -46,8 +53,12 @@ function entityReloadGltf (entity) {
   const loader = new GLTFLoader()
   loader.load(url, onLoad, onProgress, onError);
 
-  function onLoad (value) {
-    entity.getMutableComponent(GltfComponent).value = value;
+  function onLoad (result) {
+    tempBox3.setFromObject(result.scene);
+    tempBox3.getSize(tempVec3);
+
+    entity.getMutableComponent(Object3DComponent).value = result.scene;
+    entity.getMutableComponent(BoundingBoxComponent).value = tempVec3;
   }
 
   function onProgress () {}

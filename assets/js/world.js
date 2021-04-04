@@ -14,7 +14,8 @@ import {
   PositionComponent,
   BumpComponent,
   RenderToCanvasTag,
-  GltfComponent,
+  Object3DComponent,
+  BoundingBoxComponent,
   GltfUrlComponent,
 } from "./components";
 import { getPlayerName } from "./utils";
@@ -23,7 +24,8 @@ import {GAME_LOOP_MIN_FREQUENCY_HZ} from "./config";
 export const world = new DRMT.World()
   .registerComponent(PositionComponent)
   .registerComponent(GltfUrlComponent)
-  .registerComponent(GltfComponent)
+  .registerComponent(Object3DComponent)
+  .registerComponent(BoundingBoxComponent)
   .registerComponent(UILabelComponent)
   .registerComponent(PlayerTag)
   .registerComponent(LocalPlayerTag)

@@ -1,4 +1,5 @@
 import * as DRMT from 'dreamt'
+import * as THREE from 'three'
 
 export class PlayerTag extends DRMT.TagComponent {}
 
@@ -10,9 +11,28 @@ export class GltfUrlComponent extends DRMT.Component {
     value: { type: DRMT.Types.String },
   };
 }
-export class GltfComponent extends DRMT.Component {
+
+const Object3DType = DRMT.createType({
+  name: "Object3D",
+  default: new THREE.Object3D(),
+  copy: DRMT.copyCopyable,
+  clone: DRMT.cloneClonable
+});
+export class Object3DComponent extends DRMT.Component {
   static schema = {
-    value: { type: DRMT.Types.Ref },
+    value: { type: Object3DType },
+  };
+}
+
+const Vector3Type = DRMT.createType({
+  name: "Vector3",
+  default: new THREE.Vector3(),
+  copy: DRMT.copyCopyable,
+  clone: DRMT.cloneClonable
+});
+export class BoundingBoxComponent extends DRMT.Component {
+  static schema = {
+    value: { type: Vector3Type }
   };
 }
 

@@ -7,15 +7,14 @@ import {
   RotationComponent,
   BumpComponent,
   UILabelComponent,
-  GltfComponent,
+  Object3DComponent,
+  BoundingBoxComponent,
 } from "../../components";
 import { Html } from "@react-three/drei";
 import { gameLoop } from '../../world';
 
 const bumpMaxScale = new THREE.Vector3(2, 2, 2);
 const bumpMinScale = new THREE.Vector3(1, 1, 1);
-const tempBBox = new THREE.Box3();
-const tempBBoxSizeVec3 = new THREE.Vector3();
 
 /**
  * React-THREE-Fiber component that renders an entity.
@@ -40,15 +39,26 @@ export const Entity = ({ entity }) => {
   });
 
 
-  const [gltf, setGltf] = React.useState();
+  const [object3d, setObject3d] = React.useState();
   gameLoop.useTick(() => {
-    const compo = entity.getComponent(GltfComponent);
+    const compo = entity.getComponent(Object3DComponent);
     if (compo) {
       const value = compo.value;
-      if (value !== gltf) {
-        setGltf(value);
-        tempBBox.setFromObject(value.scene);
-        tempBBox.getSize(tempBBoxSizeVec3);
+      if (value !== object3d) {
+        setObject3d(value);
+      }
+    }
+  });
+
+  /** @type [THREE.Vector3, (value: THREE.Vector3) => void] */
+  const [boundingBox, setBoundingBox] = React.useState();
+  gameLoop.useTick(() => {
+    const compo = entity.getComponent(BoundingBoxComponent);
+    if (compo) {
+      /** @type THREE.Vector3 */
+      const value = compo.value;
+      if (value !== boundingBox) {
+        setBoundingBox(value);
       }
     }
   });
@@ -64,6 +74,7 @@ export const Entity = ({ entity }) => {
        * @type THREE.Vector3
        */ (ref.current.scale);
 
+      // TODO is it necessary to have a RotationComponent now that there's an Object3DComponent?
       const cRotation = entity.getComponent(RotationComponent);
       const cBump = entity.getComponent(BumpComponent);
       if (cRotation) {
@@ -88,10 +99,9 @@ export const Entity = ({ entity }) => {
 
   const position = cPosition ? cPosition.value : [0, 0, 0];
 
-
   return (
-    <group position={position} castShadow receiveShadow>
-      <Html position={[0, tempBBoxSizeVec3.y, 0]}>
+    <group ref={ref} position={position} castShadow receiveShadow>
+      <Html position-y={boundingBox && boundingBox.y}>
         <h3
           style={{
             transform: "translateX(-50%)",
@@ -100,7 +110,7 @@ export const Entity = ({ entity }) => {
           {label}
         </h3>
       </Html>
-      { gltf && <primitive object={gltf.scene} ref={ref} />}
+      {object3d && <primitive object={object3d}/>}
     </group>
   );
 };
