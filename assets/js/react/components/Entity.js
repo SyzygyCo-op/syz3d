@@ -11,10 +11,16 @@ import {
   BoundingBoxComponent,
 } from "../../components";
 import { Html } from "@react-three/drei";
-import { gameLoop } from '../../world';
+import { gameLoop } from "../../world";
 
 const bumpMaxScale = new THREE.Vector3(2, 2, 2);
 const bumpMinScale = new THREE.Vector3(1, 1, 1);
+
+const stateComponentMap = {
+  label: UILabelComponent,
+  object3d: Object3DComponent,
+  boundingBox: BoundingBoxComponent
+};
 
 /**
  * React-THREE-Fiber component that renders an entity.
@@ -22,48 +28,18 @@ const bumpMinScale = new THREE.Vector3(1, 1, 1);
  * @type React.ComponentType<{entity:  DRMT.Entity}>
  */
 export const Entity = ({ entity }) => {
-  const cPosition = entity.getComponent(PositionComponent);
-
-  const [label, setLabel] = React.useState(
-    entity.getComponent(UILabelComponent).value
+  const [{ label, object3d, boundingBox }, sync] = DRMT.useStateFromComponentMap(
+    entity,
+    stateComponentMap
   );
 
-  gameLoop.useTick(() => {
-    const compo = entity.getComponent(UILabelComponent);
-    if (compo) {
-      const newValue = compo.value;
-      if (newValue !== label) {
-        setLabel(newValue);
-      }
-    }
-  });
-
-
-  const [object3d, setObject3d] = React.useState();
-  gameLoop.useTick(() => {
-    const compo = entity.getComponent(Object3DComponent);
-    if (compo) {
-      const value = compo.value;
-      if (value !== object3d) {
-        setObject3d(value);
-      }
-    }
-  });
-
-  /** @type [THREE.Vector3, (value: THREE.Vector3) => void] */
-  const [boundingBox, setBoundingBox] = React.useState();
-  gameLoop.useTick(() => {
-    const compo = entity.getComponent(BoundingBoxComponent);
-    if (compo) {
-      /** @type THREE.Vector3 */
-      const value = compo.value;
-      if (value !== boundingBox) {
-        setBoundingBox(value);
-      }
-    }
-  });
-
   const ref = React.useRef(null);
+
+  gameLoop.useTick(
+    /**
+     * @type any
+     */ (sync)
+  );
 
   gameLoop.useTick(() => {
     if (ref.current) {
@@ -97,6 +73,7 @@ export const Entity = ({ entity }) => {
   // TODO position camera accounting for size of avatar bounding box
   camera.position.set(0, 0, 4);
 
+  const cPosition = entity.getComponent(PositionComponent);
   const position = cPosition ? cPosition.value : [0, 0, 0];
 
   return (
@@ -110,7 +87,7 @@ export const Entity = ({ entity }) => {
           {label}
         </h3>
       </Html>
-      {object3d && <primitive object={object3d}/>}
+      {object3d && <primitive object={object3d} />}
     </group>
   );
 };
