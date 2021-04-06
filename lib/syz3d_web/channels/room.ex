@@ -36,7 +36,10 @@ defmodule Syz3dWeb.RoomChannel do
 
   def handle_info({:kill_zombies, room_slug}, socket) do
     zombie_list = Presence.list_zombies(socket, Map.keys(Player.Collection.select_by_room(room_slug)))
-    Enum.each(zombie_list, fn id ->
+    live_zombie_list = Enum.filter(zombie_list, fn id ->
+      Player.Collection.get(id).is_online
+    end)
+    Enum.each(live_zombie_list, fn id ->
       Player.Collection.update(id, fn player ->
         case player do
           %{is_online: true} -> Map.merge(player, %{is_online: false, offline_at: DateTime.utc_now()})
@@ -44,11 +47,13 @@ defmodule Syz3dWeb.RoomChannel do
         end
       end)
     end)
-    removes = for player_id <- zombie_list, into: %{} do
+    removes = for player_id <- live_zombie_list, into: %{} do
       {Player.make_entity_id(player_id), true}
     end
     diff = %World.Diff{remove: removes}
-    broadcast!(socket, "world_diff", %{body: diff})
+    if length(live_zombie_list) > 0 do
+      broadcast!(socket, "world_diff", %{body: diff})
+    end
     World.apply_diff(diff)
     {:noreply, socket}
   end
