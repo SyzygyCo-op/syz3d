@@ -55,13 +55,10 @@ export class StateSystem extends DRMT.System {
         write: (compo) => !!compo,
       })
       .registerComponent("player_name", UILabelComponent)
-      .registerComponent("avatar_asset_url", GltfUrlComponent, {
+      .registerComponent("glft_url", GltfUrlComponent, {
         read: (compo, data) => {
           if (
-            compo &&
-            /**
-             * @type any
-             */ (compo).value !== data
+            compo
           ) {
             /**
              * @type any

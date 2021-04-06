@@ -10,7 +10,7 @@ export class PlayerState {
   /**
    * @type string?
    */
-  avatar_asset_url = null;
+  glft_url = null;
   position = [0, 0, 0];
   rotation = [0, 0, 0];
   spin = [0, 0, 0];

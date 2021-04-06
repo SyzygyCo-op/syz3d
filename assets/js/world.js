@@ -48,6 +48,6 @@ export function createLocalPlayer() {
   world.getSystem(StateSystem).createLocalPlayer({
     player_name: getPlayerName(),
     spin: [0, 0.0001, 0],
-    avatar_asset_url: "/3d/PokemonHaunter/model.glb",
+    glft_url: "/3d/PokemonHaunter/model.glb",
   });
 }

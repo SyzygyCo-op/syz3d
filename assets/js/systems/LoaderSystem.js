@@ -28,6 +28,8 @@ export class LoaderSystem extends DRMT.System {
   }
 }
 
+// TODO unit-test below code
+
 const urlMap = new Map();
 const gltfLoader = new GLTFLoader();
 
