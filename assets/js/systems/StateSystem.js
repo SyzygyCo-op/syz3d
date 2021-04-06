@@ -76,8 +76,7 @@ export class StateSystem extends DRMT.System {
       })
       .registerComponent("bump", BumpComponent)
       .registerComponent("rotation", RotationComponent, {
-        // Only send initial value
-        writeCache: (arr) => !!arr,
+        writeCache: (arr) => arr && arr.join(","),
       })
       .registerComponent("spin", SpinComponent, {
         writeCache: (arr) => arr && arr.join(","),
@@ -90,7 +89,7 @@ export class StateSystem extends DRMT.System {
   }
 
   execute(delta, time) {
-    if (queryHasChanges(this.queries.toRender)) {
+    if (this.queries.toRender.results.length > 0) {
       this.observable.setEntitiesToRender(this.queries.toRender.results);
     }
 
@@ -122,11 +121,7 @@ export class StateSystem extends DRMT.System {
       this.correspondent.consumeDiff({
         // TODO make methods for sythesizing diffs
         upsert: {
-          [getPlayerEntityId()]: {
-            is_player: true,
-            is_local: true,
-            ...this.observable.localPlayer.request,
-          },
+          [getPlayerEntityId()]: this.observable.localPlayer.request
         },
         remove: {},
       });
@@ -141,8 +136,7 @@ export class StateSystem extends DRMT.System {
    */
   createLocalPlayer(partialPlayerData) {
     this.correspondent
-      .createEntity(getPlayerEntityId())
-      .addComponent(LocalPlayerTag);
+      .createEntity(getPlayerEntityId());
     this.observable.localPlayer.setRequestPart(partialPlayerData);
   }
 
@@ -151,17 +145,8 @@ export class StateSystem extends DRMT.System {
    * TODO make this interface easier to import? or put StateSystem in library?
    */
   updateWorld(diff) {
+    delete diff.upsert[getPlayerEntityId()];
     this.correspondent.consumeDiff(diff).updateCache(this.worldCache, diff);
   }
 }
 
-/**
- * @param {DRMT.System['queries'][""]} query
- */
-function queryHasChanges(query) {
-  return (
-    (query.added && query.added.length > 0) ||
-    (query.removed && query.removed.length > 0) ||
-    (query.changed && query.changed.length > 0)
-  );
-}

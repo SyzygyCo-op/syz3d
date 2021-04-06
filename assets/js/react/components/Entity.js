@@ -1,11 +1,10 @@
 import * as DRMT from "dreamt";
 import * as React from "react";
-import * as THREE from "three";
+// import * as THREE from "three";
 import * as R3F from "react-three-fiber";
 import {
   PositionComponent,
-  RotationComponent,
-  BumpComponent,
+  // BumpComponent,
   UILabelComponent,
   Object3DComponent,
   BoundingBoxComponent,
@@ -13,14 +12,16 @@ import {
 import { Html } from "@react-three/drei";
 import { gameLoop } from "../../world";
 
-const bumpMaxScale = new THREE.Vector3(2, 2, 2);
-const bumpMinScale = new THREE.Vector3(1, 1, 1);
+// const bumpMaxScale = new THREE.Vector3(2, 2, 2);
+// const bumpMinScale = new THREE.Vector3(1, 1, 1);
 
 const stateComponentMap = {
   label: UILabelComponent,
   object3d: Object3DComponent,
-  boundingBox: BoundingBoxComponent
+  boundingBox: BoundingBoxComponent,
 };
+
+const debug = false;
 
 /**
  * React-THREE-Fiber component that renders an entity.
@@ -28,10 +29,27 @@ const stateComponentMap = {
  * @type React.ComponentType<{entity:  DRMT.Entity}>
  */
 export const Entity = ({ entity }) => {
-  const [{ label, object3d, boundingBox }, sync] = DRMT.useStateFromComponentMap(
-    entity,
-    stateComponentMap
-  );
+
+  const entityId = React.useMemo(() => entity.id, [entity]);
+  React.useEffect(() => {
+    if (debug) {
+      console.log(
+        "mounted",
+        entityId,
+        entity.getComponent(UILabelComponent).value
+      );
+      return () => console.log("unmounting", entityId);
+    }
+  }, []);
+
+  const [
+    { label, object3d, boundingBox },
+    sync,
+  ] = DRMT.useStateFromComponentMap(entity, stateComponentMap);
+
+  React.useEffect(() => {
+    if(debug) console.log("rerender", entityId, label, object3d, boundingBox);
+  },[entity, label, object3d, boundingBox])
 
   const ref = React.useRef(null);
 
@@ -41,32 +59,25 @@ export const Entity = ({ entity }) => {
      */ (sync)
   );
 
-  gameLoop.useTick(() => {
-    if (ref.current) {
-      const rotation = /**
-       * @type THREE.Euler
-       */ (ref.current.rotation);
-      const scale = /**
-       * @type THREE.Vector3
-       */ (ref.current.scale);
+  // gameLoop.useTick(() => {
+  //   // console.log("tick", entity.id);
+  //   if (ref.current) {
+  //     const scale = /**
+  //      * @type THREE.Vector3
+  //      */ (ref.current.scale);
 
-      // TODO is it necessary to have a RotationComponent now that there's an Object3DComponent?
-      const cRotation = entity.getComponent(RotationComponent);
-      const cBump = entity.getComponent(BumpComponent);
-      if (cRotation) {
-        rotation.set.apply(rotation, cRotation.value);
-      }
+  //     const cBump = entity.getComponent(BumpComponent);
 
-      if (cBump) {
-        const alpha =
-          cBump.value < 0.5
-            ? Math.pow(cBump.value * 2, 2)
-            : Math.pow((cBump.value - 0.5) * 2, 2);
-        const v = cBump.value < 0.5 ? bumpMaxScale : bumpMinScale;
-        scale.lerp(v, alpha);
-      }
-    }
-  });
+  //     if (cBump) {
+  //       const alpha =
+  //         cBump.value < 0.5
+  //           ? Math.pow(cBump.value * 2, 2)
+  //           : Math.pow((cBump.value - 0.5) * 2, 2);
+  //       const v = cBump.value < 0.5 ? bumpMaxScale : bumpMinScale;
+  //       scale.lerp(v, alpha);
+  //     }
+  //   }
+  // });
 
   const { camera } = R3F.useThree();
 

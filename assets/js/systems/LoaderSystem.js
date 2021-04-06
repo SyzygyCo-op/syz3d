@@ -1,7 +1,11 @@
-import * as DRMT from 'dreamt';
-import * as THREE from 'three';
-import {Object3DComponent, GltfUrlComponent, BoundingBoxComponent} from '../components';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import * as DRMT from "dreamt";
+import * as THREE from "three";
+import {
+  Object3DComponent,
+  GltfUrlComponent,
+  BoundingBoxComponent,
+} from "../components";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 const tempBox3 = new THREE.Box3();
 
@@ -9,61 +13,96 @@ const tempVec3 = new THREE.Vector3();
 
 export class LoaderSystem extends DRMT.System {
   static queries = {
-    glftInit: {
-      components: [GltfUrlComponent, DRMT.Not(Object3DComponent)]
-    },
-    glftChanged: {
+    glftUrls: {
       components: [GltfUrlComponent],
       listen: {
-        changed: true
-      }
-    }
-  }
+        added: true,
+        changed: true,
+      },
+    },
+  };
 
   execute() {
-    this.queries.glftInit.results.forEach(entityLoadGltf);
-    this.queries.glftChanged.changed.forEach(entityReloadGltf);
+    this.queries.glftUrls.added.forEach(entityReloadGltf);
+    this.queries.glftUrls.changed.forEach(entityReloadGltf);
   }
 }
 
-/** @param {DRMT.Entity} entity */
-function entityLoadGltf (entity) {
+const urlMap = new Map();
+const gltfLoader = new GLTFLoader();
+
+const cloneValue = ({ value }) => ({ value: value.clone() });
+
+/**
+ * @param {DRMT.Entity} entity
+ */
+async function entityReloadGltf(entity) {
+  if (!entity.hasComponent(GltfUrlComponent)) {
+    console.error("entity", entity.id, "was expected to have GltfUrlComponent");
+    return;
+  }
+
   const url = entity.getComponent(GltfUrlComponent).value;
-  const loader = new GLTFLoader()
-  loader.load(url, onLoad, onProgress, onError);
 
-  function onLoad (result) {
-    tempBox3.setFromObject(result.scene);
-    tempBox3.getSize(tempVec3);
+  const result = await loadGltf(url);
 
-    entity.addComponent(Object3DComponent, { value: result.scene } )
-    entity.addComponent(BoundingBoxComponent, { value: tempVec3 })
-  }
+  tempBox3.setFromObject(result.scene);
+  tempBox3.getSize(tempVec3);
 
-  function onProgress () {}
-
-  function onError (error) {
-    console.error("Error loading GLTF", url, error.toString());
-  }
+  upsertComponent(
+    entity,
+    Object3DComponent,
+    { value: result.scene },
+    cloneValue
+  );
+  upsertComponent(
+    entity,
+    BoundingBoxComponent,
+    { value: tempVec3 },
+    cloneValue
+  );
 }
 
-/** @param {DRMT.Entity} entity */
-function entityReloadGltf (entity) {
-  const url = entity.getComponent(GltfUrlComponent).value;
-  const loader = new GLTFLoader()
-  loader.load(url, onLoad, onProgress, onError);
-
-  function onLoad (result) {
-    tempBox3.setFromObject(result.scene);
-    tempBox3.getSize(tempVec3);
-
-    entity.getMutableComponent(Object3DComponent).value = result.scene;
-    entity.getMutableComponent(BoundingBoxComponent).value = tempVec3;
+/**
+ * @param {string} url
+ */
+function loadGltf(url) {
+  if (!urlMap.has(url)) {
+    console.error("Looks like you forgot to call preloadGltf? url:", url);
   }
+  return urlMap.get(url);
+}
 
-  function onProgress () {}
+/**
+ * @param {string} url
+ */
+export function preloadGltf(url) {
+  return new Promise((resolve, reject) => {
+    gltfLoader.load(url, onSuccess, onProgress, reject);
 
-  function onError (error) {
-    console.error("Error loading GLTF", url, error.toString());
+    function onSuccess(result) {
+      urlMap.set(url, result);
+    }
+
+    function onProgress() {}
+
+    function onError(error) {
+      console.error("Error loading GLTF", url, error.toString());
+      reject(error);
+    }
+  });
+}
+
+/**
+ * @param {DRMT.Entity} entity
+ * @param {DRMT.ComponentConstructor} Component
+ * @param {any} data
+ * @param {(data: any) => any} [clone]
+ */
+function upsertComponent(entity, Component, data, clone = (x) => x) {
+  if (entity.hasComponent(Component)) {
+    Object.assign(entity.getMutableComponent(Component), clone(data));
+  } else {
+    entity.addComponent(Component, data);
   }
 }

@@ -1,8 +1,10 @@
 import * as DRMT from "dreamt";
 import * as MOBX from "mobx";
 import * as config from "../config";
+import { preloadGltf } from "../systems/LoaderSystem";
 
 export class PlayerState {
+  is_player = true;
   render_to_canvas = true;
   player_name = "";
   /**
@@ -29,6 +31,10 @@ export class GameAsset {
     this.previewImageUrl = previewImageUrl;
     this.assetUrl = assetUrl;
   }
+
+  preload() {
+    return preloadGltf(this.assetUrl);
+  }
 }
 
 export const avatars = [
@@ -39,6 +45,10 @@ export const avatars = [
   ),
   new GameAsset("/3d/ShenLong/preview.png", "/3d/ShenLong/model.glb"),
 ];
+
+export async function preloadAvatars() {
+  await Promise.all(avatars.map((a) => a.preload()));
+}
 
 /**
  * @typedef {'EDIT_MY_AVATAR' | 'SETTINGS'} ModalID
