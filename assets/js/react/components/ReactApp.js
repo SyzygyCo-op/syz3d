@@ -4,7 +4,7 @@ import { Canvas, invalidate } from "react-three-fiber";
 import * as UI from "./ui";
 import { ObservableState, avatars } from "../../state";
 import { Entity } from "./Entity";
-import { gameLoop } from '../../world';
+import { gameLoop } from "../../world";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -37,22 +37,24 @@ const EntitySet = observer(
    * }} props
    */
   ({ entities }) => {
-    const components = [];
-    entities.forEach((entity) => {
-      components.push(<Entity entity={entity} key={entity.id} />);
-    });
-    return <>{components}</>;
+    return (
+      <>
+        {entities.map((entity) => {
+          return <Entity entity={entity} key={entity.id} />;
+        })}
+      </>
+    );
   }
 );
 
-const invalidateOnTick = () => invalidate()
+const invalidateOnTick = () => invalidate();
 
 export const ReactApp = observer(
   /**
    * @param {{ state: ObservableState }} props
    */
   ({ state }) => {
-    gameLoop.useTick(invalidateOnTick)
+    gameLoop.useTick(invalidateOnTick);
     return (
       <ErrorBoundary>
         <div className="App">

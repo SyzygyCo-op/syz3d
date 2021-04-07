@@ -57,9 +57,7 @@ export class StateSystem extends DRMT.System {
       .registerComponent("player_name", UILabelComponent)
       .registerComponent("glft_url", GltfUrlComponent, {
         read: (compo, data) => {
-          if (
-            compo
-          ) {
+          if (compo) {
             /**
              * @type any
              */ (compo).value = data;
@@ -86,11 +84,14 @@ export class StateSystem extends DRMT.System {
   }
 
   execute(delta, time) {
-    if (this.queries.toRender.results.length > 0) {
-      this.observable.setEntitiesToRender(this.queries.toRender.results);
+    const entitiesToRender = this.queries.toRender.results;
+    if (this.queries.toRender.removed.length > 0) {
+      this.observable.resetEntitiesToRender(entitiesToRender);
+    } else {
+      this.observable.setEntitiesToRender(entitiesToRender);
     }
 
-    if (time - this.worldDiffTimestamp >= 200) {
+    if (time - this.worldDiffTimestamp >= 1000) {
       const diff = this.correspondent.produceDiff(this.worldCache);
       if (!DRMT.Correspondent.isEmptyDiff(diff)) {
         this.worldDirty = true;
@@ -118,7 +119,7 @@ export class StateSystem extends DRMT.System {
       this.correspondent.consumeDiff({
         // TODO make methods for sythesizing diffs
         upsert: {
-          [getPlayerEntityId()]: this.observable.localPlayer.request
+          [getPlayerEntityId()]: this.observable.localPlayer.request,
         },
         remove: {},
       });
@@ -132,9 +133,8 @@ export class StateSystem extends DRMT.System {
    * @param {Partial<PlayerState>} partialPlayerData
    */
   createLocalPlayer(partialPlayerData) {
-    this.correspondent
-      .createEntity(getPlayerEntityId());
-    this.observable.localPlayer.setRequestPart(partialPlayerData);
+    this.correspondent.createEntity(getPlayerEntityId());
+    this.observable.createLocalPlayer(partialPlayerData);
   }
 
   /**
@@ -146,4 +146,3 @@ export class StateSystem extends DRMT.System {
     this.correspondent.consumeDiff(diff).updateCache(this.worldCache, diff);
   }
 }
-

@@ -56,30 +56,45 @@ export async function preloadAvatars() {
 
 export class ObservableState {
   /**
-   * @type Set<DRMT.Entity>
+   * @type DRMT.Entity[]
    */
-  entitiesToRender = new Set();
+  entitiesToRender = [];
 
   /**
    * @type {null | ModalID}
    */
   openModalId = null;
 
-  localPlayer = MOBX.makeAutoObservable(
-    new DRMT.DualModel(() => new PlayerState(), {
-      debounceRequestMs: config.DEBOUNCE_MS_ON_CHANGE_INPUT,
-    })
-  );
+  localPlayer = new DRMT.DualModel(() => new PlayerState(), {
+    debounceRequestMs: config.DEBOUNCE_MS_ON_CHANGE_INPUT,
+  });
+
+  constructor() {
+    MOBX.makeAutoObservable(this);
+  }
+
+  /**
+   * @param {Partial<PlayerState>} partialPlayerData
+   */
+  createLocalPlayer(partialPlayerData) {
+    this.localPlayer.setRequestPart(partialPlayerData);
+  }
 
   /**
    * @param {DRMT.Entity[]} entities
    */
   setEntitiesToRender(entities) {
-    replaceSetContents(this.entitiesToRender, entities);
+    entities.forEach((entity, index) => {
+      this.entitiesToRender[index] = entity;
+    })
   }
 
-  constructor() {
-    MOBX.makeAutoObservable(this);
+  /**
+   * @param {DRMT.Entity[]} entities
+   */
+  resetEntitiesToRender(entities) {
+    this.entitiesToRender.length = 0;
+    this.setEntitiesToRender(entities);
   }
 
   /**
@@ -90,13 +105,3 @@ export class ObservableState {
   }
 }
 
-/**
- * @param {Set}   set
- * @param {any[]} source
- */
-function replaceSetContents(set, source) {
-  set.clear();
-  source.forEach((entity) => {
-    set.add(entity);
-  });
-}
