@@ -4,7 +4,17 @@ import "phoenix_html";
 import NProgress from "nprogress";
 import { gameLoop, createLocalPlayer } from "./world";
 import { startReactApp } from "./react";
-import {preloadAvatars} from "./state";
+import { preloadAvatars } from "./state";
+import { configure } from "mobx";
+
+configure({
+  enforceActions: "always",
+  computedRequiresReaction: true,
+  reactionRequiresObservable: true,
+  // Sometimes Systems need to access observables
+  observableRequiresReaction: false,
+  useProxies: "never"
+});
 
 NProgress.start();
 
