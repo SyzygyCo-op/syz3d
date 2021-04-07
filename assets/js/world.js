@@ -4,6 +4,7 @@ import {
   ClientSystem,
   AnimationSystem,
   LoaderSystem,
+  InputSystem
 } from "./systems";
 import {
   UILabelComponent,
@@ -23,6 +24,7 @@ import { GAME_LOOP_MIN_FREQUENCY_HZ } from "./config";
 
 export const world = new DRMT.World()
   .registerComponent(PositionComponent)
+  .registerComponent(RotationComponent)
   .registerComponent(GltfUrlComponent)
   .registerComponent(Object3DComponent)
   .registerComponent(BoundingBoxComponent)
@@ -30,24 +32,24 @@ export const world = new DRMT.World()
   .registerComponent(PlayerTag)
   .registerComponent(LocalPlayerTag)
   .registerComponent(SpinComponent)
-  .registerComponent(RotationComponent)
   .registerComponent(BumpComponent)
   .registerComponent(RenderToCanvasTag)
   .registerSystem(ClientSystem)
   .registerSystem(LoaderSystem)
   .registerSystem(AnimationSystem)
-  .registerSystem(StateSystem);
+  .registerSystem(StateSystem)
+  .registerSystem(InputSystem);
 
 export const gameLoop = new DRMT.GameLoop(
   world.execute.bind(world),
   GAME_LOOP_MIN_FREQUENCY_HZ,
-  { pauseOnWindowBlur: true }
+  // { pauseOnWindowBlur: true }
 );
 
 export function createLocalPlayer() {
   world.getSystem(StateSystem).createLocalPlayer({
     player_name: getPlayerName(),
-    spin: [0, 0.0001, 0],
+    spin: [0, 0.01, 0],
     glft_url: "/3d/PokemonHaunter/model.glb",
   });
 }

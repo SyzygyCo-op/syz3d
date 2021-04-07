@@ -1,19 +1,15 @@
 import * as DRMT from "dreamt";
 import * as React from "react";
-// import * as THREE from "three";
 import * as R3F from "react-three-fiber";
 import {
   PositionComponent,
-  // BumpComponent,
+  RotationComponent,
   UILabelComponent,
   Object3DComponent,
   BoundingBoxComponent,
 } from "../../components";
 import { Html } from "@react-three/drei";
 import { gameLoop } from "../../world";
-
-// const bumpMaxScale = new THREE.Vector3(2, 2, 2);
-// const bumpMinScale = new THREE.Vector3(1, 1, 1);
 
 const stateComponentMap = {
   label: UILabelComponent,
@@ -51,6 +47,10 @@ export const Entity = ({ entity }) => {
     if(debug) console.log("rerender", entityId, label, object3d, boundingBox);
   },[entity, label, object3d, boundingBox])
 
+  if(debug) {
+    console.count("render")
+  }
+
   const ref = React.useRef(null);
 
   gameLoop.useTick(
@@ -59,36 +59,22 @@ export const Entity = ({ entity }) => {
      */ (sync)
   );
 
-  // gameLoop.useTick(() => {
-  //   // console.log("tick", entity.id);
-  //   if (ref.current) {
-  //     const scale = /**
-  //      * @type THREE.Vector3
-  //      */ (ref.current.scale);
-
-  //     const cBump = entity.getComponent(BumpComponent);
-
-  //     if (cBump) {
-  //       const alpha =
-  //         cBump.value < 0.5
-  //           ? Math.pow(cBump.value * 2, 2)
-  //           : Math.pow((cBump.value - 0.5) * 2, 2);
-  //       const v = cBump.value < 0.5 ? bumpMaxScale : bumpMinScale;
-  //       scale.lerp(v, alpha);
-  //     }
-  //   }
-  // });
-
   const { camera } = R3F.useThree();
 
   // TODO position camera accounting for size of avatar bounding box
   camera.position.set(0, 0, 4);
 
-  const cPosition = entity.getComponent(PositionComponent);
-  const position = cPosition ? cPosition.value : [0, 0, 0];
+  const position = entity.getComponent(PositionComponent).value;
+  const rotation = entity.getComponent(RotationComponent).value;
+  gameLoop.useTick(() => {
+    if (ref.current) {
+      ref.current.position.copy(position);
+      ref.current.rotation.copy(rotation);
+    }
+  });
 
   return (
-    <group ref={ref} position={position} castShadow receiveShadow>
+    <group ref={ref} castShadow receiveShadow>
       <Html position-y={boundingBox && boundingBox.y}>
         <h3
           style={{

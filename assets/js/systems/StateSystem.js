@@ -1,4 +1,5 @@
 import * as DRMT from "dreamt";
+import { Euler, Vector3 } from "three";
 import {
   PlayerTag,
   LocalPlayerTag,
@@ -23,14 +24,6 @@ export class StateSystem extends DRMT.System {
         changed: true, // Detect that any of the components on the query has changed
       },
     },
-    localPlayer: {
-      components: [LocalPlayerTag],
-      listen: {
-        added: true,
-        removed: true,
-        changed: true,
-      },
-    },
   };
 
   observable = new ObservableState();
@@ -38,7 +31,7 @@ export class StateSystem extends DRMT.System {
   /**
    * @type {?DRMT.IEntityComponentDiff}
    */
-  worldDiffFromLastFrame = null;
+  diffForClient = null;
 
   init() {
     this.correspondent = new DRMT.Correspondent(this.world)
@@ -47,10 +40,6 @@ export class StateSystem extends DRMT.System {
         write: (compo) => !!compo,
       })
       .registerComponent("is_player", PlayerTag, {
-        read: () => {},
-        write: (compo) => !!compo,
-      })
-      .registerComponent("is_local", LocalPlayerTag, {
         read: () => {},
         write: (compo) => !!compo,
       })
@@ -69,14 +58,44 @@ export class StateSystem extends DRMT.System {
            * @type any
            */ (compo).value,
       })
-      .registerComponent("bump", BumpComponent)
-      .registerComponent("rotation", RotationComponent, {
-        writeCache: (arr) => arr && arr.join(","),
-      })
-      .registerComponent("spin", SpinComponent, {
-        writeCache: (arr) => arr && arr.join(","),
-      })
       .registerComponent("position", PositionComponent, {
+        read: /**
+         * @param {DRMT.Component<any> & { value: Vector3 }} compo
+         */ (compo, data) => {
+          if (compo && compo.value) {
+            const localPosition = compo.value;
+            localPosition.set.apply(localPosition, data);
+          }
+        },
+        write: /**
+         * @param {DRMT.Component<any> & { value: Vector3 }} compo
+         */ (compo) => {
+          return compo && compo.value && compo.value.toArray();
+        },
+        writeCache: (data) => {
+          return JSON.stringify(data);
+        },
+      })
+      .registerComponent("rotation", RotationComponent, {
+        read: /**
+         * @param {DRMT.Component<any> & { value: Euler }} compo
+         */ (compo, data) => {
+          if (compo && compo.value) {
+            const localRotation = compo.value;
+            localRotation.set.apply(localRotation, data);
+          }
+        },
+        write: /**
+         * @param {DRMT.Component<any> & { value: Euler }} compo
+         */ (compo) => {
+          return compo && compo.value && compo.value.toArray();
+        },
+        writeCache: (data) => {
+          return JSON.stringify(data);
+        },
+      })
+      .registerComponent("bump", BumpComponent)
+      .registerComponent("spin", SpinComponent, {
         writeCache: (arr) => arr && arr.join(","),
       });
     this.worldCache = {};
@@ -91,11 +110,12 @@ export class StateSystem extends DRMT.System {
       this.observable.setEntitiesToRender(entitiesToRender);
     }
 
-    if (time - this.worldDiffTimestamp >= 1000) {
+    this.worldDirty = false;
+    if (time - this.worldDiffTimestamp >= 200) {
       const diff = this.correspondent.produceDiff(this.worldCache);
       if (!DRMT.Correspondent.isEmptyDiff(diff)) {
         this.worldDirty = true;
-        this.worldDiffFromLastFrame = diff;
+        this.diffForClient = diff;
         this.correspondent.updateCache(this.worldCache, diff);
         this.worldDiffTimestamp = time;
 
@@ -110,8 +130,6 @@ export class StateSystem extends DRMT.System {
              */ (localPlayerData)
           );
         }
-      } else {
-        this.worldDirty = false;
       }
     }
 
@@ -133,15 +151,17 @@ export class StateSystem extends DRMT.System {
    * @param {Partial<PlayerState>} partialPlayerData
    */
   createLocalPlayer(partialPlayerData) {
-    this.correspondent.createEntity(getPlayerEntityId());
+    this.correspondent
+      .createEntity(getPlayerEntityId())
+      .addComponent(LocalPlayerTag);
     this.observable.createLocalPlayer(partialPlayerData);
   }
 
   /**
    * @param {DRMT.IEntityComponentDiff} diff
-   * TODO make this interface easier to import? or put StateSystem in library?
    */
   updateWorld(diff) {
+    // TODO change this vvv if the server ever becomes authoritative
     delete diff.upsert[getPlayerEntityId()];
     this.correspondent.consumeDiff(diff).updateCache(this.worldCache, diff);
   }

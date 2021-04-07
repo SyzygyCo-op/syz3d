@@ -1,5 +1,6 @@
 import * as DRMT from "dreamt";
 import * as MOBX from "mobx";
+import {Euler, Vector3} from "three";
 import * as config from "../config";
 import { preloadGltf } from "../systems/LoaderSystem";
 
@@ -11,8 +12,8 @@ export class PlayerState {
    * @type string?
    */
   glft_url = null;
-  position = [0, 0, 0];
-  rotation = [0, 0, 0];
+  position = new Vector3();
+  rotation = new Euler();
   spin = [0, 0, 0];
 }
 

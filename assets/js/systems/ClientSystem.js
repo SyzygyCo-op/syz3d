@@ -9,7 +9,7 @@ export class ClientSystem extends DRMT.System {
   }
 
   /**
-   * @param {import("dreamt/dist/Correspondent").IEntityComponentDiff} diff
+   * @param {DRMT.IEntityComponentDiff} diff
    */
   _updateWorld(diff) {
     this._getState().updateWorld(diff);
@@ -20,7 +20,7 @@ export class ClientSystem extends DRMT.System {
   }
 
   _getWorldDiff() {
-    return this._getState().worldDiffFromLastFrame;
+    return this._getState().diffForClient;
   }
 
   init() {

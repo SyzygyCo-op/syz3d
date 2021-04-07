@@ -1,10 +1,11 @@
 import * as DRMT from "dreamt";
-import { SpinComponent, RotationComponent, BumpComponent, Object3DComponent } from "../components";
+import {Euler} from "three";
+import { SpinComponent, BumpComponent, RotationComponent } from "../components";
 
 export class AnimationSystem extends DRMT.System {
   static queries = {
     spinners: {
-      components: [SpinComponent, Object3DComponent],
+      components: [SpinComponent, RotationComponent],
     },
     bumpers: {
       components: [BumpComponent],
@@ -18,9 +19,9 @@ export class AnimationSystem extends DRMT.System {
   execute(_delta, time) {
     this.queries.spinners.results.forEach((entity) => {
       const spin = entity.getComponent(SpinComponent).value;
-      const rotation = /** @type any */(entity.getComponent(RotationComponent)).value;
-      const object3d = entity.getMutableComponent(Object3DComponent).value;
-      object3d.rotation.set(rotation[0], rotation[1] + getSpinAt(time, spin[1]), rotation[2] + getSpinAt(time, spin[2]));
+      /** @type Euler */
+      const rotation = entity.getMutableComponent(RotationComponent).value;
+      rotation.set(rotation.x + spin[0], rotation.y + spin[1], rotation.z + spin[2]);
     });
 
     this.queries.bumpers.results.forEach((entity) => {
@@ -30,12 +31,4 @@ export class AnimationSystem extends DRMT.System {
       }
     });
   }
-}
-/**
- * @param {number} time
- * @param {number} radiansPerTimeUnit
- * @returns number radians
- */
-function getSpinAt(time, radiansPerTimeUnit) {
-  return Math.PI * time * radiansPerTimeUnit;
 }
