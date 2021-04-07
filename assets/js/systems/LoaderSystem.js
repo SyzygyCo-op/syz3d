@@ -46,29 +46,24 @@ async function entityReloadGltf(entity) {
 
   const url = entity.getComponent(GltfUrlComponent).value;
 
-  const result = await loadGltf(url);
+  const result = await loadSceneFromGltf(url);
 
-  tempBox3.setFromObject(result.scene);
+  tempBox3.setFromObject(result);
   tempBox3.getSize(tempVec3);
 
   upsertComponent(
     entity,
     Object3DComponent,
-    { value: result.scene },
+    { value: result },
     cloneValue
   );
-  upsertComponent(
-    entity,
-    BoundingBoxComponent,
-    { value: tempVec3 },
-    cloneValue
-  );
+  upsertComponent(entity, BoundingBoxComponent, { value: tempVec3 }, cloneValue);
 }
 
 /**
  * @param {string} url
  */
-function loadGltf(url) {
+function loadSceneFromGltf(url) {
   if (!urlMap.has(url)) {
     console.error("Looks like you forgot to call preloadGltf? url:", url);
   }
@@ -80,10 +75,11 @@ function loadGltf(url) {
  */
 export function preloadGltf(url) {
   return new Promise((resolve, reject) => {
-    gltfLoader.load(url, onSuccess, onProgress, reject);
+    gltfLoader.load(url, onSuccess, onProgress, onError);
 
     function onSuccess(result) {
-      urlMap.set(url, result);
+      urlMap.set(url, result.scene);
+      resolve(result.scene);
     }
 
     function onProgress() {}
@@ -103,7 +99,10 @@ export function preloadGltf(url) {
  */
 function upsertComponent(entity, Component, data, clone = (x) => x) {
   if (entity.hasComponent(Component)) {
-    Object.assign(entity.getMutableComponent(Component), clone(data));
+    Object.assign(
+      entity.getMutableComponent(Component),
+      clone(data)
+    );
   } else {
     entity.addComponent(Component, data);
   }
