@@ -1,6 +1,6 @@
 import * as DRMT from "dreamt";
 import * as MOBX from "mobx";
-import {Euler, Vector3} from "three";
+import { Euler, Vector3 } from "three";
 import * as config from "../config";
 import { preloadGltf } from "../systems/LoaderSystem";
 
@@ -66,9 +66,11 @@ export class ObservableState {
    */
   openModalId = null;
 
-  localPlayer = new DRMT.DualModel(() => new PlayerState(), {
-    debounceRequestMs: config.DEBOUNCE_MS_ON_CHANGE_INPUT,
-  });
+  localPlayer = MOBX.makeAutoObservable(
+    new DRMT.DualModel(() => new PlayerState(), {
+      debounceRequestMs: config.DEBOUNCE_MS_ON_CHANGE_INPUT,
+    })
+  );
 
   constructor() {
     MOBX.makeAutoObservable(this);
@@ -87,7 +89,7 @@ export class ObservableState {
   setEntitiesToRender(entities) {
     entities.forEach((entity, index) => {
       this.entitiesToRender[index] = entity;
-    })
+    });
   }
 
   /**
@@ -105,4 +107,3 @@ export class ObservableState {
     this.openModalId = modalId;
   }
 }
-
