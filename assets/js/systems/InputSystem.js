@@ -23,6 +23,9 @@ export class InputSystem extends DRMT.System {
   keyDownUp = false;
   keyDownDown = false;
 
+  /** @type HTMLCanvasElement */
+  canvas = null;
+
   /**
    * @param {KeyboardEvent} evt
    */
@@ -61,16 +64,16 @@ export class InputSystem extends DRMT.System {
       this.keyDownLeft = false;
     });
 
-    document.addEventListener("mousedown", () => {
-      if (document.pointerLockElement === document.body) {
+    document.addEventListener("mousedown", (evt) => {
+      if (document.pointerLockElement) {
         document.exitPointerLock();
-      } else {
-        document.body.requestPointerLock();
+      } else if(evt.target === this.canvas) {
+        this.canvas.requestPointerLock();
       }
     });
 
     document.body.addEventListener("mousemove", (event) => {
-      if (document.pointerLockElement === document.body) {
+      if (document.pointerLockElement) {
         this.turnX = event.movementY / 200;
         this.turnY = event.movementX / 200;
       }
@@ -78,6 +81,8 @@ export class InputSystem extends DRMT.System {
   }
 
   execute(delta, time) {
+    this.canvas = document.getElementsByTagName('canvas')[0];
+
     this.queries.localPlayer.results.forEach((entity) => {
       if (this.keyDownLeft) {
         updateRotation(
