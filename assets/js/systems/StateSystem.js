@@ -33,6 +33,8 @@ export class StateSystem extends DRMT.System {
    */
   diffForClient = null;
 
+  isCameraReady = false;
+
   init() {
     this.correspondent = new DRMT.Correspondent(this.world)
       .registerComponent("render_to_canvas", RenderToCanvasTag, {

@@ -1,6 +1,5 @@
 import * as DRMT from "dreamt";
 import * as React from "react";
-import * as R3F from "react-three-fiber";
 import {
   PositionComponent,
   RotationComponent,
@@ -25,7 +24,6 @@ const debug = false;
  * @type React.ComponentType<{entity:  DRMT.Entity}>
  */
 export const Entity = ({ entity }) => {
-
   const entityId = React.useMemo(() => entity.id, [entity]);
   React.useEffect(() => {
     if (debug) {
@@ -44,11 +42,11 @@ export const Entity = ({ entity }) => {
   ] = DRMT.useStateFromComponentMap(entity, stateComponentMap);
 
   React.useEffect(() => {
-    if(debug) console.log("rerender", entityId, label, object3d, boundingBox);
-  },[entity, label, object3d, boundingBox])
+    if (debug) console.log("rerender", entityId, label, object3d, boundingBox);
+  }, [entity, label, object3d, boundingBox]);
 
-  if(debug) {
-    console.count("render")
+  if (debug) {
+    console.count("render");
   }
 
   const ref = React.useRef(null);
@@ -58,11 +56,6 @@ export const Entity = ({ entity }) => {
      * @type any
      */ (sync)
   );
-
-  const { camera } = R3F.useThree();
-
-  // TODO position camera accounting for size of avatar bounding box
-  camera.position.set(0, 0, 4);
 
   const position = entity.getComponent(PositionComponent).value;
   const rotation = entity.getComponent(RotationComponent).value;

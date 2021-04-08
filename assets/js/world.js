@@ -4,7 +4,8 @@ import {
   ClientSystem,
   AnimationSystem,
   LoaderSystem,
-  InputSystem
+  InputSystem,
+  CameraSystem
 } from "./systems";
 import {
   UILabelComponent,
@@ -38,6 +39,7 @@ export const world = new DRMT.World()
   .registerSystem(LoaderSystem)
   .registerSystem(AnimationSystem)
   .registerSystem(StateSystem)
+  .registerSystem(CameraSystem)
   .registerSystem(InputSystem);
 
 export const gameLoop = new DRMT.GameLoop(

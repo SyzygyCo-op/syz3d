@@ -3,8 +3,8 @@ import { observer } from "mobx-react-lite";
 import { Canvas, invalidate } from "react-three-fiber";
 import * as UI from "./ui";
 import { ObservableState, avatars } from "../../state";
-import { Entity } from "./Entity";
 import { gameLoop } from "../../world";
+import { Scene } from "./Scene";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -30,23 +30,6 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-const EntitySet = observer(
-  /**
-   * @param {{
-   *   entities: ObservableState['entitiesToRender'];
-   * }} props
-   */
-  ({ entities }) => {
-    return (
-      <>
-        {entities.map((entity) => {
-          return <Entity entity={entity} key={entity.id} />;
-        })}
-      </>
-    );
-  }
-);
-
 const invalidateOnTick = () => invalidate();
 
 export const ReactApp = observer(
@@ -55,6 +38,7 @@ export const ReactApp = observer(
    */
   ({ state }) => {
     gameLoop.useTick(invalidateOnTick);
+
     return (
       <ErrorBoundary>
         <div className="App">
@@ -64,9 +48,8 @@ export const ReactApp = observer(
             localPlayerName={state.localPlayer.actual.player_name}
           />
           <Canvas invalidateFrameloop>
-            <pointLight args={[0xffffff, 1, 100]} position={[3, 3, 3]} />
             <React.Suspense fallback={null}>
-              <EntitySet entities={state.entitiesToRender} />
+              <Scene entities={state.entitiesToRender} />
             </React.Suspense>
           </Canvas>
         </div>
