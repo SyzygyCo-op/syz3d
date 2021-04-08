@@ -5,7 +5,11 @@ import {
   PositionComponent,
   RotationComponent,
 } from "../components";
-import {GAME_LOOP_FREQUENCY_HZ, PLAYER_SPEED_MPS, PLAYER_ROTATION_SPEED_MPS} from '../config';
+import {
+  GAME_LOOP_FREQUENCY_HZ,
+  PLAYER_SPEED_MPS,
+  PLAYER_ROTATION_SPEED_MPS,
+} from "../config";
 
 export class InputSystem extends DRMT.System {
   static queries = {
@@ -56,15 +60,40 @@ export class InputSystem extends DRMT.System {
       this.keyDownRight = false;
       this.keyDownLeft = false;
     });
+
+    document.addEventListener("mousedown", () => {
+      if (document.pointerLockElement === document.body) {
+        document.exitPointerLock();
+      } else {
+        document.body.requestPointerLock();
+      }
+    });
+
+    document.body.addEventListener("mousemove", (event) => {
+      if (document.pointerLockElement === document.body) {
+        this.turnX = event.movementY / 200;
+        this.turnY = event.movementX / 200;
+      }
+    });
   }
 
   execute(delta, time) {
     this.queries.localPlayer.results.forEach((entity) => {
       if (this.keyDownLeft) {
-        updateRotation(entity, 0.0, PLAYER_ROTATION_SPEED_MPS / GAME_LOOP_FREQUENCY_HZ, 0);
+        updateRotation(
+          entity,
+          0.0,
+          PLAYER_ROTATION_SPEED_MPS / GAME_LOOP_FREQUENCY_HZ,
+          0
+        );
       }
       if (this.keyDownRight) {
-        updateRotation(entity, 0.0, -PLAYER_ROTATION_SPEED_MPS / GAME_LOOP_FREQUENCY_HZ, 0);
+        updateRotation(
+          entity,
+          0.0,
+          -PLAYER_ROTATION_SPEED_MPS / GAME_LOOP_FREQUENCY_HZ,
+          0
+        );
       }
       if (this.keyDownUp) {
         const rotation = entity.getComponent(RotationComponent).value;
@@ -76,6 +105,10 @@ export class InputSystem extends DRMT.System {
         const forwardVec = getForwardVector(rotation).multiplyScalar(-1);
         updatePosition(entity, forwardVec.x, forwardVec.y, forwardVec.z);
       }
+
+      updateRotation(entity, this.turnX, this.turnY, 0);
+      this.turnY = 0;
+      this.turnX = 0;
     });
   }
 }
