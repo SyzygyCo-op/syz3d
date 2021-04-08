@@ -6,6 +6,14 @@ defmodule Syz3d.Application do
   use Application
 
   def start(_type, _args) do
+    world_initial_data = %{
+      "river_island" => %{
+        "glft_url" => "/3d/RiverIsland/model.glb",
+        "position" => [0, 0, 0],
+        "rotation" => [0, 0, 0],
+        "render_to_canvas" => true
+      }
+    }
     children = [
       # Start the Ecto repository
       Syz3d.Repo,
@@ -18,7 +26,7 @@ defmodule Syz3d.Application do
       # Start the Endpoint (http/https)
       Syz3dWeb.Endpoint,
       # Start a worker by calling: Syz3d.Worker.start_link(arg)
-      {Syz3d.World, %{}},
+      {Syz3d.World, world_initial_data},
       {Syz3d.Player.Collection, %{}}
     ]
 

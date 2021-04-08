@@ -22,6 +22,7 @@ import {
 } from "./components";
 import { getPlayerName } from "./utils";
 import { GAME_LOOP_FREQUENCY_HZ } from "./config";
+import {Vector3} from "three";
 
 export const world = new DRMT.World()
   .registerComponent(PositionComponent)
@@ -51,7 +52,7 @@ export const gameLoop = new DRMT.GameLoop(
 export function createLocalPlayer() {
   world.getSystem(StateSystem).createLocalPlayer({
     player_name: getPlayerName(),
-    spin: [0, 0, 0],
+    position: new Vector3(0, 5, 0),
     glft_url: "/3d/PokemonHaunter/model.glb",
   });
 }

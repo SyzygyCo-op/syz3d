@@ -17,7 +17,7 @@ export class PlayerState {
   spin = [0, 0, 0];
 }
 
-export class GameAsset {
+export class Asset3D {
   previewImageUrl = "/images/missing_asset_preview.png";
   /**
    * @type string?
@@ -39,16 +39,14 @@ export class GameAsset {
 }
 
 export const avatars = [
-  new GameAsset("/3d/GrimReaper/preview.png", "/3d/GrimReaper/model.glb"),
-  new GameAsset(
-    "/3d/PokemonHaunter/preview.png",
-    "/3d/PokemonHaunter/model.glb"
-  ),
-  new GameAsset("/3d/ShenLong/preview.png", "/3d/ShenLong/model.glb"),
+  new Asset3D("/3d/GrimReaper/preview.png", "/3d/GrimReaper/model.glb"),
+  new Asset3D("/3d/PokemonHaunter/preview.png", "/3d/PokemonHaunter/model.glb"),
+  new Asset3D("/3d/ShenLong/preview.png", "/3d/ShenLong/model.glb"),
 ];
+const assets = [...avatars, new Asset3D("", "/3d/RiverIsland/model.glb")];
 
-export async function preloadAvatars() {
-  await Promise.all(avatars.map((a) => a.preload()));
+export async function preloadAssets() {
+  await Promise.all(assets.map((a) => a.preload()));
 }
 
 /**

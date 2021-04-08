@@ -4,7 +4,7 @@ import "phoenix_html";
 import NProgress from "nprogress";
 import { gameLoop, createLocalPlayer } from "./world";
 import { startReactApp } from "./react";
-import { preloadAvatars } from "./state";
+import { preloadAssets } from "./state";
 import { configure } from "mobx";
 
 configure({
@@ -13,15 +13,15 @@ configure({
   reactionRequiresObservable: true,
   // Sometimes Systems need to access observables
   observableRequiresReaction: false,
-  useProxies: "never"
+  useProxies: "never",
 });
 
 NProgress.start();
 
-preloadAvatars();
+preloadAssets().then(() => {
+  gameLoop.start();
+  createLocalPlayer();
+  startReactApp();
 
-gameLoop.start();
-createLocalPlayer();
-startReactApp();
-
-NProgress.done();
+  NProgress.done();
+});

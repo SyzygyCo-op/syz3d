@@ -1,10 +1,10 @@
 import * as React from "react";
 import * as AntD from "antd";
-import { GameAsset } from "../../../state";
+import { Asset3D } from "../../../state";
 
 /**
  * @type {React.ComponentType<
-     *   AntD.FormProps<any> & { validating: boolean, avatars: GameAsset[] }
+     *   AntD.FormProps<any> & { validating: boolean, avatars: Asset3D[] }
  * >}
  */
 export const AvatarForm = (props) => {
