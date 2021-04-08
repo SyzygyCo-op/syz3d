@@ -28,6 +28,7 @@ export class CameraSystem extends DRMT.System {
       if (localPlayer.hasComponent(RotationComponent)) {
         const rotation = localPlayer.getComponent(RotationComponent).value;
         this.camera.rotation.copy(rotation);
+        this.camera.rotation.y += Math.PI;
       }
     }
   }

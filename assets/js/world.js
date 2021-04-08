@@ -51,7 +51,7 @@ export const gameLoop = new DRMT.GameLoop(
 export function createLocalPlayer() {
   world.getSystem(StateSystem).createLocalPlayer({
     player_name: getPlayerName(),
-    spin: [0, 0.01, 0],
+    spin: [0, 0, 0],
     glft_url: "/3d/PokemonHaunter/model.glb",
   });
 }
