@@ -5,6 +5,7 @@ import {
   PositionComponent,
   RotationComponent,
 } from "../components";
+import {GAME_LOOP_FREQUENCY_HZ, PLAYER_SPEED_MPS, PLAYER_ROTATION_SPEED_MPS} from '../config';
 
 export class InputSystem extends DRMT.System {
   static queries = {
@@ -60,10 +61,10 @@ export class InputSystem extends DRMT.System {
   execute(delta, time) {
     this.queries.localPlayer.results.forEach((entity) => {
       if (this.keyDownLeft) {
-        updateRotation(entity, 0.0, 0.03, 0);
+        updateRotation(entity, 0.0, PLAYER_ROTATION_SPEED_MPS / GAME_LOOP_FREQUENCY_HZ, 0);
       }
       if (this.keyDownRight) {
-        updateRotation(entity, 0.0, -0.03, 0);
+        updateRotation(entity, 0.0, -PLAYER_ROTATION_SPEED_MPS / GAME_LOOP_FREQUENCY_HZ, 0);
       }
       if (this.keyDownUp) {
         const rotation = entity.getComponent(RotationComponent).value;
@@ -89,7 +90,7 @@ function getForwardVector(playerRotation) {
   tempObject3D.getWorldDirection(tempVec3);
   tempVec3.y = 0;
   tempVec3.normalize();
-  tempVec3.multiplyScalar(0.03);
+  tempVec3.multiplyScalar(PLAYER_SPEED_MPS / GAME_LOOP_FREQUENCY_HZ);
 
   return tempVec3;
 }

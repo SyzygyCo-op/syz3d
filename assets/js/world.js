@@ -21,7 +21,7 @@ import {
   GltfUrlComponent,
 } from "./components";
 import { getPlayerName } from "./utils";
-import { GAME_LOOP_MIN_FREQUENCY_HZ } from "./config";
+import { GAME_LOOP_FREQUENCY_HZ } from "./config";
 
 export const world = new DRMT.World()
   .registerComponent(PositionComponent)
@@ -44,7 +44,7 @@ export const world = new DRMT.World()
 
 export const gameLoop = new DRMT.GameLoop(
   world.execute.bind(world),
-  GAME_LOOP_MIN_FREQUENCY_HZ,
+  GAME_LOOP_FREQUENCY_HZ,
   // { pauseOnWindowBlur: true }
 );
 
