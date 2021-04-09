@@ -42,6 +42,7 @@ export class Asset3D {
 export const avatars = [
   new Asset3D("/3d/GrimReaper/preview.png", "/3d/GrimReaper/model.glb"),
   new Asset3D("/3d/PokemonHaunter/preview.png", "/3d/PokemonHaunter/model.glb"),
+  new Asset3D("/3d/PokemonDratini/preview.png", "/3d/PokemonDratini/model.glb"),
   new Asset3D("/3d/ShenLong/preview.png", "/3d/ShenLong/model.glb"),
 ];
 const assets = [...avatars, new Asset3D("", "/3d/RiverIsland/model.glb")];
