@@ -14,6 +14,8 @@ const stateComponentMap = {
   label: UILabelComponent,
   object3d: Object3DComponent,
   boundingBox: BoundingBoxComponent,
+  position: PositionComponent,
+  rotation: RotationComponent
 };
 
 const debug = false;
@@ -25,21 +27,22 @@ const debug = false;
  */
 export const Entity = ({ entity }) => {
   const entityId = React.useMemo(() => entity.id, [entity]);
+
+  const [
+    { label, object3d, boundingBox, position, rotation },
+    sync,
+  ] = DRMT.useStateFromComponentMap(entity, stateComponentMap);
+
   React.useEffect(() => {
     if (debug) {
       console.log(
         "mounted",
         entityId,
-        entity.getComponent(UILabelComponent).value
+        label
       );
       return () => console.log("unmounting", entityId);
     }
   }, []);
-
-  const [
-    { label, object3d, boundingBox },
-    sync,
-  ] = DRMT.useStateFromComponentMap(entity, stateComponentMap);
 
   React.useEffect(() => {
     if (debug) console.log("rerender", entityId, label, object3d, boundingBox);
@@ -57,12 +60,10 @@ export const Entity = ({ entity }) => {
      */ (sync)
   );
 
-  const position = entity.getComponent(PositionComponent).value;
-  const rotation = entity.getComponent(RotationComponent).value;
   gameLoop.useTick(() => {
     if (ref.current) {
-      ref.current.position.copy(position);
-      ref.current.rotation.copy(rotation);
+      position && ref.current.position.copy(position);
+      rotation && ref.current.rotation.copy(rotation);
     }
   });
 
