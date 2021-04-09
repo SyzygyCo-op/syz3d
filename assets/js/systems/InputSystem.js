@@ -37,22 +37,22 @@ export class InputSystem extends DRMT.System {
     const isDown = evt.type === "keydown";
     switch (evt.key) {
       case "a":
-      case "Left": // IE/Edge specific value
+      case "Left":
       case "ArrowLeft":
         this.keyDownLeft = isDown;
         break;
       case "d":
-      case "Right": // IE/Edge specific value
+      case "Right":
       case "ArrowRight":
         this.keyDownRight = isDown;
         break;
       case "w":
-      case "Up": // IE/Edge specific value
+      case "Up":
       case "ArrowUp":
         this.keyDownUp = isDown;
         break;
       case "s":
-      case "Down": // IE/Edge specific value
+      case "Down":
       case "ArrowDown":
         this.keyDownDown = isDown;
         break;
@@ -108,17 +108,19 @@ export class InputSystem extends DRMT.System {
         );
       }
       if (this.keyDownUp) {
-        const rotation = entity.getComponent(RotationComponent).value;
-        const forwardVec = getForwardVector(rotation);
+        const forwardVec = getForwardVector(entity);
         updatePosition(entity, forwardVec.x, forwardVec.y, forwardVec.z);
       }
       if (this.keyDownDown) {
-        const rotation = entity.getComponent(RotationComponent).value;
-        const forwardVec = getForwardVector(rotation).multiplyScalar(-1);
+        const forwardVec = getForwardVector(entity).multiplyScalar(-1);
         updatePosition(entity, forwardVec.x, forwardVec.y, forwardVec.z);
       }
 
-      if (entity.hasComponent(PositionComponent)) {
+      // Jumping and gravity
+      if (
+        entity.hasComponent(PositionComponent) &&
+        entity.hasComponent(VelocityComponent)
+      ) {
         const velocity = entity.getMutableComponent(VelocityComponent).value;
         const position = entity.getMutableComponent(PositionComponent).value;
         if (this.keyDownJump) {
@@ -143,14 +145,19 @@ export class InputSystem extends DRMT.System {
 const tempVec3 = new Vector3();
 const tempObject3D = new Object3D();
 /**
- * @param {Euler} playerRotation
+ * @param {DRMT.Entity} entity
  */
-function getForwardVector(playerRotation) {
-  tempObject3D.rotation.copy(playerRotation);
-  tempObject3D.getWorldDirection(tempVec3);
-  tempVec3.y = 0;
-  tempVec3.normalize();
-  tempVec3.multiplyScalar(PLAYER_SPEED_MPS / GAME_LOOP_FREQUENCY_HZ);
+function getForwardVector(entity) {
+  if (entity.hasComponent(RotationComponent)) {
+    const rotation = entity.getComponent(RotationComponent).value;
+
+    tempObject3D.rotation.copy(rotation);
+    tempObject3D.getWorldDirection(tempVec3);
+
+    tempVec3.y = 0;
+    tempVec3.normalize();
+    tempVec3.multiplyScalar(PLAYER_SPEED_MPS / GAME_LOOP_FREQUENCY_HZ);
+  }
 
   return tempVec3;
 }
