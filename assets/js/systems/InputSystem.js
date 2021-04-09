@@ -6,11 +6,7 @@ import {
   RotationComponent,
   VelocityComponent,
 } from "../components";
-import {
-  GAME_LOOP_FREQUENCY_HZ,
-  PLAYER_SPEED_MPS,
-  PLAYER_ROTATION_SPEED_MPS,
-} from "../config";
+import { PLAYER_SPEED_MPS, PLAYER_ROTATION_SPEED_MPS } from "../config";
 
 export class InputSystem extends DRMT.System {
   static queries = {
@@ -87,32 +83,28 @@ export class InputSystem extends DRMT.System {
     });
   }
 
-  execute(delta, time) {
+  /**
+   * @param {number} delta
+   * @param {number} _time
+   */
+  execute(delta, _time) {
     this.canvas = document.getElementsByTagName("canvas")[0];
+
+    const rotationDelta = PLAYER_ROTATION_SPEED_MPS * (delta / 1000);
 
     this.queries.localPlayer.results.forEach((entity) => {
       if (this.keyDownLeft) {
-        updateRotation(
-          entity,
-          0.0,
-          PLAYER_ROTATION_SPEED_MPS / GAME_LOOP_FREQUENCY_HZ,
-          0
-        );
+        updateRotation(entity, 0.0, rotationDelta, 0);
       }
       if (this.keyDownRight) {
-        updateRotation(
-          entity,
-          0.0,
-          -PLAYER_ROTATION_SPEED_MPS / GAME_LOOP_FREQUENCY_HZ,
-          0
-        );
+        updateRotation(entity, 0.0, -rotationDelta, 0);
       }
       if (this.keyDownUp) {
-        const forwardVec = getForwardVector(entity);
+        const forwardVec = getForwardVector(entity, delta);
         updatePosition(entity, forwardVec.x, forwardVec.y, forwardVec.z);
       }
       if (this.keyDownDown) {
-        const forwardVec = getForwardVector(entity).multiplyScalar(-1);
+        const forwardVec = getForwardVector(entity, delta).multiplyScalar(-1);
         updatePosition(entity, forwardVec.x, forwardVec.y, forwardVec.z);
       }
 
@@ -146,8 +138,9 @@ const tempVec3 = new Vector3();
 const tempObject3D = new Object3D();
 /**
  * @param {DRMT.Entity} entity
+ * @param {number}      delta
  */
-function getForwardVector(entity) {
+function getForwardVector(entity, delta) {
   if (entity.hasComponent(RotationComponent)) {
     const rotation = entity.getComponent(RotationComponent).value;
 
@@ -156,7 +149,7 @@ function getForwardVector(entity) {
 
     tempVec3.y = 0;
     tempVec3.normalize();
-    tempVec3.multiplyScalar(PLAYER_SPEED_MPS / GAME_LOOP_FREQUENCY_HZ);
+    tempVec3.multiplyScalar(PLAYER_SPEED_MPS * (delta / 1000));
   }
 
   return tempVec3;
