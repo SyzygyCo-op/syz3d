@@ -4,6 +4,7 @@ import {
   LocalPlayerTag,
   PositionComponent,
   RotationComponent,
+  VelocityComponent,
 } from "../components";
 import {
   GAME_LOOP_FREQUENCY_HZ,
@@ -22,8 +23,11 @@ export class InputSystem extends DRMT.System {
   keyDownRight = false;
   keyDownUp = false;
   keyDownDown = false;
+  keyDownJump = false;
 
-  /** @type HTMLCanvasElement */
+  /**
+   * @type HTMLCanvasElement
+   */
   canvas = null;
 
   /**
@@ -52,6 +56,8 @@ export class InputSystem extends DRMT.System {
       case "ArrowDown":
         this.keyDownDown = isDown;
         break;
+      case " ":
+        this.keyDownJump = isDown;
     }
   };
 
@@ -62,12 +68,13 @@ export class InputSystem extends DRMT.System {
     window.addEventListener("blur", () => {
       this.keyDownRight = false;
       this.keyDownLeft = false;
+      this.keyDownJump = false;
     });
 
     document.addEventListener("mousedown", (evt) => {
       if (document.pointerLockElement) {
         document.exitPointerLock();
-      } else if(evt.target === this.canvas) {
+      } else if (evt.target === this.canvas) {
         this.canvas.requestPointerLock();
       }
     });
@@ -81,7 +88,7 @@ export class InputSystem extends DRMT.System {
   }
 
   execute(delta, time) {
-    this.canvas = document.getElementsByTagName('canvas')[0];
+    this.canvas = document.getElementsByTagName("canvas")[0];
 
     this.queries.localPlayer.results.forEach((entity) => {
       if (this.keyDownLeft) {
@@ -109,6 +116,21 @@ export class InputSystem extends DRMT.System {
         const rotation = entity.getComponent(RotationComponent).value;
         const forwardVec = getForwardVector(rotation).multiplyScalar(-1);
         updatePosition(entity, forwardVec.x, forwardVec.y, forwardVec.z);
+      }
+
+      if (entity.hasComponent(PositionComponent)) {
+        const velocity = entity.getMutableComponent(VelocityComponent).value;
+        const position = entity.getMutableComponent(PositionComponent).value;
+        if (this.keyDownJump) {
+          if (position.y <= 0) {
+            velocity.y = 1;
+          }
+        }
+
+        velocity.y -= 0.1;
+        velocity.y = Math.max(velocity.y, -1);
+        position.y += velocity.y;
+        position.y = Math.max(position.y, 0);
       }
 
       updateRotation(entity, this.turnX, this.turnY, 0);

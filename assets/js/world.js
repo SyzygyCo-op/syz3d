@@ -14,6 +14,7 @@ import {
   SpinComponent,
   RotationComponent,
   PositionComponent,
+  VelocityComponent,
   BumpComponent,
   RenderToCanvasTag,
   Object3DComponent,
@@ -26,6 +27,7 @@ import {Vector3} from "three";
 
 export const world = new DRMT.World()
   .registerComponent(PositionComponent)
+  .registerComponent(VelocityComponent)
   .registerComponent(RotationComponent)
   .registerComponent(GltfUrlComponent)
   .registerComponent(Object3DComponent)

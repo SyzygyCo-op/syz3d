@@ -30,6 +30,11 @@ export class PositionComponent extends DRMT.Component {
     value: { type: Vector3Type },
   };
 }
+export class VelocityComponent extends DRMT.Component {
+  static schema = {
+    value: { type: Vector3Type },
+  };
+}
 export class RotationComponent extends DRMT.Component {
   static schema = {
     value: { type: EulerType },

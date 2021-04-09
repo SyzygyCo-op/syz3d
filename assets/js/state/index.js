@@ -13,6 +13,7 @@ export class PlayerState {
    */
   glft_url = null;
   position = new Vector3();
+  velocity = new Vector3();
   rotation = new Euler();
   spin = [0, 0, 0];
 }

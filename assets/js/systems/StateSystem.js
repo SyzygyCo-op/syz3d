@@ -10,6 +10,7 @@ import {
   SpinComponent,
   BumpComponent,
   RotationComponent,
+  VelocityComponent,
 } from "../components";
 import { ObservableState, PlayerState } from "../state";
 import { getPlayerEntityId } from "../utils";
@@ -155,7 +156,8 @@ export class StateSystem extends DRMT.System {
   createLocalPlayer(partialPlayerData) {
     this.correspondent
       .createEntity(getPlayerEntityId())
-      .addComponent(LocalPlayerTag);
+      .addComponent(LocalPlayerTag)
+      .addComponent(VelocityComponent);
     this.observable.createLocalPlayer(partialPlayerData);
   }
 
