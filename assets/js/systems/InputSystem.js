@@ -6,7 +6,11 @@ import {
   RotationComponent,
   VelocityComponent,
 } from "../components";
-import { PLAYER_SPEED_MPS, PLAYER_ROTATION_SPEED_MPS } from "../config";
+import {
+  PLAYER_WALK_SPEED_MPS,
+  PLAYER_RUN_SPEED_MPS,
+  PLAYER_ROTATION_SPEED_MPS,
+} from "../config";
 
 export class InputSystem extends DRMT.System {
   static queries = {
@@ -20,6 +24,7 @@ export class InputSystem extends DRMT.System {
   keyDownUp = false;
   keyDownDown = false;
   keyDownJump = false;
+  keyDownShift = false;
 
   /**
    * @type HTMLCanvasElement
@@ -33,27 +38,34 @@ export class InputSystem extends DRMT.System {
     const isDown = evt.type === "keydown";
     switch (evt.key) {
       case "a":
+      case "A":
       case "Left":
       case "ArrowLeft":
         this.keyDownLeft = isDown;
         break;
       case "d":
+      case "D":
       case "Right":
       case "ArrowRight":
         this.keyDownRight = isDown;
         break;
       case "w":
+      case "W":
       case "Up":
       case "ArrowUp":
         this.keyDownUp = isDown;
         break;
       case "s":
+      case "S":
       case "Down":
       case "ArrowDown":
         this.keyDownDown = isDown;
         break;
       case " ":
         this.keyDownJump = isDown;
+        break;
+      case "Shift":
+        this.keyDownShift = isDown;
     }
   };
 
@@ -65,6 +77,7 @@ export class InputSystem extends DRMT.System {
       this.keyDownRight = false;
       this.keyDownLeft = false;
       this.keyDownJump = false;
+      this.keyDownShift = false;
     });
 
     document.addEventListener("mousedown", (evt) => {
@@ -92,6 +105,8 @@ export class InputSystem extends DRMT.System {
 
     const rotationDelta = PLAYER_ROTATION_SPEED_MPS * (delta / 1000);
 
+    const speed = this.keyDownShift ? PLAYER_WALK_SPEED_MPS : PLAYER_RUN_SPEED_MPS;
+
     this.queries.localPlayer.results.forEach((entity) => {
       if (this.keyDownLeft) {
         updateRotation(entity, 0.0, rotationDelta, 0);
@@ -100,11 +115,11 @@ export class InputSystem extends DRMT.System {
         updateRotation(entity, 0.0, -rotationDelta, 0);
       }
       if (this.keyDownUp) {
-        const forwardVec = getForwardVector(entity, delta);
+        const forwardVec = getForwardVector(entity, delta, speed);
         updatePosition(entity, forwardVec.x, forwardVec.y, forwardVec.z);
       }
       if (this.keyDownDown) {
-        const forwardVec = getForwardVector(entity, delta).multiplyScalar(-1);
+        const forwardVec = getForwardVector(entity, delta, speed).multiplyScalar(-1);
         updatePosition(entity, forwardVec.x, forwardVec.y, forwardVec.z);
       }
 
@@ -139,8 +154,9 @@ const tempObject3D = new Object3D();
 /**
  * @param {DRMT.Entity} entity
  * @param {number}      delta
+ * @param {number}      speed
  */
-function getForwardVector(entity, delta) {
+function getForwardVector(entity, delta, speed) {
   if (entity.hasComponent(RotationComponent)) {
     const rotation = entity.getComponent(RotationComponent).value;
 
@@ -149,7 +165,7 @@ function getForwardVector(entity, delta) {
 
     tempVec3.y = 0;
     tempVec3.normalize();
-    tempVec3.multiplyScalar(PLAYER_SPEED_MPS * (delta / 1000));
+    tempVec3.multiplyScalar(speed * (delta / 1000));
   }
 
   return tempVec3;
