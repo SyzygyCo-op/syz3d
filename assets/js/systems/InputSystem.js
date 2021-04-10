@@ -224,7 +224,6 @@ function updateRotation(entity, deltaX, deltaY, deltaZ) {
      */
     const rotation = entity.getMutableComponent(RotationComponent).value;
     rotation.set(rotation.x + deltaX, rotation.y + deltaY, rotation.z + deltaZ);
-    setXYEuler(rotation);
   }
 }
 
