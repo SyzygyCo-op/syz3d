@@ -1,5 +1,5 @@
 import * as DRMT from "dreamt";
-import { PerspectiveCamera } from "three";
+import { Euler, PerspectiveCamera } from "three";
 import {
   BoundingBoxComponent,
   LocalPlayerTag,
@@ -7,6 +7,7 @@ import {
   RotationComponent,
 } from "../components";
 import { StateSystem } from "./StateSystem";
+
 
 export class CameraSystem extends DRMT.System {
   static queries = {
@@ -20,23 +21,24 @@ export class CameraSystem extends DRMT.System {
   }
 
   execute(delta, time) {
-    const localPlayer = this.queries.localPlayer.results[0];
+    this.localPlayer = this.queries.localPlayer.results[0];
     if (this.world.getSystem(StateSystem).isCameraReady) {
-      if (localPlayer.hasComponent(PositionComponent)) {
-        const position = localPlayer.getComponent(PositionComponent).value;
+      if (this.localPlayer.hasComponent(PositionComponent)) {
+        const position = this.localPlayer.getComponent(PositionComponent).value;
         this.camera.position.copy(position);
       }
 
-      if (localPlayer.hasComponent(RotationComponent)) {
-        const rotation = localPlayer.getComponent(RotationComponent).value;
+      if (this.localPlayer.hasComponent(RotationComponent)) {
+        const rotation = this.localPlayer.getComponent(RotationComponent).value;
         this.camera.rotation.copy(rotation);
         this.camera.rotation.y += Math.PI;
+        this.camera.rotation.x *= -1;
       }
 
-      if(localPlayer.hasComponent(BoundingBoxComponent)) {
-        const box = localPlayer.getComponent(BoundingBoxComponent).value;
+      if (this.localPlayer.hasComponent(BoundingBoxComponent)) {
+        const box = this.localPlayer.getComponent(BoundingBoxComponent).value;
         // Generically position the camera at 3/4 the avatar's height
-        this.camera.position.y += box.y / 4 * 3;
+        this.camera.position.y += (box.y / 4) * 3;
       }
     }
   }

@@ -11,6 +11,7 @@ import {
   PLAYER_RUN_SPEED_MPS,
   PLAYER_ROTATION_SPEED_MPS,
 } from "../config";
+import {moveMoveableEuler, setMoveableEuler} from '../maths';
 
 export class InputSystem extends DRMT.System {
   static queries = {
@@ -88,13 +89,30 @@ export class InputSystem extends DRMT.System {
       }
     });
 
-    document.body.addEventListener("mousemove", (event) => {
-      if (document.pointerLockElement) {
-        this.turnX = event.movementY / 200;
-        this.turnY = event.movementX / 200;
-      }
-    });
+    document.body.addEventListener("mousemove", this.onMouseMove);
   }
+
+  onMouseMove = (event) => {
+    if (
+      document.pointerLockElement &&
+      this.localPlayer &&
+      this.localPlayer.hasComponent(RotationComponent)
+    ) {
+      var movementX =
+        event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+      var movementY =
+        event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+
+      const newRotation = moveMoveableEuler(movementX * 0.004, movementY * 0.004)
+
+      /**
+       * @type Euler
+       */
+      const playerRotation = this.localPlayer.getComponent(RotationComponent)
+        .value;
+      playerRotation.copy(newRotation);
+    }
+  };
 
   /**
    * @param {number} delta
@@ -105,9 +123,13 @@ export class InputSystem extends DRMT.System {
 
     const rotationDelta = PLAYER_ROTATION_SPEED_MPS * (delta / 1000);
 
-    const speed = this.keyDownShift ? PLAYER_WALK_SPEED_MPS : PLAYER_RUN_SPEED_MPS;
+    const speed = this.keyDownShift
+      ? PLAYER_WALK_SPEED_MPS
+      : PLAYER_RUN_SPEED_MPS;
 
-    this.queries.localPlayer.results.forEach((entity) => {
+    const entity = (this.localPlayer = this.queries.localPlayer.results[0]);
+
+    if (entity) {
       if (this.keyDownLeft) {
         updateRotation(entity, 0.0, rotationDelta, 0);
       }
@@ -115,11 +137,15 @@ export class InputSystem extends DRMT.System {
         updateRotation(entity, 0.0, -rotationDelta, 0);
       }
       if (this.keyDownUp) {
-        const forwardVec = getForwardVector(entity, delta, speed);
+        const forwardVec = getEntityForwardVector(entity, delta, speed);
         updatePosition(entity, forwardVec.x, forwardVec.y, forwardVec.z);
       }
       if (this.keyDownDown) {
-        const forwardVec = getForwardVector(entity, delta, speed).multiplyScalar(-1);
+        const forwardVec = getEntityForwardVector(
+          entity,
+          delta,
+          speed
+        ).multiplyScalar(-1);
         updatePosition(entity, forwardVec.x, forwardVec.y, forwardVec.z);
       }
 
@@ -141,11 +167,7 @@ export class InputSystem extends DRMT.System {
         position.y += velocity.y;
         position.y = Math.max(position.y, 0);
       }
-
-      updateRotation(entity, this.turnX, this.turnY, 0);
-      this.turnY = 0;
-      this.turnX = 0;
-    });
+    }
   }
 }
 
@@ -156,7 +178,7 @@ const tempObject3D = new Object3D();
  * @param {number}      delta
  * @param {number}      speed
  */
-function getForwardVector(entity, delta, speed) {
+function getEntityForwardVector(entity, delta, speed) {
   if (entity.hasComponent(RotationComponent)) {
     const rotation = entity.getComponent(RotationComponent).value;
 
@@ -181,6 +203,7 @@ function updateRotation(entity, deltaX, deltaY, deltaZ) {
      */
     const rotation = entity.getMutableComponent(RotationComponent).value;
     rotation.set(rotation.x + deltaX, rotation.y + deltaY, rotation.z + deltaZ);
+    setMoveableEuler(rotation);
   }
 }
 
