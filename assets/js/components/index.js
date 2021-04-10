@@ -18,9 +18,10 @@ const Vector3Type = DRMT.createType({
   copy: DRMT.copyCopyable,
   clone: DRMT.cloneClonable
 });
-const EulerType = DRMT.createType({
+const YawPitchRollType = DRMT.createType({
   name: "Euler",
-  default: new THREE.Euler(),
+  // Use YXZ order to enable translating mouse movement to YAW and PITCH
+  default: new THREE.Euler(0, 0, 0, "YXZ"),
   copy: DRMT.copyCopyable,
   clone: DRMT.cloneClonable
 });
@@ -37,7 +38,7 @@ export class VelocityComponent extends DRMT.Component {
 }
 export class RotationComponent extends DRMT.Component {
   static schema = {
-    value: { type: EulerType },
+    value: { type: YawPitchRollType },
   };
 }
 
