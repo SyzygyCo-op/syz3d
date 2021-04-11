@@ -74,6 +74,7 @@ export class InputSystem extends DRMT.System {
         this.keyDownDown = isDown;
         break;
       case " ":
+      case "Backspace":
         this.keyDownJump = isDown;
         break;
       case "Shift":
@@ -177,10 +178,9 @@ export class InputSystem extends DRMT.System {
       ) {
         const velocity = entity.getMutableComponent(VelocityComponent).value;
         const position = entity.getMutableComponent(PositionComponent).value;
-        if (this.keyDownJump) {
-          if (position.y <= 0) {
-            velocity.y = 1;
-          }
+
+        if (position.y <= 0) {
+          velocity.y = getJumpIntensity(this.keyDownJump);
         }
 
         velocity.y -= 0.1;
@@ -238,4 +238,43 @@ function updatePosition(entity, deltaX, deltaY, deltaZ) {
     const position = entity.getMutableComponent(PositionComponent).value;
     position.set(position.x + deltaX, position.y + deltaY, position.z + deltaZ);
   }
+}
+
+let jumpPrepTimer = 0;
+let jumpRestTimer = 0;
+
+/**
+ * @param {boolean} keyIsDown
+ * TODO test jumping logic
+ */
+function getJumpIntensity(keyIsDown) {
+  let retval = 0;
+
+  const isRested = jumpRestTimer > 0;
+
+  const maxPrep = 4;
+
+  const isMaxedOut = jumpPrepTimer == maxPrep;
+  const isPrepped = isMaxedOut || jumpPrepTimer > 0 && !keyIsDown;
+  const isNonZero = isRested && isPrepped;
+
+  if(isNonZero) {
+    retval = Math.sqrt(jumpPrepTimer) * 0.5;
+    jumpPrepTimer = 0;
+    jumpRestTimer = 0;
+  }
+
+  if (keyIsDown && !isNonZero) {
+    jumpPrepTimer = Math.min(4, jumpPrepTimer + 1);
+  }
+
+  if(!keyIsDown) {
+    jumpPrepTimer = 0;
+  }
+
+  if(!keyIsDown && !isNonZero) {
+    jumpRestTimer += 1;
+  }
+
+  return retval;
 }
