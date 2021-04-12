@@ -5,6 +5,7 @@ import {
   AnimationSystem,
   LoaderSystem,
   InputSystem,
+  RoundingSystem,
   CameraSystem
 } from "./systems";
 import {
@@ -38,12 +39,13 @@ export const world = new DRMT.World()
   .registerComponent(SpinComponent)
   .registerComponent(BumpComponent)
   .registerComponent(RenderToCanvasTag)
-  .registerSystem(ClientSystem)
   .registerSystem(LoaderSystem)
+  .registerSystem(InputSystem)
+  .registerSystem(RoundingSystem)
   .registerSystem(AnimationSystem)
-  .registerSystem(StateSystem)
   .registerSystem(CameraSystem)
-  .registerSystem(InputSystem);
+  .registerSystem(StateSystem)
+  .registerSystem(ClientSystem)
 
 export const gameLoop = new DRMT.GameLoop(
   world.execute.bind(world),

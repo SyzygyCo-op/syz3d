@@ -16,14 +16,6 @@ const PI_2 = Math.PI / 2;
 const minPolarAngle = 0;
 const maxPolarAngle = Math.PI;
 
-/**
- * @param {number} num
- * @param {number} denominator
- */
-function roundToNearest(num, denominator) {
-  return Math.round(num * denominator) / denominator;
-}
-
 export class InputSystem extends DRMT.System {
   static queries = {
     localPlayer: {
@@ -129,10 +121,6 @@ export class InputSystem extends DRMT.System {
         PI_2 - maxPolarAngle,
         PI_2 - minPolarAngle
       );
-
-      playerRotation.x = roundToNearest(playerRotation.x, 100);
-      playerRotation.y = roundToNearest(playerRotation.y, 100);
-      playerRotation.z = roundToNearest(playerRotation.z, 100);
     }
   };
 
