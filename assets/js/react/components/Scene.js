@@ -16,11 +16,11 @@ export const Scene = observer(
    */
   ({ entities }) => {
 
-    const { setDefaultCamera } = useThree();
+    const { setDefaultCamera, gl } = useThree();
 
     React.useEffect(() => {
-      setDefaultCamera(world.getSystem(CameraSystem).camera);
-      world.getSystem(StateSystem).isCameraReady = true;
+      world.getSystem(CameraSystem).setDefaultCamera = setDefaultCamera;
+      world.getSystem(StateSystem).canvasElement = gl.domElement;
     }, [])
 
     return (

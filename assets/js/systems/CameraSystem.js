@@ -1,12 +1,11 @@
 import * as DRMT from "dreamt";
-import { Euler, PerspectiveCamera } from "three";
+import { PerspectiveCamera } from "three";
 import {
   BoundingBoxComponent,
   LocalPlayerTag,
   PositionComponent,
   RotationComponent,
 } from "../components";
-import { StateSystem } from "./StateSystem";
 
 
 export class CameraSystem extends DRMT.System {
@@ -16,13 +15,23 @@ export class CameraSystem extends DRMT.System {
     },
   };
 
+  /** @type {(camera: PerspectiveCamera) => void | null} */
+  setDefaultCamera = null;
+  isCameraReady = false;
+
   init() {
     this.camera = new PerspectiveCamera();
   }
 
   execute(delta, time) {
+    if(!this.isCameraReady && this.setDefaultCamera) {
+      this.setDefaultCamera(this.camera);
+      this.isCameraReady = true;
+    }
+
     this.localPlayer = this.queries.localPlayer.results[0];
-    if (this.world.getSystem(StateSystem).isCameraReady) {
+
+    if (this.isCameraReady && this.localPlayer) {
       if (this.localPlayer.hasComponent(PositionComponent)) {
         const position = this.localPlayer.getComponent(PositionComponent).value;
         this.camera.position.copy(position);

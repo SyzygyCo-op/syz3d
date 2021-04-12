@@ -11,6 +11,7 @@ import {
   PLAYER_RUN_SPEED_MPS,
   PLAYER_ROTATION_SPEED_MPS,
 } from "../config";
+import {StateSystem} from "./StateSystem";
 
 const PI_2 = Math.PI / 2;
 const minPolarAngle = 0;
@@ -33,7 +34,7 @@ export class InputSystem extends DRMT.System {
   /**
    * @type HTMLCanvasElement
    */
-  canvas = null;
+  canvasElement = null;
 
   /**
    * @param {KeyboardEvent} evt
@@ -88,8 +89,8 @@ export class InputSystem extends DRMT.System {
     document.addEventListener("mousedown", (evt) => {
       if (document.pointerLockElement) {
         document.exitPointerLock();
-      } else if (evt.target === this.canvas) {
-        this.canvas.requestPointerLock();
+      } else if (evt.target === this.canvasElement) {
+        this.canvasElement.requestPointerLock();
       }
     });
 
@@ -129,7 +130,7 @@ export class InputSystem extends DRMT.System {
    * @param {number} _time
    */
   execute(delta, _time) {
-    this.canvas = document.getElementsByTagName("canvas")[0];
+    this.canvasElement = this.world.getSystem(StateSystem).canvasElement;
 
     const rotationDelta = PLAYER_ROTATION_SPEED_MPS * (delta / 1000);
 

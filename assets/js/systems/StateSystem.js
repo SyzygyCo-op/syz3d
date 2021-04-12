@@ -31,7 +31,8 @@ export class StateSystem extends DRMT.System {
   worldDirty = false;
   diffForClient = DRMT.Correspondent.createEmptyDiff();
 
-  isCameraReady = false;
+  /** @type HTMLCanvasElement */
+  canvasElement = null;
 
   init() {
     this.correspondent = new DRMT.Correspondent(this.world)
