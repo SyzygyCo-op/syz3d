@@ -7,8 +7,8 @@ import {
   VelocityComponent,
 } from "../components";
 import {
-  PLAYER_WALK_SPEED_MPS,
-  PLAYER_RUN_SPEED_MPS,
+  PLAYER_WALK_ACCEL,
+  PLAYER_RUN_ACCEL,
   PLAYER_ROTATION_SPEED_MPS,
 } from "../config";
 import { StateSystem } from "./StateSystem";
@@ -132,15 +132,9 @@ export class InputSystem extends DRMT.System {
   execute(delta, _time) {
     this.canvasElement = this.world.getSystem(StateSystem).canvasElement;
 
-    const rotationDelta = PLAYER_ROTATION_SPEED_MPS * (delta / 1000);
-
-    const speed = this.keyDownShift
-      ? PLAYER_WALK_SPEED_MPS
-      : PLAYER_RUN_SPEED_MPS;
-
     const entity = (this.localPlayer = this.queries.localPlayer.results[0]);
 
-    const hasPosition = entity.hasComponent(PositionComponent);
+    const hasVelocity = entity.hasComponent(VelocityComponent);
     const hasRotation = entity.hasComponent(RotationComponent);
 
     if (hasRotation) {
@@ -148,6 +142,8 @@ export class InputSystem extends DRMT.System {
        * @type Euler
        */
       const rotation = entity.getComponent(RotationComponent).value;
+
+      const rotationDelta = PLAYER_ROTATION_SPEED_MPS * (delta / 1000);
       if (this.keyDownLeft) {
         rotation.y += rotationDelta;
       }
@@ -156,21 +152,25 @@ export class InputSystem extends DRMT.System {
       }
     }
 
-    if (hasPosition && hasRotation) {
+    if (hasVelocity && hasRotation) {
       /**
        * @type Vector3
        */
-      const position = entity.getComponent(PositionComponent).value;
+      const velocity = entity.getComponent(VelocityComponent).value;
       const rotation = entity.getComponent(RotationComponent).value;
 
       if (this.keyDownUp || this.keyDownDown) {
-        const forward = getForwardVector(rotation, delta, speed);
+        const accel = this.keyDownShift
+          ? PLAYER_WALK_ACCEL
+          : PLAYER_RUN_ACCEL;
+        const forward = getForwardNormal(rotation);
 
         if (this.keyDownUp) {
-          position.add(forward);
+          velocity.add(forward.multiplyScalar(accel));
+          console.log(velocity.toArray());
         }
         if (this.keyDownDown) {
-          position.add(forward.multiplyScalar(-1));
+          velocity.add(forward.multiplyScalar(-accel));
         }
       }
 
@@ -199,16 +199,13 @@ const tempVec3 = new Vector3();
 const tempObject3D = new Object3D();
 /**
  * @param {Euler}  facingAngle
- * @param {number} delta
- * @param {number} speed
  */
-function getForwardVector(facingAngle, delta, speed) {
+function getForwardNormal(facingAngle, speed) {
   tempObject3D.rotation.copy(facingAngle);
   tempObject3D.getWorldDirection(tempVec3);
 
   tempVec3.y = 0;
   tempVec3.normalize();
-  tempVec3.multiplyScalar(speed * (delta / 1000));
 
   return tempVec3;
 }

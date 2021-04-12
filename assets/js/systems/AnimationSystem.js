@@ -1,34 +1,34 @@
 import * as DRMT from "dreamt";
-import {Euler} from "three";
-import { SpinComponent, BumpComponent, RotationComponent } from "../components";
+import { Vector3 } from "three";
+import { PositionComponent, VelocityComponent } from "../components";
 
 export class AnimationSystem extends DRMT.System {
   static queries = {
-    spinners: {
-      components: [SpinComponent, RotationComponent],
-    },
-    bumpers: {
-      components: [BumpComponent],
+    velocity: {
+      components: [VelocityComponent, PositionComponent],
     },
   };
 
   /**
-   * @param {number} _delta
+   * @param {number} delta
    * @param {number} time
    */
-  execute(_delta, time) {
-    this.queries.spinners.results.forEach((entity) => {
-      const spin = entity.getComponent(SpinComponent).value;
-      /** @type Euler */
-      const rotation = entity.getMutableComponent(RotationComponent).value;
-      rotation.set(rotation.x + spin[0], rotation.y + spin[1], rotation.z + spin[2]);
-    });
+  execute(delta, time) {
+    this.queries.velocity.results.forEach((entity) => {
+      /**
+       * @type Vector3
+       */
+      const velocity = entity.getComponent(VelocityComponent).value;
+      /**
+       * @type Vector3
+       */
+      const position = entity.getComponent(PositionComponent).value;
 
-    this.queries.bumpers.results.forEach((entity) => {
-      const cBump = entity.getMutableComponent(BumpComponent);
-      if (cBump.value < 1) {
-        cBump.value += 0.01;
-      }
+      position.addScaledVector(velocity, delta / 1000);
+
+      // TODO move to PhysicsSystem, once that exists
+      const damping = Math.exp(-5 * delta / 1000) - 1;
+      velocity.addScaledVector(velocity, damping);
     });
   }
 }
