@@ -29,10 +29,7 @@ export class StateSystem extends DRMT.System {
 
   observable = new ObservableState();
   worldDirty = false;
-  /**
-   * @type {?DRMT.IEntityComponentDiff}
-   */
-  diffForClient = null;
+  diffForClient = DRMT.Correspondent.createEmptyDiff();
 
   isCameraReady = false;
 
@@ -118,7 +115,7 @@ export class StateSystem extends DRMT.System {
       const diff = this.correspondent.produceDiff(this.worldCache);
       if (!DRMT.Correspondent.isEmptyDiff(diff)) {
         this.worldDirty = true;
-        this.diffForClient = diff;
+        Object.assign(this.diffForClient, diff);
         this.correspondent.updateCache(this.worldCache, diff);
         this.worldDiffTimestamp = time;
 
