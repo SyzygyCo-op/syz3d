@@ -11,7 +11,7 @@ import {
   PLAYER_RUN_SPEED_MPS,
   PLAYER_ROTATION_SPEED_MPS,
 } from "../config";
-import {StateSystem} from "./StateSystem";
+import { StateSystem } from "./StateSystem";
 
 const PI_2 = Math.PI / 2;
 const minPolarAngle = 0;
@@ -140,24 +140,38 @@ export class InputSystem extends DRMT.System {
 
     const entity = (this.localPlayer = this.queries.localPlayer.results[0]);
 
-    if (entity) {
+    const hasPosition = entity.hasComponent(PositionComponent);
+    const hasRotation = entity.hasComponent(RotationComponent);
+
+    if (hasRotation) {
+      /**
+       * @type Euler
+       */
+      const rotation = entity.getComponent(RotationComponent).value;
       if (this.keyDownLeft) {
-        updateRotation(entity, 0.0, rotationDelta, 0);
+        rotation.y += rotationDelta;
       }
       if (this.keyDownRight) {
-        updateRotation(entity, 0.0, -rotationDelta, 0);
+        rotation.y -= rotationDelta;
       }
-      if (this.keyDownUp) {
-        const forwardVec = getEntityForwardVector(entity, delta, speed);
-        updatePosition(entity, forwardVec.x, forwardVec.y, forwardVec.z);
-      }
-      if (this.keyDownDown) {
-        const forwardVec = getEntityForwardVector(
-          entity,
-          delta,
-          speed
-        ).multiplyScalar(-1);
-        updatePosition(entity, forwardVec.x, forwardVec.y, forwardVec.z);
+    }
+
+    if (hasPosition && hasRotation) {
+      /**
+       * @type Vector3
+       */
+      const position = entity.getComponent(PositionComponent).value;
+      const rotation = entity.getComponent(RotationComponent).value;
+
+      if (this.keyDownUp || this.keyDownDown) {
+        const forward = getForwardVector(rotation, delta, speed);
+
+        if (this.keyDownUp) {
+          position.add(forward);
+        }
+        if (this.keyDownDown) {
+          position.add(forward.multiplyScalar(-1));
+        }
       }
 
       // Jumping and gravity
@@ -184,57 +198,26 @@ export class InputSystem extends DRMT.System {
 const tempVec3 = new Vector3();
 const tempObject3D = new Object3D();
 /**
- * @param {DRMT.Entity} entity
- * @param {number}      delta
- * @param {number}      speed
+ * @param {Euler}  facingAngle
+ * @param {number} delta
+ * @param {number} speed
  */
-function getEntityForwardVector(entity, delta, speed) {
-  if (entity.hasComponent(RotationComponent)) {
-    const rotation = entity.getComponent(RotationComponent).value;
+function getForwardVector(facingAngle, delta, speed) {
+  tempObject3D.rotation.copy(facingAngle);
+  tempObject3D.getWorldDirection(tempVec3);
 
-    tempObject3D.rotation.copy(rotation);
-    tempObject3D.getWorldDirection(tempVec3);
-
-    tempVec3.y = 0;
-    tempVec3.normalize();
-    tempVec3.multiplyScalar(speed * (delta / 1000));
-  }
+  tempVec3.y = 0;
+  tempVec3.normalize();
+  tempVec3.multiplyScalar(speed * (delta / 1000));
 
   return tempVec3;
-}
-
-/**
- * @param {DRMT.Entity} entity
- */
-function updateRotation(entity, deltaX, deltaY, deltaZ) {
-  if (entity.hasComponent(RotationComponent)) {
-    /**
-     * @type Euler
-     */
-    const rotation = entity.getMutableComponent(RotationComponent).value;
-    rotation.set(rotation.x + deltaX, rotation.y + deltaY, rotation.z + deltaZ);
-  }
-}
-
-/**
- * @param {DRMT.Entity} entity
- */
-function updatePosition(entity, deltaX, deltaY, deltaZ) {
-  if (entity.hasComponent(PositionComponent)) {
-    /**
-     * @type Vector3
-     */
-    const position = entity.getMutableComponent(PositionComponent).value;
-    position.set(position.x + deltaX, position.y + deltaY, position.z + deltaZ);
-  }
 }
 
 let jumpPrepTimer = 0;
 let jumpRestTimer = 0;
 
 /**
- * @param {boolean} keyIsDown
- * TODO test jumping logic
+ * @param {boolean} keyIsDown  TODO test jumping logic
  */
 function getJumpIntensity(keyIsDown) {
   let retval = 0;
@@ -244,10 +227,10 @@ function getJumpIntensity(keyIsDown) {
   const maxPrep = 4;
 
   const isMaxedOut = jumpPrepTimer == maxPrep;
-  const isPrepped = isMaxedOut || jumpPrepTimer > 0 && !keyIsDown;
+  const isPrepped = isMaxedOut || (jumpPrepTimer > 0 && !keyIsDown);
   const isNonZero = isRested && isPrepped;
 
-  if(isNonZero) {
+  if (isNonZero) {
     retval = Math.sqrt(jumpPrepTimer) * 0.5;
     jumpPrepTimer = 0;
     jumpRestTimer = 0;
@@ -257,11 +240,11 @@ function getJumpIntensity(keyIsDown) {
     jumpPrepTimer = Math.min(4, jumpPrepTimer + 1);
   }
 
-  if(!keyIsDown) {
+  if (!keyIsDown) {
     jumpPrepTimer = 0;
   }
 
-  if(!keyIsDown && !isNonZero) {
+  if (!keyIsDown && !isNonZero) {
     jumpRestTimer += 1;
   }
 
