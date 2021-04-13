@@ -167,7 +167,6 @@ export class InputSystem extends DRMT.System {
 
         if (this.keyDownUp) {
           velocity.add(forward.multiplyScalar(accel));
-          console.log(velocity.toArray());
         }
         if (this.keyDownDown) {
           velocity.add(forward.multiplyScalar(-accel));
