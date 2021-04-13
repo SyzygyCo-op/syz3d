@@ -12,7 +12,6 @@ import {
   UILabelComponent,
   LocalPlayerTag,
   PlayerTag,
-  SpinComponent,
   RotationComponent,
   PositionComponent,
   VelocityComponent,
@@ -21,6 +20,7 @@ import {
   Object3DComponent,
   BoundingBoxComponent,
   GltfUrlComponent,
+  AngularVelocityComponent,
 } from "./components";
 import { getPlayerName } from "./utils";
 import { GAME_LOOP_FREQUENCY_HZ } from "./config";
@@ -30,13 +30,13 @@ export const world = new DRMT.World()
   .registerComponent(PositionComponent)
   .registerComponent(VelocityComponent)
   .registerComponent(RotationComponent)
+  .registerComponent(AngularVelocityComponent)
   .registerComponent(GltfUrlComponent)
   .registerComponent(Object3DComponent)
   .registerComponent(BoundingBoxComponent)
   .registerComponent(UILabelComponent)
   .registerComponent(PlayerTag)
   .registerComponent(LocalPlayerTag)
-  .registerComponent(SpinComponent)
   .registerComponent(BumpComponent)
   .registerComponent(RenderToCanvasTag)
   .registerSystem(LoaderSystem)

@@ -1,6 +1,7 @@
 import * as DRMT from "dreamt";
 import { Euler, MathUtils, Object3D, Vector3 } from "three";
 import {
+  AngularVelocityComponent,
   LocalPlayerTag,
   PositionComponent,
   RotationComponent,
@@ -9,13 +10,9 @@ import {
 import {
   PLAYER_WALK_ACCEL,
   PLAYER_RUN_ACCEL,
-  PLAYER_ROTATION_SPEED_MPS,
+  PLAYER_TURN_ACCEL,
 } from "../config";
 import { StateSystem } from "./StateSystem";
-
-const PI_2 = Math.PI / 2;
-const minPolarAngle = 0;
-const maxPolarAngle = Math.PI;
 
 export class InputSystem extends DRMT.System {
   static queries = {
@@ -101,7 +98,7 @@ export class InputSystem extends DRMT.System {
     if (
       document.pointerLockElement &&
       this.localPlayer &&
-      this.localPlayer.hasComponent(RotationComponent)
+      this.localPlayer.hasComponent(AngularVelocityComponent)
     ) {
       var movementX =
         event.movementX || event.mozMovementX || event.webkitMovementX || 0;
@@ -111,17 +108,12 @@ export class InputSystem extends DRMT.System {
       /**
        * @type Euler
        */
-      const playerRotation = this.localPlayer.getComponent(RotationComponent)
+      const angularVelocity = this.localPlayer.getComponent(AngularVelocityComponent)
         .value;
 
-      playerRotation.x += movementY * 0.004;
-      playerRotation.y -= movementX * 0.004;
+      angularVelocity.x += movementY * 0.04;
+      angularVelocity.y -= movementX * 0.04;
 
-      playerRotation.x = MathUtils.clamp(
-        playerRotation.x,
-        PI_2 - maxPolarAngle,
-        PI_2 - minPolarAngle
-      );
     }
   };
 
@@ -136,19 +128,19 @@ export class InputSystem extends DRMT.System {
 
     const hasVelocity = entity.hasComponent(VelocityComponent);
     const hasRotation = entity.hasComponent(RotationComponent);
+    const hasAngularVelocity = entity.hasComponent(AngularVelocityComponent);
 
-    if (hasRotation) {
+    if (hasAngularVelocity) {
       /**
        * @type Euler
        */
-      const rotation = entity.getComponent(RotationComponent).value;
+      const angularVelocity = entity.getComponent(AngularVelocityComponent).value;
 
-      const rotationDelta = PLAYER_ROTATION_SPEED_MPS * (delta / 1000);
       if (this.keyDownLeft) {
-        rotation.y += rotationDelta;
+        angularVelocity.y += PLAYER_TURN_ACCEL;
       }
       if (this.keyDownRight) {
-        rotation.y -= rotationDelta;
+        angularVelocity.y -= PLAYER_TURN_ACCEL;
       }
     }
 
@@ -178,8 +170,8 @@ export class InputSystem extends DRMT.System {
         entity.hasComponent(PositionComponent) &&
         entity.hasComponent(VelocityComponent)
       ) {
-        const velocity = entity.getMutableComponent(VelocityComponent).value;
-        const position = entity.getMutableComponent(PositionComponent).value;
+        const velocity = entity.getComponent(VelocityComponent).value;
+        const position = entity.getComponent(PositionComponent).value;
 
         if (position.y <= 0) {
           velocity.y = getJumpIntensity(this.keyDownJump);

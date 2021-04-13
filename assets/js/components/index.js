@@ -41,6 +41,11 @@ export class RotationComponent extends DRMT.Component {
     value: { type: YawPitchRollType },
   };
 }
+export class AngularVelocityComponent extends DRMT.Component {
+  static schema = {
+    value: { type: YawPitchRollType },
+  };
+}
 
 /** Stores a URL pointing to a GLTF/GLB file */
 export class GltfUrlComponent extends DRMT.Component {
@@ -69,12 +74,6 @@ export class UILabelComponent extends DRMT.Component {
 }
 
 export class RenderToCanvasTag extends DRMT.TagComponent {}
-
-export class SpinComponent extends DRMT.Component {
-  static schema = {
-    value: { type: DRMT.Types.Array },
-  };
-}
 
 export class BumpComponent extends DRMT.Component {
   static schema = {

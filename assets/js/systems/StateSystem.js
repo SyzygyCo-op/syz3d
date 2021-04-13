@@ -7,10 +7,10 @@ import {
   RenderToCanvasTag,
   PositionComponent,
   GltfUrlComponent,
-  SpinComponent,
   BumpComponent,
   RotationComponent,
   VelocityComponent,
+  AngularVelocityComponent,
 } from "../components";
 import { ObservableState, PlayerState } from "../state";
 import { getPlayerEntityId } from "../utils";
@@ -96,9 +96,6 @@ export class StateSystem extends DRMT.System {
         },
       })
       .registerComponent("bump", BumpComponent)
-      .registerComponent("spin", SpinComponent, {
-        writeCache: (arr) => arr && arr.join(","),
-      });
     this.worldCache = {};
     this.worldDiffTimestamp = 0;
   }
@@ -155,7 +152,8 @@ export class StateSystem extends DRMT.System {
     this.correspondent
       .createEntity(getPlayerEntityId())
       .addComponent(LocalPlayerTag)
-      .addComponent(VelocityComponent);
+      .addComponent(VelocityComponent)
+      .addComponent(AngularVelocityComponent);
     this.observable.createLocalPlayer(partialPlayerData);
   }
 
