@@ -1,6 +1,6 @@
 import * as DRMT from "dreamt";
 import { Euler, Vector3 } from "three";
-import { PositionComponent, RotationComponent } from "../components";
+import { AngularVelocityComponent, PositionComponent, RotationComponent, VelocityComponent } from "../components";
 
 // TODO for wire format use something like Protobufs instead of JSON
 
@@ -11,34 +11,43 @@ function round(num) {
   return Math.round(num * 1000) / 1000;
 }
 
+/** @param {Vector3 | Euler} vectorOrEuler */
+function round3(vectorOrEuler) {
+  vectorOrEuler.x = round(vectorOrEuler.x);
+  vectorOrEuler.y = round(vectorOrEuler.y);
+  vectorOrEuler.z = round(vectorOrEuler.z);
+}
+
+/** @param {DRMT.ComponentConstructor} Component */
+function thunk(Component) {
+  return roundComponent;
+  /** @param {DRMT.Entity} entity */
+  function roundComponent(entity) {
+    const value = /** @type any */(entity.getComponent(Component)).value
+    round3(value);
+  }
+}
+
 export class RoundingSystem extends DRMT.System {
   static queries = {
-    positions: {
+    position: {
       components: [PositionComponent],
     },
-    rotations: {
+    rotation: {
       components: [RotationComponent],
+    },
+    velocity: {
+      components: [VelocityComponent],
+    },
+    angularVelocity: {
+      components: [AngularVelocityComponent],
     },
   };
 
   execute(_delta, _time) {
-    this.queries.positions.results.forEach((entity) => {
-      /**
-       * @type Vector3
-       */
-      const position = entity.getComponent(PositionComponent).value;
-      position.x = round(position.x);
-      position.y = round(position.y);
-      position.z = round(position.z);
-    });
-    this.queries.rotations.results.forEach((entity) => {
-      /**
-       * @type Euler
-       */
-      const rotation = entity.getComponent(RotationComponent).value;
-      rotation.x = round(rotation.x);
-      rotation.y = round(rotation.y);
-      rotation.z = round(rotation.z);
-    });
+    this.queries.velocity.results.forEach(thunk(PositionComponent));
+    this.queries.angularVelocity.results.forEach(thunk(RotationComponent));
+    this.queries.velocity.results.forEach(thunk(VelocityComponent));
+    this.queries.angularVelocity.results.forEach(thunk(AngularVelocityComponent));
   }
 }
