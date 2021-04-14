@@ -1,21 +1,18 @@
 import * as DRMT from "dreamt";
 import * as MOBX from "mobx";
-import { Euler, Vector3 } from "three";
 import * as config from "../config";
 import { preloadGltf } from "../systems/LoaderSystem";
 
 export class PlayerState {
   is_player = true;
   render_to_canvas = true;
-  player_name = "";
+  label = "";
   /**
    * @type string?
    */
   glft_url = null;
-  position = new Vector3();
-  velocity = new Vector3();
-  rotation = new Euler();
-  spin = [0, 0, 0];
+  position = [0, 0, 0];
+  rotation = [0, 0, 0, 'YXZ'];
 }
 
 export class Asset3D {
@@ -45,7 +42,9 @@ export const avatars = [
   new Asset3D("/3d/PokemonDratini/preview.png", "/3d/PokemonDratini/model.glb"),
   new Asset3D("/3d/ShenLong/preview.png", "/3d/ShenLong/model.glb"),
 ];
-const assets = [...avatars, new Asset3D("", "/3d/RiverIsland/model.glb")];
+const assets = [...avatars, new Asset3D("", "/3d/RiverIsland/model.glb"),
+  new Asset3D("", "/3d/TieFighter/model.glb")
+];
 
 export async function preloadAssets() {
   await Promise.all(assets.map((a) => a.preload()));

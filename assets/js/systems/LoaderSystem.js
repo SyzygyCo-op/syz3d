@@ -29,6 +29,20 @@ export class LoaderSystem extends DRMT.System {
 }
 
 // TODO unit-test below code
+// TODO(optimize) use InstancedMesh
+// var dummy = new THREE.Object3D();
+// gltf.scene.traverse(function (child) {
+//   if (child.isMesh) {
+//     var instancedMesh = new THREE.InstancedMesh(
+//       child.geometry,
+//       child.material,
+//       1
+//     );
+//     instancedMesh.setMatrixAt(0, dummy.matrix);
+//     instancedMesh.position.add(new THREE.Vector3(0.6, 0, 0));
+//     scene.add(instancedMesh);
+//   }
+// });
 
 const urlMap = new Map();
 const gltfLoader = new GLTFLoader();
@@ -51,13 +65,13 @@ async function entityReloadGltf(entity) {
   tempBox3.setFromObject(result);
   tempBox3.getSize(tempVec3);
 
+  upsertComponent(entity, Object3DComponent, { value: result }, cloneValue);
   upsertComponent(
     entity,
-    Object3DComponent,
-    { value: result },
+    BoundingBoxComponent,
+    { value: tempVec3 },
     cloneValue
   );
-  upsertComponent(entity, BoundingBoxComponent, { value: tempVec3 }, cloneValue);
 }
 
 /**
@@ -99,10 +113,7 @@ export function preloadGltf(url) {
  */
 function upsertComponent(entity, Component, data, clone = (x) => x) {
   if (entity.hasComponent(Component)) {
-    Object.assign(
-      entity.getMutableComponent(Component),
-      clone(data)
-    );
+    Object.assign(entity.getMutableComponent(Component), clone(data));
   } else {
     entity.addComponent(Component, data);
   }

@@ -45,7 +45,7 @@ export const ReactApp = observer(
           <UI.HeadsUp
             onAvatarEdit={handleAvatarEdit}
             onSettingsOpen={handleSettingsOpen}
-            localPlayerName={state.localPlayer.actual.player_name}
+            localPlayerName={state.localPlayer.actual.label}
           />
           <Canvas invalidateFrameloop>
             <React.Suspense fallback={null}>

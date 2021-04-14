@@ -11,7 +11,9 @@ import {
   RotationComponent,
   VelocityComponent,
   AngularVelocityComponent,
+  ScaleComponent,
 } from "../components";
+import { NETWORK_FRAME_DURATION } from "../config";
 import { ObservableState, PlayerState } from "../state";
 import { getPlayerEntityId } from "../utils";
 
@@ -31,7 +33,9 @@ export class StateSystem extends DRMT.System {
   worldDirty = false;
   diffForClient = DRMT.Correspondent.createEmptyDiff();
 
-  /** @type HTMLCanvasElement */
+  /**
+   * @type HTMLCanvasElement
+   */
   canvasElement = null;
 
   init() {
@@ -44,7 +48,7 @@ export class StateSystem extends DRMT.System {
         read: () => {},
         write: (compo) => !!compo,
       })
-      .registerComponent("player_name", UILabelComponent)
+      .registerComponent("label", UILabelComponent)
       .registerComponent("glft_url", GltfUrlComponent, {
         read: (compo, data) => {
           if (compo) {
@@ -61,11 +65,11 @@ export class StateSystem extends DRMT.System {
       })
       .registerComponent("position", PositionComponent, {
         read: /**
-         * @param {DRMT.Component<any> & { value: Vector3 }} compo
-         */ (compo, data) => {
-          if (compo && compo.value) {
-            const localPosition = compo.value;
-            localPosition.set.apply(localPosition, data);
+         * @param {DRMT.Component<any> & { value: Vector3 }} component
+         */ (component, data) => {
+          if (component) {
+            component.value = component.value || new Vector3();
+            component.value.set.apply(component.value, data);
           }
         },
         write: /**
@@ -79,11 +83,11 @@ export class StateSystem extends DRMT.System {
       })
       .registerComponent("rotation", RotationComponent, {
         read: /**
-         * @param {DRMT.Component<any> & { value: Euler }} compo
-         */ (compo, data) => {
-          if (compo && compo.value) {
-            const localRotation = compo.value;
-            localRotation.set.apply(localRotation, data);
+         * @param {DRMT.Component<any> & { value: Euler }} component
+         */ (component, data) => {
+          if (component) {
+            component.value = component.value || new Euler();
+            component.value.set.apply(component.value, data);
           }
         },
         write: /**
@@ -95,7 +99,25 @@ export class StateSystem extends DRMT.System {
           return JSON.stringify(data);
         },
       })
-      .registerComponent("bump", BumpComponent)
+      .registerComponent("scale", ScaleComponent, {
+        read: /**
+         * @param {DRMT.Component<any> & { value: Vector3 }} component
+         */ (component, data) => {
+          if (component) {
+            component.value = component.value || new Vector3();
+            component.value.set.apply(component.value, data);
+          }
+        },
+        write: /**
+         * @param {DRMT.Component<any> & { value: Vector3 }} compo
+         */ (compo) => {
+          return compo && compo.value && compo.value.toArray();
+        },
+        writeCache: (data) => {
+          return JSON.stringify(data);
+        },
+      })
+      .registerComponent("bump", BumpComponent);
     this.worldCache = {};
     this.worldDiffTimestamp = 0;
   }
@@ -109,7 +131,7 @@ export class StateSystem extends DRMT.System {
     }
 
     this.worldDirty = false;
-    if (time - this.worldDiffTimestamp >= 200) {
+    if (time - this.worldDiffTimestamp >= NETWORK_FRAME_DURATION) {
       const diff = this.correspondent.produceDiff(this.worldCache);
       if (!DRMT.Correspondent.isEmptyDiff(diff)) {
         this.worldDirty = true;

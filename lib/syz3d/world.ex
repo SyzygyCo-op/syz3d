@@ -9,6 +9,44 @@ defmodule Syz3d.World do
 
   alias Syz3d.Player
 
+  defmodule InitialData do
+    def random_euler do
+      [
+        :rand.uniform() * 4 - 2,
+        :rand.uniform() * 4 - 2,
+        :rand.uniform() * 4 - 2,
+        "YXZ"
+      ]
+    end
+    def random_position do
+      [
+        :rand.uniform() * 4 - 2,
+        :rand.uniform() * 4,
+        :rand.uniform() * 4 - 2,
+      ]
+    end
+    def get() do
+      retval = %{
+        "river_island" => %{
+          "glft_url" => "/3d/RiverIsland/model.glb",
+          "position" => [0, 0, 0],
+          "rotation" => [0, 0, 0, "YXZ"],
+          "render_to_canvas" => true
+        },
+      }
+
+      Enum.reduce(0..99, retval, fn index, acc ->
+        Map.put(acc, "tie_fighter:#{index}", %{
+          "glft_url" => "/3d/TieFighter/model.glb",
+          "position" => random_position(),
+          "rotation" => random_euler(),
+          "scale" => [0.1, 0.1, 0.1],
+          "render_to_canvas" => true
+        })
+      end)
+    end
+  end
+
   defmodule Diff do
     @derive {Jason.Encoder, only: [:upsert, :remove]}
     defstruct upsert: %{}, remove: %{}

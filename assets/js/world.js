@@ -21,16 +21,17 @@ import {
   BoundingBoxComponent,
   GltfUrlComponent,
   AngularVelocityComponent,
+  ScaleComponent,
 } from "./components";
 import { getPlayerName } from "./utils";
 import { GAME_LOOP_FREQUENCY_HZ } from "./config";
-import {Vector3} from "three";
 
 export const world = new DRMT.World()
   .registerComponent(PositionComponent)
   .registerComponent(VelocityComponent)
   .registerComponent(RotationComponent)
   .registerComponent(AngularVelocityComponent)
+  .registerComponent(ScaleComponent)
   .registerComponent(GltfUrlComponent)
   .registerComponent(Object3DComponent)
   .registerComponent(BoundingBoxComponent)
@@ -55,8 +56,7 @@ export const gameLoop = new DRMT.GameLoop(
 
 export function createLocalPlayer() {
   world.getSystem(StateSystem).createLocalPlayer({
-    player_name: getPlayerName(),
-    position: new Vector3(0, 5, 0),
+    label: getPlayerName(),
     glft_url: "/3d/PokemonHaunter/model.glb",
   });
 }

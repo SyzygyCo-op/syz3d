@@ -46,6 +46,11 @@ export class AngularVelocityComponent extends DRMT.Component {
     value: { type: YawPitchRollType },
   };
 }
+export class ScaleComponent extends DRMT.Component {
+  static schema = {
+    value: { type: Vector3Type },
+  };
+}
 
 /** Stores a URL pointing to a GLTF/GLB file */
 export class GltfUrlComponent extends DRMT.Component {

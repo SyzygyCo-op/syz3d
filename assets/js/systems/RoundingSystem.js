@@ -45,8 +45,8 @@ export class RoundingSystem extends DRMT.System {
   };
 
   execute(_delta, _time) {
-    this.queries.velocity.results.forEach(thunk(PositionComponent));
-    this.queries.angularVelocity.results.forEach(thunk(RotationComponent));
+    this.queries.position.results.forEach(thunk(PositionComponent));
+    this.queries.rotation.results.forEach(thunk(RotationComponent));
     this.queries.velocity.results.forEach(thunk(VelocityComponent));
     this.queries.angularVelocity.results.forEach(thunk(AngularVelocityComponent));
   }

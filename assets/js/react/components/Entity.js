@@ -6,16 +6,19 @@ import {
   UILabelComponent,
   Object3DComponent,
   BoundingBoxComponent,
+  ScaleComponent,
 } from "../../components";
 import { Html } from "@react-three/drei";
 import { gameLoop } from "../../world";
+import {Group} from "three";
 
 const stateComponentMap = {
   label: UILabelComponent,
   object3d: Object3DComponent,
   boundingBox: BoundingBoxComponent,
   position: PositionComponent,
-  rotation: RotationComponent
+  rotation: RotationComponent,
+  scale: ScaleComponent
 };
 
 const debug = false;
@@ -29,7 +32,7 @@ export const Entity = ({ entity }) => {
   const entityId = React.useMemo(() => entity.id, [entity]);
 
   const [
-    { label, object3d, boundingBox, position, rotation },
+    { label, object3d, boundingBox, position, rotation, scale },
     sync,
   ] = DRMT.useStateFromComponentMap(entity, stateComponentMap);
 
@@ -62,8 +65,11 @@ export const Entity = ({ entity }) => {
 
   gameLoop.useTick(() => {
     if (ref.current) {
-      position && ref.current.position.copy(position);
-      rotation && ref.current.rotation.copy(rotation);
+      /** @type Group */
+      const group = ref.current;
+      position && group.position.copy(position);
+      rotation && group.rotation.copy(rotation);
+      scale && group.scale.copy(scale);
     }
   });
 
