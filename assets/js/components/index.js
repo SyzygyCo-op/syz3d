@@ -86,3 +86,8 @@ export class BumpComponent extends DRMT.Component {
   };
 }
 
+export class OwnershipComponent extends DRMT.Component {
+  static schema = {
+    value: { type: DRMT.Types.Number },
+  };
+}

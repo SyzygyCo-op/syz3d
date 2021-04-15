@@ -12,10 +12,10 @@ import {
   VelocityComponent,
   AngularVelocityComponent,
   ScaleComponent,
+  OwnershipComponent,
 } from "../components";
-import { NETWORK_FRAME_DURATION } from "../config";
 import { ObservableState, PlayerState } from "../state";
-import { getPlayerEntityId } from "../utils";
+import { getPlayerEntityId, getPlayerId } from "../utils";
 
 export class StateSystem extends DRMT.System {
   static queries = {
@@ -39,7 +39,9 @@ export class StateSystem extends DRMT.System {
   canvasElement = null;
 
   init() {
-    this.correspondent = new DRMT.Correspondent(this.world)
+    this.correspondent = new DRMT.Correspondent(this.world, {
+      isMine: (entity) => entity.hasComponent(OwnershipComponent) && entity.getComponent(OwnershipComponent).value === getPlayerId()
+    })
       .registerComponent("render_to_canvas", RenderToCanvasTag, {
         read: () => {},
         write: (compo) => !!compo,
@@ -50,6 +52,20 @@ export class StateSystem extends DRMT.System {
       })
       .registerComponent("label", UILabelComponent)
       .registerComponent("glft_url", GltfUrlComponent, {
+        read: (compo, data) => {
+          if (compo) {
+            /**
+             * @type any
+             */ (compo).value = data;
+          }
+        },
+        write: (compo) =>
+          compo &&
+          /**
+           * @type any
+           */ (compo).value,
+      })
+      .registerComponent("owner", OwnershipComponent, {
         read: (compo, data) => {
           if (compo) {
             /**
@@ -131,7 +147,7 @@ export class StateSystem extends DRMT.System {
     }
 
     this.worldDirty = false;
-    if (time - this.worldDiffTimestamp >= NETWORK_FRAME_DURATION) {
+    if (time - this.worldDiffTimestamp >= 100) {
       const diff = this.correspondent.produceDiff(this.worldCache);
       if (!DRMT.Correspondent.isEmptyDiff(diff)) {
         this.worldDirty = true;

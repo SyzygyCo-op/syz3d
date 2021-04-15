@@ -22,10 +22,12 @@ import {
   GltfUrlComponent,
   AngularVelocityComponent,
   ScaleComponent,
+  OwnershipComponent,
 } from "./components";
 import { getPlayerName } from "./utils";
 import { GAME_LOOP_FREQUENCY_HZ } from "./config";
 
+// TODO enable hot-reloading for systems, components, etc
 export const world = new DRMT.World()
   .registerComponent(PositionComponent)
   .registerComponent(VelocityComponent)
@@ -40,6 +42,7 @@ export const world = new DRMT.World()
   .registerComponent(LocalPlayerTag)
   .registerComponent(BumpComponent)
   .registerComponent(RenderToCanvasTag)
+  .registerComponent(OwnershipComponent)
   .registerSystem(LoaderSystem)
   .registerSystem(InputSystem)
   .registerSystem(AnimationSystem)

@@ -1,6 +1,6 @@
 export function getPlayerId() {
   // @ts-ignore
-  return window.PLAYER_ID;
+  return parseInt(window.PLAYER_ID, 10);
 }
 
 export function getPlayerName() {
@@ -18,3 +18,5 @@ export function getRoomToken() {
 }
 
 export { debounceBoundFn } from "./async";
+
+export { getForwardNormal } from "./math";

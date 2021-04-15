@@ -2,10 +2,12 @@ import * as DRMT from "dreamt";
 import { Vector3, MathUtils, Euler } from "three";
 import {
   AngularVelocityComponent,
+  OwnershipComponent,
   PositionComponent,
   RotationComponent,
   VelocityComponent,
 } from "../components";
+import { getForwardNormal, getPlayerId } from "../utils";
 
 const PI_2 = Math.PI / 2;
 const minPolarAngle = 0;
@@ -19,6 +21,9 @@ export class AnimationSystem extends DRMT.System {
     angularVelocity: {
       components: [AngularVelocityComponent, RotationComponent],
     },
+    test: {
+      components: [OwnershipComponent],
+    },
   };
 
   /**
@@ -27,6 +32,13 @@ export class AnimationSystem extends DRMT.System {
    */
   execute(delta, time) {
     this.queries.velocity.results.forEach((entity) => {
+      if (
+        entity.hasComponent(OwnershipComponent) &&
+        entity.getComponent(OwnershipComponent).value !== getPlayerId()
+      ) {
+        return;
+      }
+
       /**
        * @type Vector3
        */
@@ -44,6 +56,13 @@ export class AnimationSystem extends DRMT.System {
     });
 
     this.queries.angularVelocity.results.forEach((entity) => {
+      if (
+        entity.hasComponent(OwnershipComponent) &&
+        entity.getComponent(OwnershipComponent).value !== getPlayerId()
+      ) {
+        return;
+      }
+
       /**
        * @type Euler
        */
@@ -59,19 +78,44 @@ export class AnimationSystem extends DRMT.System {
       rotation.y = rotation.y + angularVelocity.y * scale;
       rotation.z = rotation.z + angularVelocity.z * scale;
 
-      rotation.x = MathUtils.clamp(
-        rotation.x,
-        PI_2 - maxPolarAngle,
-        PI_2 - minPolarAngle
-      );
-
       // TODO move to PhysicsSystem, once that exists
+      // TODO use a DampingComponent?
       const damping = 0.5;
 
-      angularVelocity.x = angularVelocity.x * damping;
-      angularVelocity.y = angularVelocity.y * damping;
-      angularVelocity.z = angularVelocity.z * damping;
+      if (!entity.hasComponent(OwnershipComponent)) {
+        rotation.x = MathUtils.clamp(
+          rotation.x,
+          PI_2 - maxPolarAngle,
+          PI_2 - minPolarAngle
+        );
+        angularVelocity.x = angularVelocity.x * damping;
+        angularVelocity.y = angularVelocity.y * damping;
+        angularVelocity.z = angularVelocity.z * damping;
+      }
+    });
 
+    this.queries.test.results.forEach((entity) => {
+      const owningPlayerId = entity.getComponent(OwnershipComponent).value;
+      if (owningPlayerId === getPlayerId()) {
+        if (!entity.hasComponent(VelocityComponent)) {
+          entity.addComponent(VelocityComponent);
+        }
+        if (!entity.hasComponent(AngularVelocityComponent)) {
+          entity.addComponent(AngularVelocityComponent, {
+            value: new Euler(0, Math.random() * 0.7 + 0.5, Math.random() * 0.7 + 0.5),
+          });
+        }
+        /**
+         * @type Vector3
+         */
+        const velocity = entity.getComponent(VelocityComponent).value;
+        /**
+         * @type Euler
+         */
+        const rotation = entity.getComponent(RotationComponent).value;
+
+        velocity.copy(getForwardNormal(rotation).multiplyScalar(3));
+      }
     });
   }
 }

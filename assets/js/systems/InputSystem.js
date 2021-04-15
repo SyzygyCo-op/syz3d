@@ -13,6 +13,7 @@ import {
   PLAYER_TURN_ACCEL,
 } from "../config";
 import { StateSystem } from "./StateSystem";
+import { getForwardNormal } from '../utils';
 
 export class InputSystem extends DRMT.System {
   static queries = {
@@ -186,20 +187,6 @@ export class InputSystem extends DRMT.System {
   }
 }
 
-const tempVec3 = new Vector3();
-const tempObject3D = new Object3D();
-/**
- * @param {Euler}  facingAngle
- */
-function getForwardNormal(facingAngle, speed) {
-  tempObject3D.rotation.copy(facingAngle);
-  tempObject3D.getWorldDirection(tempVec3);
-
-  tempVec3.y = 0;
-  tempVec3.normalize();
-
-  return tempVec3;
-}
 
 let jumpPrepTimer = 0;
 let jumpRestTimer = 0;
