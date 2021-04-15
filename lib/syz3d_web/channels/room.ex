@@ -3,6 +3,7 @@ defmodule Syz3dWeb.RoomChannel do
 
   alias Syz3d.World
   alias Syz3d.Player
+  alias Syz3d.Game
   alias Syz3dWeb.Presence
 
   def join("room:" <> room_slug, _params, socket) do
@@ -21,7 +22,7 @@ defmodule Syz3dWeb.RoomChannel do
 
         body = %{
           world_diff: %World.Diff{
-            upsert: World.get(),
+            upsert: Game.assign_test_entities(World.get(), player_id),
             remove: %{}
           }
         }

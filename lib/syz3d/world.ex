@@ -26,7 +26,7 @@ defmodule Syz3d.World do
       ]
     end
     def get() do
-      retval = %{
+      %{
         "river_island" => %{
           "glft_url" => "/3d/RiverIsland/model.glb",
           "position" => [0, 0, 0],
@@ -34,16 +34,6 @@ defmodule Syz3d.World do
           "render_to_canvas" => true
         },
       }
-
-      Enum.reduce(0..99, retval, fn index, acc ->
-        Map.put(acc, "tie_fighter:#{index}", %{
-          "glft_url" => "/3d/TieFighter/model.glb",
-          "position" => random_position(),
-          "rotation" => random_euler(),
-          "scale" => [0.1, 0.1, 0.1],
-          "render_to_canvas" => true
-        })
-      end)
     end
   end
 
