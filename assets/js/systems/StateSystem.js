@@ -22,9 +22,7 @@ export class StateSystem extends DRMT.System {
     toRender: {
       components: [RenderToCanvasTag],
       listen: {
-        added: true,
-        removed: true,
-        changed: true, // Detect that any of the components on the query has changed
+        removed: true
       },
     },
   };
@@ -40,7 +38,9 @@ export class StateSystem extends DRMT.System {
 
   init() {
     this.correspondent = new DRMT.Correspondent(this.world, {
-      isMine: (entity) => entity.hasComponent(OwnershipComponent) && entity.getComponent(OwnershipComponent).value === getPlayerId()
+      isMine: (entity) =>
+        entity.hasComponent(OwnershipComponent) &&
+        entity.getComponent(OwnershipComponent).value === getPlayerId(),
     })
       .registerComponent("render_to_canvas", RenderToCanvasTag, {
         read: () => {},
@@ -142,7 +142,10 @@ export class StateSystem extends DRMT.System {
     const entitiesToRender = this.queries.toRender.results;
     if (this.queries.toRender.removed.length > 0) {
       this.observable.resetEntitiesToRender(entitiesToRender);
-    } else {
+    } else if (
+      this.queries.toRender.results.length >
+      this.observable.entitiesToRender.length
+    ) {
       this.observable.setEntitiesToRender(entitiesToRender);
     }
 
@@ -157,14 +160,21 @@ export class StateSystem extends DRMT.System {
 
         // TODO add target parameter
         const worldState = this.correspondent.produceDiff({});
-        // TODO make methods for analyzing diffs
-        const localPlayerData = worldState.upsert[getPlayerEntityId()];
-        if (localPlayerData) {
-          this.observable.localPlayer.setActual(
-            /**
-             * @type any
-             */ (localPlayerData)
-          );
+        // TODO add methods for analyzing diffs
+        if (
+          !DRMT.Correspondent.isEmptyDiff({
+            upsert: diff.upsert[getPlayerEntityId()],
+            remove: {},
+          })
+        ) {
+          const localPlayerData = worldState.upsert[getPlayerEntityId()];
+          if (localPlayerData) {
+            this.observable.localPlayer.setActual(
+              /**
+               * @type any
+               */ (localPlayerData)
+            );
+          }
         }
       }
     }
