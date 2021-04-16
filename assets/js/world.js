@@ -24,10 +24,14 @@ const systems = [
 ];
 
 // TODO enable hot-reloading for systems etc
-/** @type DRMT.World */
+/**
+ * @type DRMT.World
+ */
 export let world;
 
-/** @type DRMT.GameLoop */
+/**
+ * @type DRMT.GameLoop
+ */
 export let gameLoop;
 
 if (module.hot) {
@@ -39,10 +43,13 @@ if (module.hot) {
     console.log("not able to hot swap entity components contructors");
 
     // Type library is a bit out of date...
-    /** @type any */(module.hot).invalidate();
+    /**
+     * @type any
+     */ (module.hot).invalidate();
   } else {
     module.hot.accept();
   }
+
   module.hot.dispose(function (data) {
     console.log("pausing game loop");
     gameLoop.pause();
@@ -54,50 +61,61 @@ if (module.hot) {
     data.components = components;
   });
 
-  if (module.hot.status() === "apply") {
-    world = module.hot.data.world;
-    registerSystems();
-    world.getSystem(StateSystem).correspondent._knownEntityMap = module.hot.data.entityMap;
-    console.log(/** @type any */(world).stats());
+  module.hot.status() === "apply" ? reload() : initialize();
+}
 
-    gameLoop = module.hot.data.gameLoop;
-    gameLoop.start();
+if (process.env.NODE_ENV !== "development") {
+  initialize();
+}
 
-  } else {
-    world = new DRMT.World();
-    Object.values(components).forEach((Component) =>
-      world.registerComponent(Component)
-    );
-    registerSystems();
+function initialize() {
+  world = new DRMT.World();
+  Object.values(components).forEach((Component) =>
+    world.registerComponent(Component)
+  );
+  registerSystems();
 
-    gameLoop = new DRMT.GameLoop(
-      world.execute.bind(world),
-      GAME_LOOP_FREQUENCY_HZ
-      // { pauseOnWindowBlur: true }
-    );
+  gameLoop = new DRMT.GameLoop(
+    world.execute.bind(world),
+    GAME_LOOP_FREQUENCY_HZ
+    // { pauseOnWindowBlur: true }
+  );
+}
 
-  }
+function reload() {
+  world = module.hot.data.world;
+  registerSystems();
+  world.getSystem(StateSystem).correspondent._knownEntityMap =
+    module.hot.data.entityMap;
+  console.log(
+    /**
+     * @type any
+     */ (world).stats()
+  );
+
+  gameLoop = module.hot.data.gameLoop;
+  gameLoop.start();
 }
 
 function registerSystems() {
   systems.forEach((System) => {
-    world.registerSystem(System)
+    world.registerSystem(System);
     const sys = world.getSystem(System);
     // TODO remove if
-    if(sys.restart) {
+    if (sys.restart) {
       sys.restart();
     }
-  })
+  });
 }
 function unregisterSystems() {
   systems.forEach((System) => {
     const sys = world.getSystem(System);
     // TODO remove if
-    if(sys.dispose) {
+    if (sys.dispose) {
       sys.dispose();
     }
-    world.unregisterSystem(System)
-  })
+    world.unregisterSystem(System);
+  });
 }
 
 export function createLocalPlayer() {
@@ -107,4 +125,3 @@ export function createLocalPlayer() {
     glft_url: "/3d/PokemonHaunter/model.glb",
   });
 }
-
