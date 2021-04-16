@@ -106,3 +106,7 @@ export class ObservableState {
     this.openModalId = modalId;
   }
 }
+
+// TODO add a createBox fn
+/** @type import("dreamt").IEntityComponentData */
+export const correspondentCache = {};

@@ -13,7 +13,7 @@ import {
   PLAYER_TURN_ACCEL,
 } from "../config";
 import { StateSystem } from "./StateSystem";
-import { getForwardNormal } from '../utils';
+import { getForwardNormal } from "../utils";
 
 export class InputSystem extends DRMT.System {
   static queries = {
@@ -77,25 +77,43 @@ export class InputSystem extends DRMT.System {
     window.addEventListener("keydown", this.updateKeyDownState);
     window.addEventListener("keyup", this.updateKeyDownState);
     // If focus is lost before key is released, the up event will not fire
-    window.addEventListener("blur", () => {
+    window.addEventListener("blur", this.handleMouseDown);
+
+    document.addEventListener("mousedown", this.handleMouseDown);
+
+    document.body.addEventListener("mousemove", this.handleMouseMove);
+  }
+
+  // TODO add dispose method to base class
+  dispose() {
+    window.removeEventListener("keydown", this.updateKeyDownState);
+    window.removeEventListener("keyup", this.updateKeyDownState);
+    // If fremoves is lost before key is released, the up event will not fire
+    window.removeEventListener("blur", this.handleMouseDown);
+
+    document.removeEventListener("mousedown", this.handleMouseDown);
+
+    document.body.removeEventListener("mousemove", this.handleMouseMove);
+  }
+
+  handleBlurWindow = () => {
       this.keyDownRight = false;
       this.keyDownLeft = false;
       this.keyDownJump = false;
       this.keyDownShift = false;
-    });
+    };
 
-    document.addEventListener("mousedown", (evt) => {
-      if (document.pointerLockElement) {
-        document.exitPointerLock();
-      } else if (evt.target === this.canvasElement) {
-        this.canvasElement.requestPointerLock();
-      }
-    });
+  handleMouseDown = (evt) => {
+    if (document.pointerLockElement || this._hasPointerLock) {
+      document.exitPointerLock();
+      this._hasPointerLock = false;
+    } else if (evt.target === this.canvasElement) {
+      this.canvasElement.requestPointerLock();
+      this._hasPointerLock = true;
+    }
+  };
 
-    document.body.addEventListener("mousemove", this.onMouseMove);
-  }
-
-  onMouseMove = (event) => {
+  handleMouseMove = (event) => {
     if (
       document.pointerLockElement &&
       this.localPlayer &&
@@ -109,12 +127,12 @@ export class InputSystem extends DRMT.System {
       /**
        * @type Euler
        */
-      const angularVelocity = this.localPlayer.getComponent(AngularVelocityComponent)
-        .value;
+      const angularVelocity = this.localPlayer.getComponent(
+        AngularVelocityComponent
+      ).value;
 
       angularVelocity.x += movementY * 0.04;
       angularVelocity.y -= movementX * 0.04;
-
     }
   };
 
@@ -135,7 +153,8 @@ export class InputSystem extends DRMT.System {
       /**
        * @type Euler
        */
-      const angularVelocity = entity.getComponent(AngularVelocityComponent).value;
+      const angularVelocity = entity.getComponent(AngularVelocityComponent)
+        .value;
 
       if (this.keyDownLeft) {
         angularVelocity.y += PLAYER_TURN_ACCEL;
@@ -153,9 +172,7 @@ export class InputSystem extends DRMT.System {
       const rotation = entity.getComponent(RotationComponent).value;
 
       if (this.keyDownUp || this.keyDownDown) {
-        const accel = this.keyDownShift
-          ? PLAYER_WALK_ACCEL
-          : PLAYER_RUN_ACCEL;
+        const accel = this.keyDownShift ? PLAYER_WALK_ACCEL : PLAYER_RUN_ACCEL;
         const forward = getForwardNormal(rotation);
 
         if (this.keyDownUp) {
@@ -186,7 +203,6 @@ export class InputSystem extends DRMT.System {
     }
   }
 }
-
 
 let jumpPrepTimer = 0;
 let jumpRestTimer = 0;
@@ -225,3 +241,4 @@ function getJumpIntensity(keyIsDown) {
 
   return retval;
 }
+

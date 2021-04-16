@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require('webpack');
 const glob = require("glob");
 const HardSourceWebpackPlugin = require("hard-source-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
@@ -63,3 +64,4 @@ module.exports = (env, options) => {
     ),
   };
 };
+

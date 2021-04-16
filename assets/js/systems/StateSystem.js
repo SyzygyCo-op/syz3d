@@ -16,14 +16,18 @@ import {
 } from "../components";
 import { ObservableState, PlayerState } from "../state";
 import { getPlayerEntityId, getPlayerId } from "../utils";
+import { correspondentCache } from "../state";
 
 export class StateSystem extends DRMT.System {
   static queries = {
     toRender: {
       components: [RenderToCanvasTag],
       listen: {
-        removed: true
+        removed: true,
       },
+    },
+    localPlayer: {
+      components: [LocalPlayerTag],
     },
   };
 
@@ -134,7 +138,7 @@ export class StateSystem extends DRMT.System {
         },
       })
       .registerComponent("bump", BumpComponent);
-    this.worldCache = {};
+    this.worldCache = correspondentCache;
     this.worldDiffTimestamp = 0;
   }
 
@@ -161,20 +165,13 @@ export class StateSystem extends DRMT.System {
         // TODO add target parameter
         const worldState = this.correspondent.produceDiff({});
         // TODO add methods for analyzing diffs
-        if (
-          diff.upsert[getPlayerEntityId()] && !DRMT.Correspondent.isEmptyDiff({
-            upsert: diff.upsert[getPlayerEntityId()],
-            remove: {},
-          })
-        ) {
-          const localPlayerData = worldState.upsert[getPlayerEntityId()];
-          if (localPlayerData) {
-            this.observable.localPlayer.setActual(
-              /**
-               * @type any
-               */ (localPlayerData)
-            );
-          }
+        const localPlayerData = worldState.upsert[getPlayerEntityId()];
+        if (localPlayerData) {
+          this.observable.localPlayer.setActual(
+            /**
+             * @type any
+             */ (localPlayerData)
+          );
         }
       }
     }
@@ -211,6 +208,16 @@ export class StateSystem extends DRMT.System {
   updateWorld(diff) {
     // TODO change this vvv if the server ever becomes authoritative
     delete diff.upsert[getPlayerEntityId()];
+    // TODO need a method for knowing if the diff actually would make a difference
+    // useful for when the systems are hot reloaded
     this.correspondent.consumeDiff(diff).updateCache(this.worldCache, diff);
+  }
+
+  // TODO add to base class
+  restart() {
+    this.correspondent.registerEntity(
+      getPlayerEntityId(),
+      this.queries.localPlayer.results[0]
+    );
   }
 }

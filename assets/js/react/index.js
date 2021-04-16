@@ -6,6 +6,7 @@ import { StateSystem } from "../systems";
 
 export function startReactApp() {
   const observable = world.getSystem(StateSystem).observable;
+  console.log("starting React renderer");
 
   ReactDOM.render(
     <ReactApp state={observable} />,
@@ -13,3 +14,9 @@ export function startReactApp() {
   );
 }
 
+if (module.hot) {
+  module.hot.accept();
+  if (module.hot.status() === "apply") {
+    startReactApp();
+  }
+}

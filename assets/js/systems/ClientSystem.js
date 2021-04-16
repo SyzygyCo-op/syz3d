@@ -24,16 +24,16 @@ export class ClientSystem extends DRMT.System {
   }
 
   init() {
-    const socket = new Socket("/socket", {
+    this.socket = new Socket("/socket", {
       params: { room_token: getRoomToken() },
     });
-    socket.connect();
+    this.socket.connect();
 
     const roomSlug = /**
      * @type {any} window
      */ (window).ROOM_SLUG;
     const topic = `room:${roomSlug}`;
-    this.channel = socket.channel(topic);
+    this.channel = this.socket.channel(topic);
 
     this.channel.on("init", (response) => {
       this._updateWorld(response.body.world_diff);
@@ -62,5 +62,10 @@ export class ClientSystem extends DRMT.System {
     if (this._worldIsDirty()) {
       this.channel.push("world_diff", { body: this._getWorldDiff() });
     }
+  }
+
+  dispose() {
+    this.channel.leave();
+    this.socket.disconnect();
   }
 }

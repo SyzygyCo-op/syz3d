@@ -15,7 +15,7 @@ export const AvatarForm = (props) => {
       <AntD.Form {...restProps}>
         <AntD.Form.Item
           label="name"
-          name="player_name"
+          name="label"
           hasFeedback={validating}
           validateStatus={validating ? "validating" : null}
           rules={[{ required: true, message: "You gotta have a name!" }]}

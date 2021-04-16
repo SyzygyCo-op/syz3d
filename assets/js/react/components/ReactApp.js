@@ -63,7 +63,7 @@ export const ReactApp = observer(
           <UI.SettingsModalBody
             onAvatarEdit={handleAvatarEdit}
             // TODO use selectors
-            localPlayerName={state.localPlayer.actual.player_name}
+            localPlayerName={state.localPlayer.actual.label}
           />
         </UI.Drawer>
         <UI.Drawer

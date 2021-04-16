@@ -6,60 +6,105 @@ import {
   LoaderSystem,
   InputSystem,
   RoundingSystem,
-  CameraSystem
+  CameraSystem,
 } from "./systems";
-import {
-  UILabelComponent,
-  LocalPlayerTag,
-  PlayerTag,
-  RotationComponent,
-  PositionComponent,
-  VelocityComponent,
-  BumpComponent,
-  RenderToCanvasTag,
-  Object3DComponent,
-  BoundingBoxComponent,
-  GltfUrlComponent,
-  AngularVelocityComponent,
-  ScaleComponent,
-  OwnershipComponent,
-} from "./components";
+import * as components from "./components";
 import { getPlayerName } from "./utils";
 import { GAME_LOOP_FREQUENCY_HZ } from "./config";
 
-// TODO enable hot-reloading for systems, components, etc
-export const world = new DRMT.World()
-  .registerComponent(PositionComponent)
-  .registerComponent(VelocityComponent)
-  .registerComponent(RotationComponent)
-  .registerComponent(AngularVelocityComponent)
-  .registerComponent(ScaleComponent)
-  .registerComponent(GltfUrlComponent)
-  .registerComponent(Object3DComponent)
-  .registerComponent(BoundingBoxComponent)
-  .registerComponent(UILabelComponent)
-  .registerComponent(PlayerTag)
-  .registerComponent(LocalPlayerTag)
-  .registerComponent(BumpComponent)
-  .registerComponent(RenderToCanvasTag)
-  .registerComponent(OwnershipComponent)
-  .registerSystem(LoaderSystem)
-  .registerSystem(InputSystem)
-  .registerSystem(AnimationSystem)
-  .registerSystem(CameraSystem)
-  .registerSystem(RoundingSystem)
-  .registerSystem(StateSystem)
-  .registerSystem(ClientSystem)
+// The order of registration determines order of execution
+const systems = [
+  LoaderSystem,
+  InputSystem,
+  AnimationSystem,
+  CameraSystem,
+  RoundingSystem,
+  StateSystem,
+  ClientSystem,
+];
 
-export const gameLoop = new DRMT.GameLoop(
-  world.execute.bind(world),
-  GAME_LOOP_FREQUENCY_HZ,
-  // { pauseOnWindowBlur: true }
-);
+// TODO enable hot-reloading for systems etc
+/** @type DRMT.World */
+export let world;
+
+/** @type DRMT.GameLoop */
+export let gameLoop;
+
+if (module.hot) {
+  if (
+    module.hot.data &&
+    module.hot.data.components &&
+    module.hot.data.components !== components
+  ) {
+    console.log("not able to hot swap entity components contructors");
+
+    // Type library is a bit out of date...
+    /** @type any */(module.hot).invalidate();
+  } else {
+    module.hot.accept();
+  }
+  module.hot.dispose(function (data) {
+    console.log("pausing game loop");
+    gameLoop.pause();
+    data.entityMap = world.getSystem(StateSystem).correspondent._knownEntityMap;
+    unregisterSystems();
+
+    data.world = world;
+    data.gameLoop = gameLoop;
+    data.components = components;
+  });
+
+  if (module.hot.status() === "apply") {
+    world = module.hot.data.world;
+    registerSystems();
+    world.getSystem(StateSystem).correspondent._knownEntityMap = module.hot.data.entityMap;
+    console.log(/** @type any */(world).stats());
+
+    gameLoop = module.hot.data.gameLoop;
+    gameLoop.start();
+
+  } else {
+    world = new DRMT.World();
+    Object.values(components).forEach((Component) =>
+      world.registerComponent(Component)
+    );
+    registerSystems();
+
+    gameLoop = new DRMT.GameLoop(
+      world.execute.bind(world),
+      GAME_LOOP_FREQUENCY_HZ
+      // { pauseOnWindowBlur: true }
+    );
+
+  }
+}
+
+function registerSystems() {
+  systems.forEach((System) => {
+    world.registerSystem(System)
+    const sys = world.getSystem(System);
+    // TODO remove if
+    if(sys.restart) {
+      sys.restart();
+    }
+  })
+}
+function unregisterSystems() {
+  systems.forEach((System) => {
+    const sys = world.getSystem(System);
+    // TODO remove if
+    if(sys.dispose) {
+      sys.dispose();
+    }
+    world.unregisterSystem(System)
+  })
+}
 
 export function createLocalPlayer() {
+  console.log("creating local player");
   world.getSystem(StateSystem).createLocalPlayer({
     label: getPlayerName(),
     glft_url: "/3d/PokemonHaunter/model.glb",
   });
 }
+
