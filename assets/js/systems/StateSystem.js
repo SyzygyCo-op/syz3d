@@ -162,7 +162,7 @@ export class StateSystem extends DRMT.System {
         const worldState = this.correspondent.produceDiff({});
         // TODO add methods for analyzing diffs
         if (
-          !DRMT.Correspondent.isEmptyDiff({
+          diff.upsert[getPlayerEntityId()] && !DRMT.Correspondent.isEmptyDiff({
             upsert: diff.upsert[getPlayerEntityId()],
             remove: {},
           })
