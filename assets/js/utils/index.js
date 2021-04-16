@@ -17,6 +17,7 @@ export function getRoomToken() {
   return window.ROOM_TOKEN;
 }
 
+
 export { debounceBoundFn } from "./async";
 
-export { getForwardNormal } from "./math";
+export { getForwardNormal, isOnCamera } from "./math";

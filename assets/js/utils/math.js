@@ -1,16 +1,31 @@
-import {Object3D, Vector3, Euler} from "three";
+import {Object3D, Vector3, Euler, PerspectiveCamera} from "three";
 
-const tempVec3 = new Vector3();
-const tempObject3D = new Object3D();
+const v1 = new Vector3();
+const v2 = new Vector3();
+const v3 = new Vector3();
+const o1 = new Object3D();
+
+const DEGREES_TO_RADIANS = Math.PI / 180;
+
 /**
  * @param {Euler}  facingAngle
  */
 export function getForwardNormal(facingAngle) {
-  tempObject3D.rotation.copy(facingAngle);
-  tempObject3D.getWorldDirection(tempVec3);
+  o1.rotation.copy(facingAngle);
+  o1.getWorldDirection(v1);
 
-  tempVec3.y = 0;
-  tempVec3.normalize();
+  v1.y = 0;
+  v1.normalize();
 
-  return tempVec3;
+  return v1;
+}
+
+/** @param {Vector3} objectPos
+  * @param {PerspectiveCamera} camera
+  */
+export function isOnCamera(objectPos, camera) {
+  const cameraPos = v1.setFromMatrixPosition(camera.matrixWorld)
+  const deltaCamObj = objectPos.sub(cameraPos)
+  const camDir = camera.getWorldDirection(v3)
+  return deltaCamObj.angleTo(camDir) > Math.PI / 2
 }
