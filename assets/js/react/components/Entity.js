@@ -10,7 +10,7 @@ import {
 } from "../../components";
 import { Html } from "@react-three/drei";
 import { gameLoop } from "../../world";
-import {Group} from "three";
+import { Group } from "three";
 
 const stateComponentMap = {
   label: UILabelComponent,
@@ -18,7 +18,7 @@ const stateComponentMap = {
   boundingBox: BoundingBoxComponent,
   position: PositionComponent,
   rotation: RotationComponent,
-  scale: ScaleComponent
+  scale: ScaleComponent,
 };
 
 const debug = false;
@@ -38,11 +38,7 @@ export const Entity = ({ entity }) => {
 
   React.useEffect(() => {
     if (debug) {
-      console.log(
-        "mounted",
-        entityId,
-        label
-      );
+      console.log("mounted", entityId, label);
       return () => console.log("unmounting", entityId);
     }
   }, []);
@@ -65,7 +61,9 @@ export const Entity = ({ entity }) => {
 
   gameLoop.useTick(() => {
     if (ref.current) {
-      /** @type Group */
+      /**
+       * @type Group
+       */
       const group = ref.current;
       position && group.position.copy(position);
       rotation && group.rotation.copy(rotation);
@@ -75,15 +73,17 @@ export const Entity = ({ entity }) => {
 
   return (
     <group ref={ref} castShadow receiveShadow>
-      <Html position-y={boundingBox && boundingBox.y}>
-        <h3
-          style={{
-            transform: "translateX(-50%)",
-          }}
-        >
-          {label}
-        </h3>
-      </Html>
+      {label && (
+        <Html position-y={boundingBox && boundingBox.y}>
+          <h3
+            style={{
+              transform: "translateX(-50%)",
+            }}
+          >
+            {label}
+          </h3>
+        </Html>
+      )}
       {object3d && <primitive object={object3d} />}
     </group>
   );
