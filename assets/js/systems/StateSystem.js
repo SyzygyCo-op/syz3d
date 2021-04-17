@@ -165,9 +165,10 @@ export class StateSystem extends DRMT.System {
 
         // TODO add target parameter
         const worldState = this.correspondent.produceDiff({});
-        // TODO add methods for analyzing diffs
-        // use getUpsert
-        const localPlayerData = worldState.upsert[getPlayerEntityId()];
+        const localPlayerData = DRMT.Correspondent.getUpsert(
+          worldState,
+          getPlayerEntityId()
+        );
         if (localPlayerData) {
           this.observable.localPlayer.setActual(
             /**
@@ -179,14 +180,12 @@ export class StateSystem extends DRMT.System {
     }
 
     if (this.observable.localPlayer.isDirty) {
-      this.correspondent.consumeDiff({
-        // TODO make methods for sythesizing diffs
-        // use setUpsert and createEmptyDiff
-        upsert: {
-          [getPlayerEntityId()]: this.observable.localPlayer.request,
-        },
-        remove: {},
-      });
+      const changesFromLocalUser = DRMT.Correspondent.setUpsert(
+        DRMT.Correspondent.createEmptyDiff(),
+        getPlayerEntityId(),
+        this.observable.localPlayer.request
+      );
+      this.correspondent.consumeDiff(changesFromLocalUser);
 
       // Make sure the spinner is shown for >=1 sec so user knows it's doing something
       this.observable.localPlayer.clean();
