@@ -107,6 +107,4 @@ export class ObservableState {
   }
 }
 
-// TODO add a createBox fn
-/** @type import("dreamt").IEntityComponentData */
-export const correspondentCache = {};
+export const correspondentCache = DRMT.Correspondent.createEmptyBox();
