@@ -84,7 +84,6 @@ export class InputSystem extends DRMT.System {
     document.body.addEventListener("mousemove", this.handleMouseMove);
   }
 
-  // TODO add dispose method to base class
   dispose() {
     window.removeEventListener("keydown", this.updateKeyDownState);
     window.removeEventListener("keyup", this.updateKeyDownState);

@@ -23,7 +23,6 @@ const systems = [
   ClientSystem,
 ];
 
-// TODO enable hot-reloading for systems etc
 /**
  * @type DRMT.World
  */
@@ -102,18 +101,14 @@ function registerSystems() {
     world.registerSystem(System);
     const sys = world.getSystem(System);
     // TODO remove if
-    if (sys.restart) {
-      sys.restart();
-    }
+    sys.reinit();
   });
 }
 function unregisterSystems() {
   systems.forEach((System) => {
     const sys = world.getSystem(System);
     // TODO remove if
-    if (sys.dispose) {
-      sys.dispose();
-    }
+    sys.dispose();
     world.unregisterSystem(System);
   });
 }

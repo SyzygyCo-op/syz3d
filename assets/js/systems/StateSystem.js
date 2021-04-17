@@ -213,8 +213,7 @@ export class StateSystem extends DRMT.System {
     this.correspondent.consumeDiff(diff).updateCache(this.worldCache, diff);
   }
 
-  // TODO add to base class
-  restart() {
+  reinit() {
     this.correspondent.registerEntity(
       getPlayerEntityId(),
       this.queries.localPlayer.results[0]
