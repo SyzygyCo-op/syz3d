@@ -154,7 +154,7 @@ export class StateSystem extends DRMT.System {
     }
 
     this.worldDirty = false;
-    if (time - this.worldDiffTimestamp >= 100) {
+    if (time - this.worldDiffTimestamp >= 50) {
       const diff = this.correspondent.produceDiff(this.worldCache);
       if (!DRMT.Correspondent.isEmptyDiff(diff)) {
         this.worldDirty = true;
