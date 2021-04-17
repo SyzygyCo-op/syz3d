@@ -108,3 +108,4 @@ export class ObservableState {
 }
 
 export const correspondentCache = DRMT.Correspondent.createEmptyBox();
+export const entityStore = DRMT.Correspondent.createEntityStore();

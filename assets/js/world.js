@@ -52,7 +52,6 @@ if (module.hot) {
   module.hot.dispose(function (data) {
     console.log("pausing game loop");
     gameLoop.pause();
-    data.entityMap = world.getSystem(StateSystem).correspondent._knownEntityMap;
     unregisterSystems();
 
     data.world = world;
@@ -84,8 +83,6 @@ function initialize() {
 function reload() {
   world = module.hot.data.world;
   registerSystems();
-  world.getSystem(StateSystem).correspondent._knownEntityMap =
-    module.hot.data.entityMap;
   console.log(
     /**
      * @type any

@@ -14,7 +14,7 @@ import {
   ScaleComponent,
   OwnershipComponent,
 } from "../components";
-import { ObservableState, PlayerState } from "../state";
+import { entityStore, ObservableState, PlayerState } from "../state";
 import { getPlayerEntityId, getPlayerId } from "../utils";
 import { correspondentCache } from "../state";
 
@@ -42,6 +42,7 @@ export class StateSystem extends DRMT.System {
 
   init() {
     this.correspondent = new DRMT.Correspondent(this.world, {
+      entityStore: entityStore,
       isMine: (entity) =>
         entity.hasComponent(OwnershipComponent) &&
         entity.getComponent(OwnershipComponent).value === getPlayerId(),
@@ -165,6 +166,7 @@ export class StateSystem extends DRMT.System {
         // TODO add target parameter
         const worldState = this.correspondent.produceDiff({});
         // TODO add methods for analyzing diffs
+        // use getUpsert
         const localPlayerData = worldState.upsert[getPlayerEntityId()];
         if (localPlayerData) {
           this.observable.localPlayer.setActual(
@@ -179,6 +181,7 @@ export class StateSystem extends DRMT.System {
     if (this.observable.localPlayer.isDirty) {
       this.correspondent.consumeDiff({
         // TODO make methods for sythesizing diffs
+        // use setUpsert and createEmptyDiff
         upsert: {
           [getPlayerEntityId()]: this.observable.localPlayer.request,
         },
