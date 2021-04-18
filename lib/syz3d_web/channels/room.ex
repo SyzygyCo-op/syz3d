@@ -48,10 +48,15 @@ defmodule Syz3dWeb.RoomChannel do
         end
       end)
     end)
-    removes = for player_id <- live_zombie_list, into: %{} do
+    remove_players = for player_id <- live_zombie_list, into: %{} do
       {Player.make_entity_id(player_id), true}
     end
-    diff = %World.Diff{remove: removes}
+
+    remove_players_and_test_entities = Enum.reduce(live_zombie_list, remove_players, fn player_id, acc ->
+      Game.map_test_entities(acc, player_id, fn -> true end)
+    end)
+
+    diff = %World.Diff{remove: remove_players_and_test_entities}
     if length(live_zombie_list) > 0 do
       broadcast!(socket, "world_diff", %{body: diff})
     end

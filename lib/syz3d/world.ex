@@ -9,6 +9,7 @@ defmodule Syz3d.World do
 
   alias Syz3d.Player
 
+  # TODO move to Syz3d.Game
   defmodule InitialData do
     def random_euler do
       [

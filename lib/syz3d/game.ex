@@ -15,9 +15,19 @@ defmodule  Syz3d.Game do
     ]
   end
 
+  def list_test_entity_ids(player_id) do
+    Enum.map(0..25, fn index -> "tie_fighter:#{player_id}:#{index}" end)
+  end
+
+  def map_test_entities(world_data, player_id, value_fn) do
+    Enum.reduce(list_test_entity_ids(player_id), world_data, fn entity_id, acc ->
+      Map.put(acc, entity_id, value_fn.())
+    end)
+  end
+
   def assign_test_entities(world_data, player_id) do
-    Enum.reduce(0..25, world_data, fn index, acc ->
-      Map.put(acc, "tie_fighter:#{player_id}:#{index}", %{
+    map_test_entities(world_data, player_id, fn ->
+      %{
         "glft_url" => "/3d/TieFighter/model.glb",
         "position" => random_position(),
         "rotation" => random_euler(),
@@ -26,7 +36,8 @@ defmodule  Syz3d.Game do
           # "velocity" => [0, 0, 0],
           # "angular_velocity" => [0, :rand.uniform() * 0.3 + 0.1, 0],
         "render_to_canvas" => true
-      })
+      }
     end)
   end
+
 end
