@@ -18,7 +18,7 @@ defmodule Syz3d.Application do
       # Start the Endpoint (http/https)
       Syz3dWeb.Endpoint,
       # Start a worker by calling: Syz3d.Worker.start_link(arg)
-      {Syz3d.World, Syz3d.World.InitialData.get()},
+      {Syz3d.World, Syz3d.Game.get_initial_data()},
       {Syz3d.Player.Collection, %{}}
     ]
 

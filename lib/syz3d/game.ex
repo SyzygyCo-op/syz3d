@@ -15,6 +15,17 @@ defmodule  Syz3d.Game do
     ]
   end
 
+  def get_initial_data() do
+    %{
+      "river_island" => %{
+        "glft_url" => "/3d/RiverIsland/model.glb",
+        "position" => [0, 0, 0],
+        "rotation" => [0, 0, 0, "YXZ"],
+        "render_to_canvas" => true
+      },
+    }
+  end
+
   def list_test_entity_ids(player_id) do
     Enum.map(0..25, fn index -> "tie_fighter:#{player_id}:#{index}" end)
   end

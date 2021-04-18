@@ -9,35 +9,6 @@ defmodule Syz3d.World do
 
   alias Syz3d.Player
 
-  # TODO move to Syz3d.Game
-  defmodule InitialData do
-    def random_euler do
-      [
-        :rand.uniform() * 4 - 2,
-        :rand.uniform() * 4 - 2,
-        :rand.uniform() * 4 - 2,
-        "YXZ"
-      ]
-    end
-    def random_position do
-      [
-        :rand.uniform() * 4 - 2,
-        :rand.uniform() * 4,
-        :rand.uniform() * 4 - 2,
-      ]
-    end
-    def get() do
-      %{
-        "river_island" => %{
-          "glft_url" => "/3d/RiverIsland/model.glb",
-          "position" => [0, 0, 0],
-          "rotation" => [0, 0, 0, "YXZ"],
-          "render_to_canvas" => true
-        },
-      }
-    end
-  end
-
   defmodule Diff do
     @derive {Jason.Encoder, only: [:upsert, :remove]}
     defstruct upsert: %{}, remove: %{}
