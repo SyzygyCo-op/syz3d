@@ -1,5 +1,5 @@
 import * as DRMT from "dreamt";
-import { Euler, MathUtils, Object3D, Vector3 } from "three";
+import { Euler, Vector3 } from "three";
 import {
   AngularVelocityComponent,
   LocalPlayerTag,
@@ -191,13 +191,8 @@ export class InputSystem extends DRMT.System {
         const position = entity.getComponent(PositionComponent).value;
 
         if (position.y <= 0) {
-          velocity.y = getJumpIntensity(this.keyDownJump);
+          velocity.y = getJumpIntensity(this.keyDownJump, delta);
         }
-
-        velocity.y -= 0.1;
-        velocity.y = Math.max(velocity.y, -1);
-        position.y += velocity.y;
-        position.y = Math.max(position.y, 0);
       }
     }
   }
@@ -207,9 +202,11 @@ let jumpPrepTimer = 0;
 let jumpRestTimer = 0;
 
 /**
+ * Currently assumes that delta is rougly the same in each call
  * @param {boolean} keyIsDown  TODO test jumping logic
+ * @param {number} delta
  */
-function getJumpIntensity(keyIsDown) {
+function getJumpIntensity(keyIsDown, delta) {
   let retval = 0;
 
   const isRested = jumpRestTimer > 0;
@@ -221,7 +218,7 @@ function getJumpIntensity(keyIsDown) {
   const isNonZero = isRested && isPrepped;
 
   if (isNonZero) {
-    retval = Math.sqrt(jumpPrepTimer) * 0.5;
+    retval = Math.sqrt(jumpPrepTimer) * delta / 10;
     jumpPrepTimer = 0;
     jumpRestTimer = 0;
   }

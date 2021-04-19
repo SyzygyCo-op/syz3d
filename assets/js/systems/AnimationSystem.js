@@ -39,13 +39,9 @@ export class AnimationSystem extends DRMT.System {
         return;
       }
 
-      /**
-       * @type Vector3
-       */
+      /** @type Vector3 */
       const velocity = entity.getComponent(VelocityComponent).value;
-      /**
-       * @type Vector3
-       */
+      /** @type Vector3 */
       const position = entity.getComponent(PositionComponent).value;
 
       position.addScaledVector(velocity, delta / 1000);
@@ -53,6 +49,9 @@ export class AnimationSystem extends DRMT.System {
       // TODO move to PhysicsSystem, once that exists
       const damping = Math.exp((-5 * delta) / 1000) - 1;
       velocity.addScaledVector(velocity, damping);
+
+      velocity.y -= delta / 20;
+      velocity.y = Math.max(velocity.y, -delta / 5);
     });
 
     this.queries.angularVelocity.results.forEach((entity) => {
@@ -63,14 +62,10 @@ export class AnimationSystem extends DRMT.System {
         return;
       }
 
-      /**
-       * @type Euler
-       */
+      /** @type Euler */
       const angularVelocity = entity.getComponent(AngularVelocityComponent)
         .value;
-      /**
-       * @type Euler
-       */
+      /** @type Euler */
       const rotation = entity.getComponent(RotationComponent).value;
 
       const scale = delta / 1000;
@@ -102,16 +97,16 @@ export class AnimationSystem extends DRMT.System {
         }
         if (!entity.hasComponent(AngularVelocityComponent)) {
           entity.addComponent(AngularVelocityComponent, {
-            value: new Euler(0, Math.random() * 0.7 + 0.5, Math.random() * 0.7 + 0.5),
+            value: new Euler(
+              0,
+              Math.random() * 0.7 + 0.5,
+              Math.random() * 0.7 + 0.5
+            ),
           });
         }
-        /**
-         * @type Vector3
-         */
+        /** @type Vector3 */
         const velocity = entity.getComponent(VelocityComponent).value;
-        /**
-         * @type Euler
-         */
+        /** @type Euler */
         const rotation = entity.getComponent(RotationComponent).value;
 
         velocity.copy(getForwardNormal(rotation).multiplyScalar(3));
