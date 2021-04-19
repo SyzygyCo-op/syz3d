@@ -1,4 +1,5 @@
-export const GAME_LOOP_FREQUENCY_HZ = 20;
+export const GAME_LOOP_FREQUENCY_HZ = 50;
+export const GAME_LOOPS_PER_NETWORK_FRAME = 6;
 export const DEBOUNCE_MS_ON_CHANGE_INPUT = 800;
 export const DEBOUNCE_MS_ON_SAVE_INPUT = 1000;
 /** m/s^2 */

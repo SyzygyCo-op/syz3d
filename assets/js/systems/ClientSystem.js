@@ -8,9 +8,7 @@ export class ClientSystem extends DRMT.System {
     return this.world.getSystem(StateSystem);
   }
 
-  /**
-   * @param {DRMT.IEntityComponentDiff} diff
-   */
+  /** @param {DRMT.IEntityComponentDiff} diff */
   _updateWorld(diff) {
     this._getState().updateWorld(diff);
   }
@@ -25,13 +23,13 @@ export class ClientSystem extends DRMT.System {
 
   init() {
     this.socket = new Socket("/socket", {
-      params: { room_token: getRoomToken() },
+      params: {
+        room_token: getRoomToken(),
+      },
     });
     this.socket.connect();
 
-    const roomSlug = /**
-     * @type {any} window
-     */ (window).ROOM_SLUG;
+    const roomSlug = /** @type {any} window */ (window).ROOM_SLUG;
     const topic = `room:${roomSlug}`;
     this.channel = this.socket.channel(topic);
 
@@ -55,9 +53,7 @@ export class ClientSystem extends DRMT.System {
       );
   }
 
-  /**
-   * @param {number} time
-   */
+  /** @param {number} time */
   execute(_delta, time) {
     if (this._worldIsDirty()) {
       this.channel.push("world_diff", { body: this._getWorldDiff() });

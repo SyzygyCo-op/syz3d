@@ -15,7 +15,7 @@ import {
   OwnershipComponent,
 } from "../components";
 import { entityStore, ObservableState, PlayerState } from "../state";
-import { getPlayerEntityId, getPlayerId } from "../utils";
+import { getNetworkFrameDuration, getPlayerEntityId, getPlayerId } from "../utils";
 import { correspondentCache } from "../state";
 
 export class StateSystem extends DRMT.System {
@@ -35,9 +35,7 @@ export class StateSystem extends DRMT.System {
   worldDirty = false;
   diffForClient = DRMT.Correspondent.createEmptyDiff();
 
-  /**
-   * @type HTMLCanvasElement
-   */
+  /** @type HTMLCanvasElement */
   canvasElement = null;
 
   init() {
@@ -59,43 +57,32 @@ export class StateSystem extends DRMT.System {
       .registerComponent("glft_url", GltfUrlComponent, {
         read: (compo, data) => {
           if (compo) {
-            /**
-             * @type any
-             */ (compo).value = data;
+            /** @type any */ (compo).value = data;
           }
         },
-        write: (compo) =>
-          compo &&
-          /**
-           * @type any
-           */ (compo).value,
+        write: (compo) => compo && /** @type any */ (compo).value,
       })
       .registerComponent("owner", OwnershipComponent, {
         read: (compo, data) => {
           if (compo) {
-            /**
-             * @type any
-             */ (compo).value = data;
+            /** @type any */ (compo).value = data;
           }
         },
-        write: (compo) =>
-          compo &&
-          /**
-           * @type any
-           */ (compo).value,
+        write: (compo) => compo && /** @type any */ (compo).value,
       })
       .registerComponent("position", PositionComponent, {
-        read: /**
-         * @param {DRMT.Component<any> & { value: Vector3 }} component
-         */ (component, data) => {
+        read: /** @param {DRMT.Component<any> & { value: Vector3 }} component */ (
+          component,
+          data
+        ) => {
           if (component) {
             component.value = component.value || new Vector3();
             component.value.set.apply(component.value, data);
           }
         },
-        write: /**
-         * @param {DRMT.Component<any> & { value: Vector3 }} compo
-         */ (compo) => {
+        write: /** @param {DRMT.Component<any> & { value: Vector3 }} compo */ (
+          compo
+        ) => {
           return compo && compo.value && compo.value.toArray();
         },
         writeCache: (data) => {
@@ -103,17 +90,18 @@ export class StateSystem extends DRMT.System {
         },
       })
       .registerComponent("rotation", RotationComponent, {
-        read: /**
-         * @param {DRMT.Component<any> & { value: Euler }} component
-         */ (component, data) => {
+        read: /** @param {DRMT.Component<any> & { value: Euler }} component */ (
+          component,
+          data
+        ) => {
           if (component) {
             component.value = component.value || new Euler();
             component.value.set.apply(component.value, data);
           }
         },
-        write: /**
-         * @param {DRMT.Component<any> & { value: Euler }} compo
-         */ (compo) => {
+        write: /** @param {DRMT.Component<any> & { value: Euler }} compo */ (
+          compo
+        ) => {
           return compo && compo.value && compo.value.toArray();
         },
         writeCache: (data) => {
@@ -121,17 +109,18 @@ export class StateSystem extends DRMT.System {
         },
       })
       .registerComponent("scale", ScaleComponent, {
-        read: /**
-         * @param {DRMT.Component<any> & { value: Vector3 }} component
-         */ (component, data) => {
+        read: /** @param {DRMT.Component<any> & { value: Vector3 }} component */ (
+          component,
+          data
+        ) => {
           if (component) {
             component.value = component.value || new Vector3();
             component.value.set.apply(component.value, data);
           }
         },
-        write: /**
-         * @param {DRMT.Component<any> & { value: Vector3 }} compo
-         */ (compo) => {
+        write: /** @param {DRMT.Component<any> & { value: Vector3 }} compo */ (
+          compo
+        ) => {
           return compo && compo.value && compo.value.toArray();
         },
         writeCache: (data) => {
@@ -155,7 +144,10 @@ export class StateSystem extends DRMT.System {
     }
 
     this.worldDirty = false;
-    if (time - this.worldDiffTimestamp >= 100) {
+    if (
+      time - this.worldDiffTimestamp >=
+      getNetworkFrameDuration()
+    ) {
       const diff = this.correspondent.produceDiff(this.worldCache);
       if (!DRMT.Correspondent.isEmptyDiff(diff)) {
         this.worldDirty = true;
@@ -171,9 +163,7 @@ export class StateSystem extends DRMT.System {
         );
         if (localPlayerData) {
           this.observable.localPlayer.setActual(
-            /**
-             * @type any
-             */ (localPlayerData)
+            /** @type any */ (localPlayerData)
           );
         }
       }
@@ -192,23 +182,23 @@ export class StateSystem extends DRMT.System {
     }
   }
 
-  /**
-   * @param {Partial<PlayerState>} partialPlayerData
-   */
+  /** @param {Partial<PlayerState>} partialPlayerData */
   createLocalPlayer(partialPlayerData) {
     this.correspondent
       .createEntity(getPlayerEntityId())
       .addComponent(LocalPlayerTag)
+      .addComponent(PlayerTag)
       .addComponent(VelocityComponent)
-      .addComponent(AngularVelocityComponent);
+      .addComponent(AngularVelocityComponent)
+      .addComponent(OwnershipComponent, { value: getPlayerId()});
     this.observable.createLocalPlayer(partialPlayerData);
   }
 
-  /**
-   * @param {DRMT.IEntityComponentDiff} diff
-   */
+  /** @param {DRMT.IEntityComponentDiff} diff */
   updateWorld(diff) {
+    const localPlayer = this.queries.localPlayer.results[0];
     // TODO change this vvv if the server ever becomes authoritative
+    // TODO add method for removing entities from a diff
     delete diff.upsert[getPlayerEntityId()];
     // TODO need a method for knowing if the diff actually would make a difference
     // useful for when the systems are hot reloaded

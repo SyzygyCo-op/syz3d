@@ -3,6 +3,7 @@ import {
   StateSystem,
   ClientSystem,
   AnimationSystem,
+  TweenSystem,
   LoaderSystem,
   InputSystem,
   RoundingSystem,
@@ -16,6 +17,7 @@ import { GAME_LOOP_FREQUENCY_HZ } from "./config";
 const systems = [
   LoaderSystem,
   InputSystem,
+  TweenSystem,
   AnimationSystem,
   CameraSystem,
   RoundingSystem,
@@ -23,14 +25,10 @@ const systems = [
   ClientSystem,
 ];
 
-/**
- * @type DRMT.World
- */
+/** @type DRMT.World */
 export let world;
 
-/**
- * @type DRMT.GameLoop
- */
+/** @type DRMT.GameLoop */
 export let gameLoop;
 
 if (module.hot) {
@@ -42,9 +40,7 @@ if (module.hot) {
     console.log("not able to hot swap entity components contructors");
 
     // Type library is a bit out of date...
-    /**
-     * @type any
-     */ (module.hot).invalidate();
+    /** @type any */ (module.hot).invalidate();
   } else {
     module.hot.accept();
   }
@@ -83,11 +79,7 @@ function initialize() {
 function reload() {
   world = module.hot.data.world;
   registerSystems();
-  console.log(
-    /**
-     * @type any
-     */ (world).stats()
-  );
+  console.log(/** @type any */ (world).stats());
 
   gameLoop = module.hot.data.gameLoop;
   gameLoop.start();

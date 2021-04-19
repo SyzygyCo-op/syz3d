@@ -1,12 +1,12 @@
 import * as DRMT from "dreamt";
 import * as React from "react";
 import {
-  PositionComponent,
   RotationComponent,
   UILabelComponent,
   Object3DComponent,
   BoundingBoxComponent,
   ScaleComponent,
+  PositionTweenComponent,
 } from "../../components";
 import { Html } from "@react-three/drei";
 import { gameLoop } from "../../world";
@@ -16,7 +16,7 @@ const stateComponentMap = {
   label: UILabelComponent,
   object3d: Object3DComponent,
   boundingBox: BoundingBoxComponent,
-  position: PositionComponent,
+  position: PositionTweenComponent,
   rotation: RotationComponent,
   scale: ScaleComponent,
 };

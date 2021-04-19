@@ -7,7 +7,7 @@ import {
   RotationComponent,
   VelocityComponent,
 } from "../components";
-import { getForwardNormal, getPlayerId } from "../utils";
+import { getForwardNormal, isPlayer, isMine } from "../utils";
 
 const PI_2 = Math.PI / 2;
 const minPolarAngle = 0;
@@ -32,66 +32,43 @@ export class AnimationSystem extends DRMT.System {
    */
   execute(delta, time) {
     this.queries.velocity.results.forEach((entity) => {
-      if (
-        entity.hasComponent(OwnershipComponent) &&
-        entity.getComponent(OwnershipComponent).value !== getPlayerId()
-      ) {
-        return;
+      if (isMine(entity)) {
+        applyVelocity(entity, PositionComponent, delta);
       }
-
-      /** @type Vector3 */
-      const velocity = entity.getComponent(VelocityComponent).value;
-      /** @type Vector3 */
-      const position = entity.getComponent(PositionComponent).value;
-
-      position.addScaledVector(velocity, delta / 1000);
-
-      // TODO move to PhysicsSystem, once that exists
-      const damping = Math.exp((-5 * delta) / 1000) - 1;
-      velocity.addScaledVector(velocity, damping);
-
-      velocity.y -= delta / 20;
-      velocity.y = Math.max(velocity.y, -delta / 5);
     });
 
     this.queries.angularVelocity.results.forEach((entity) => {
-      if (
-        entity.hasComponent(OwnershipComponent) &&
-        entity.getComponent(OwnershipComponent).value !== getPlayerId()
-      ) {
-        return;
-      }
+      if (isMine(entity)) {
+        /** @type Euler */
+        const angularVelocity = entity.getComponent(AngularVelocityComponent)
+          .value;
+        /** @type Euler */
+        const rotation = entity.getComponent(RotationComponent).value;
 
-      /** @type Euler */
-      const angularVelocity = entity.getComponent(AngularVelocityComponent)
-        .value;
-      /** @type Euler */
-      const rotation = entity.getComponent(RotationComponent).value;
+        const scale = delta / 1000;
+        rotation.x = rotation.x + angularVelocity.x * scale;
+        rotation.y = rotation.y + angularVelocity.y * scale;
+        rotation.z = rotation.z + angularVelocity.z * scale;
 
-      const scale = delta / 1000;
-      rotation.x = rotation.x + angularVelocity.x * scale;
-      rotation.y = rotation.y + angularVelocity.y * scale;
-      rotation.z = rotation.z + angularVelocity.z * scale;
+        // TODO move to PhysicsSystem, once that exists
+        // TODO use a DampingComponent?
+        const damping = 0.5;
 
-      // TODO move to PhysicsSystem, once that exists
-      // TODO use a DampingComponent?
-      const damping = 0.5;
-
-      if (!entity.hasComponent(OwnershipComponent)) {
-        rotation.x = MathUtils.clamp(
-          rotation.x,
-          PI_2 - maxPolarAngle,
-          PI_2 - minPolarAngle
-        );
-        angularVelocity.x = angularVelocity.x * damping;
-        angularVelocity.y = angularVelocity.y * damping;
-        angularVelocity.z = angularVelocity.z * damping;
+        if (isPlayer(entity)) {
+          rotation.x = MathUtils.clamp(
+            rotation.x,
+            PI_2 - maxPolarAngle,
+            PI_2 - minPolarAngle
+          );
+          angularVelocity.x = angularVelocity.x * damping;
+          angularVelocity.y = angularVelocity.y * damping;
+          angularVelocity.z = angularVelocity.z * damping;
+        }
       }
     });
 
     this.queries.test.results.forEach((entity) => {
-      const owningPlayerId = entity.getComponent(OwnershipComponent).value;
-      if (owningPlayerId === getPlayerId()) {
+      if (isMine(entity) && !isPlayer(entity)) {
         if (!entity.hasComponent(VelocityComponent)) {
           entity.addComponent(VelocityComponent);
         }
@@ -113,4 +90,26 @@ export class AnimationSystem extends DRMT.System {
       }
     });
   }
+}
+
+
+/**
+ * @param {DRMT.Entity} entity
+ * @param {typeof PositionComponent} PositionComponent
+ * @param {number} delta
+ */
+export function applyVelocity(entity, PositionComponent, delta) {
+  const velocity = entity.getComponent(VelocityComponent).value;
+  /** @type Vector3 */
+  const position = entity.getComponent(PositionComponent).value;
+
+  position.addScaledVector(velocity, delta / 1000);
+  position.y = Math.max(position.y, 0);
+
+  // TODO move to PhysicsSystem, once that exists
+  const damping = Math.exp((-5 * delta) / 1000) - 1;
+  velocity.addScaledVector(velocity, damping);
+
+  velocity.y -= delta / 20;
+  velocity.y = Math.max(velocity.y, -delta / 5);
 }

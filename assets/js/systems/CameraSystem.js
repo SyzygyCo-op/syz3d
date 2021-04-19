@@ -48,6 +48,7 @@ export class CameraSystem extends DRMT.System {
         const box = this.localPlayer.getComponent(BoundingBoxComponent).value;
         // Generically position the camera at 3/4 the avatar's height
         this.camera.position.y += (box.y / 4) * 3;
+        // TODO is camera positioned to far in front of player?
       }
     }
   }
