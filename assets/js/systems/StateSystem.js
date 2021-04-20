@@ -15,7 +15,11 @@ import {
   OwnershipComponent,
 } from "../components";
 import { entityStore, ObservableState, PlayerState } from "../state";
-import { getNetworkFrameDuration, getPlayerEntityId, getPlayerId } from "../utils";
+import {
+  getNetworkFrameDuration,
+  getPlayerEntityId,
+  getPlayerId,
+} from "../utils";
 import { correspondentCache } from "../state";
 
 export class StateSystem extends DRMT.System {
@@ -76,6 +80,7 @@ export class StateSystem extends DRMT.System {
           data
         ) => {
           if (component) {
+            // TODO should share a vector instance since ECSY copies the value?
             component.value = component.value || new Vector3();
             component.value.set.apply(component.value, data);
           }
@@ -144,10 +149,7 @@ export class StateSystem extends DRMT.System {
     }
 
     this.worldDirty = false;
-    if (
-      time - this.worldDiffTimestamp >=
-      getNetworkFrameDuration()
-    ) {
+    if (time - this.worldDiffTimestamp >= getNetworkFrameDuration()) {
       const diff = this.correspondent.produceDiff(this.worldCache);
       if (!DRMT.Correspondent.isEmptyDiff(diff)) {
         this.worldDirty = true;
@@ -155,13 +157,19 @@ export class StateSystem extends DRMT.System {
         this.correspondent.updateCache(this.worldCache, diff);
         this.worldDiffTimestamp = time;
 
-        // TODO add target parameter
         const worldState = this.correspondent.produceDiff({});
         const localPlayerData = DRMT.Correspondent.getUpsert(
           worldState,
           getPlayerEntityId()
         );
-        if (localPlayerData) {
+        // TODO seems like a seperate correspondent is needed for the UI
+        if (
+          (localPlayerData &&
+            localPlayerData.label !==
+              this.observable.localPlayer.actual.label) ||
+          localPlayerData.glft_url !==
+            this.observable.localPlayer.actual.glft_url
+        ) {
           this.observable.localPlayer.setActual(
             /** @type any */ (localPlayerData)
           );
@@ -190,7 +198,7 @@ export class StateSystem extends DRMT.System {
       .addComponent(PlayerTag)
       .addComponent(VelocityComponent)
       .addComponent(AngularVelocityComponent)
-      .addComponent(OwnershipComponent, { value: getPlayerId()});
+      .addComponent(OwnershipComponent, { value: getPlayerId() });
     this.observable.createLocalPlayer(partialPlayerData);
   }
 
