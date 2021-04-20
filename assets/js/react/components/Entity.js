@@ -7,17 +7,20 @@ import {
   BoundingBoxComponent,
   ScaleComponent,
   PositionTweenComponent,
+  PositionComponent,
+  RotationComponent,
 } from "../../components";
 import { Html } from "@react-three/drei";
 import { gameLoop } from "../../world";
 import { Group } from "three";
+import {USE_TWEENING} from "../../config";
 
 const stateComponentMap = {
   label: UILabelComponent,
   object3d: Object3DComponent,
   boundingBox: BoundingBoxComponent,
-  position: PositionTweenComponent,
-  rotation: RotationTweenComponent,
+  position: USE_TWEENING ? PositionTweenComponent : PositionComponent,
+  rotation: USE_TWEENING ? RotationTweenComponent : RotationComponent,
   scale: ScaleComponent,
 };
 
@@ -26,13 +29,20 @@ const debug = false;
 /**
  * React-THREE-Fiber component that renders an entity.
  *
- * @type React.ComponentType<{entity:  DRMT.Entity}>
+ * @type React.ComponentType<{entity: DRMT.Entity}>
  */
 export const Entity = ({ entity }) => {
   const entityId = React.useMemo(() => entity.id, [entity]);
 
   const [
-    { label, object3d, boundingBox, position, rotation, scale },
+    {
+      label,
+      object3d,
+      boundingBox,
+      position,
+      rotation,
+      scale,
+    },
     sync,
   ] = DRMT.useStateFromComponentMap(entity, stateComponentMap);
 
@@ -53,20 +63,16 @@ export const Entity = ({ entity }) => {
 
   const ref = React.useRef(null);
 
-  gameLoop.useTick(
-    /**
-     * @type any
-     */ (sync)
-  );
+  gameLoop.useTick(/** @type any */ (sync));
 
   gameLoop.useTick(() => {
     if (ref.current) {
-      /**
-       * @type Group
-       */
+      /** @type Group */
       const group = ref.current;
-      position && group.position.copy(position);
-      rotation && group.rotation.copy(rotation);
+      position &&
+        group.position.copy(position);
+      rotation &&
+        group.rotation.copy(rotation);
       scale && group.scale.copy(scale);
     }
   });

@@ -11,19 +11,19 @@ import {
 } from "./systems";
 import * as components from "./components";
 import { getPlayerName } from "./utils";
-import { GAME_LOOP_FREQUENCY_HZ } from "./config";
-
+import { GAME_LOOP_FREQUENCY_HZ, USE_TWEENING } from "./config";
 // The order of registration determines order of execution
 const systems = [
   LoaderSystem,
   InputSystem,
-  TweenSystem,
   AnimationSystem,
+  ...(USE_TWEENING ? [TweenSystem] : []),
   CameraSystem,
   RoundingSystem,
   StateSystem,
   ClientSystem,
 ];
+
 
 /** @type DRMT.World */
 export let world;
