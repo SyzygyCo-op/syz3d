@@ -11,6 +11,7 @@ import {
   PLAYER_WALK_ACCEL,
   PLAYER_RUN_ACCEL,
   PLAYER_TURN_ACCEL,
+  GAME_LOOP_FREQUENCY_HZ,
 } from "../config";
 import { StateSystem } from "./StateSystem";
 import { getForwardNormal } from "../utils";
@@ -202,11 +203,9 @@ let jumpPrepTimer = 0;
 let jumpRestTimer = 0;
 
 /**
- * Currently assumes that delta is rougly the same in each call
  * @param {boolean} keyIsDown  TODO test jumping logic
- * @param {number} delta
  */
-function getJumpIntensity(keyIsDown, delta) {
+function getJumpIntensity(keyIsDown) {
   let retval = 0;
 
   const isRested = jumpRestTimer > 0;
@@ -218,13 +217,13 @@ function getJumpIntensity(keyIsDown, delta) {
   const isNonZero = isRested && isPrepped;
 
   if (isNonZero) {
-    retval = Math.sqrt(jumpPrepTimer) * delta / 10;
+    retval = Math.sqrt(jumpPrepTimer) * 7;
     jumpPrepTimer = 0;
     jumpRestTimer = 0;
   }
 
   if (keyIsDown && !isNonZero) {
-    jumpPrepTimer = Math.min(4, jumpPrepTimer + 1);
+    jumpPrepTimer = Math.min(0.5 * (1000 / GAME_LOOP_FREQUENCY_HZ), jumpPrepTimer + 1);
   }
 
   if (!keyIsDown) {
