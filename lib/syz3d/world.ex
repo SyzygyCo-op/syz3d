@@ -7,8 +7,6 @@ defmodule Syz3d.World do
 
   use Agent
 
-  alias Syz3d.Player
-
   defmodule Diff do
     @derive {Jason.Encoder, only: [:upsert, :remove]}
     defstruct upsert: %{}, remove: %{}

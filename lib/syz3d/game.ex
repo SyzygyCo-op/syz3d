@@ -27,7 +27,7 @@ defmodule  Syz3d.Game do
   end
 
   def list_test_entity_ids(player_id) do
-    Enum.map(0..25, fn index -> "tie_fighter:#{player_id}:#{index}" end)
+    Enum.map(0..1, fn index -> "tie_fighter:#{player_id}:#{index}" end)
   end
 
   def map_test_entities(world_data, player_id, value_fn) do

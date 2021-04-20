@@ -22,7 +22,7 @@ defmodule Syz3dWeb.RoomChannel do
 
         body = %{
           world_diff: %World.Diff{
-            upsert: Game.assign_test_entities(World.get(), player_id),
+            upsert: World.get(),
             remove: %{}
           }
         }
