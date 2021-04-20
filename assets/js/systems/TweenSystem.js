@@ -89,7 +89,7 @@ export class TweenSystem extends DRMT.System {
 
         applyVelocity(entity, PositionTweenComponent, delta);
       }
-      if (time % duration === 0) {
+      if (time % duration === 0 && !tween.equals(end)) {
         tween.copy(end);
       }
     });
@@ -117,7 +117,7 @@ export class TweenSystem extends DRMT.System {
 
         applyAngularVelocity(entity, RotationTweenComponent, delta);
       }
-      if (time % duration === 0) {
+      if (time % duration === 0 && !tween.equals(end)) {
         tween.copy(end);
       }
     });
