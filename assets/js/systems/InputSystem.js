@@ -11,7 +11,7 @@ import {
   PLAYER_WALK_ACCEL,
   PLAYER_RUN_ACCEL,
   PLAYER_TURN_ACCEL,
-  GAME_LOOP_FREQUENCY_HZ,
+  GAME_LOOP_DURATION,
 } from "../config";
 import { StateSystem } from "./StateSystem";
 import { getForwardNormal } from "../utils";
@@ -203,7 +203,8 @@ let jumpPrepTimer = 0;
 let jumpRestTimer = 0;
 
 /**
- * @param {boolean} keyIsDown  TODO test jumping logic
+ * @param {boolean} keyIsDown
+  * TODO test jumping logic
  */
 function getJumpIntensity(keyIsDown) {
   let retval = 0;
@@ -223,7 +224,7 @@ function getJumpIntensity(keyIsDown) {
   }
 
   if (keyIsDown && !isNonZero) {
-    jumpPrepTimer = Math.min(0.5 * (1000 / GAME_LOOP_FREQUENCY_HZ), jumpPrepTimer + 1);
+    jumpPrepTimer = Math.min(0.5 * GAME_LOOP_DURATION, jumpPrepTimer + 1);
   }
 
   if (!keyIsDown) {

@@ -1,4 +1,4 @@
-import {GAME_LOOP_FREQUENCY_HZ, GAME_LOOPS_PER_NETWORK_FRAME} from "../config";
+import {GAME_LOOP_DURATION, GAME_LOOPS_PER_NETWORK_FRAME} from "../config";
 
 export { debounceBoundFn } from "./async";
 
@@ -27,6 +27,6 @@ export function getRoomToken() {
 
 /** Amount of time between each exchange of data with the server, in miliseconds */
 export function getNetworkFrameDuration() {
-  return (1000 / GAME_LOOP_FREQUENCY_HZ) * GAME_LOOPS_PER_NETWORK_FRAME;
+  return GAME_LOOP_DURATION * GAME_LOOPS_PER_NETWORK_FRAME;
 }
 

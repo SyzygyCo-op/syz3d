@@ -11,7 +11,7 @@ import {
 } from "./systems";
 import * as components from "./components";
 import { getPlayerName } from "./utils";
-import { GAME_LOOP_FREQUENCY_HZ, USE_TWEENING } from "./config";
+import { GAME_LOOP_DURATION, USE_TWEENING } from "./config";
 // The order of registration determines order of execution
 const systems = [
   LoaderSystem,
@@ -71,7 +71,7 @@ function initialize() {
 
   gameLoop = new DRMT.GameLoop(
     world.execute.bind(world),
-    GAME_LOOP_FREQUENCY_HZ
+    GAME_LOOP_DURATION
     // { pauseOnWindowBlur: true }
   );
 }
