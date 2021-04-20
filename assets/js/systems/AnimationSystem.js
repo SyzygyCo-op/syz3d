@@ -13,6 +13,8 @@ const PI_2 = Math.PI / 2;
 const minPolarAngle = 0;
 const maxPolarAngle = Math.PI;
 
+// TODO if not using a full-blown physics rig like Cannon, split in to multiple more focused systems, e.g. LinearMovementSystem, AngularMovementSystem, GravitySystem, FrictionSystem, CollisionSystem
+
 export class AnimationSystem extends DRMT.System {
   static queries = {
     velocity: {
@@ -39,31 +41,7 @@ export class AnimationSystem extends DRMT.System {
 
     this.queries.angularVelocity.results.forEach((entity) => {
       if (isMine(entity)) {
-        /** @type Euler */
-        const angularVelocity = entity.getComponent(AngularVelocityComponent)
-          .value;
-        /** @type Euler */
-        const rotation = entity.getComponent(RotationComponent).value;
-
-        const scale = delta / 1000;
-        rotation.x = rotation.x + angularVelocity.x * scale;
-        rotation.y = rotation.y + angularVelocity.y * scale;
-        rotation.z = rotation.z + angularVelocity.z * scale;
-
-        // TODO move to PhysicsSystem, once that exists
-        // TODO use a DampingComponent?
-        const damping = 0.5;
-
-        if (isPlayer(entity)) {
-          rotation.x = MathUtils.clamp(
-            rotation.x,
-            PI_2 - maxPolarAngle,
-            PI_2 - minPolarAngle
-          );
-          angularVelocity.x = angularVelocity.x * damping;
-          angularVelocity.y = angularVelocity.y * damping;
-          angularVelocity.z = angularVelocity.z * damping;
-        }
+        applyAngularVelocity(entity, RotationComponent, delta);
       }
     });
 
@@ -92,7 +70,6 @@ export class AnimationSystem extends DRMT.System {
   }
 }
 
-
 /**
  * @param {DRMT.Entity} entity
  * @param {typeof PositionComponent} PositionComponent
@@ -106,10 +83,42 @@ export function applyVelocity(entity, PositionComponent, delta) {
   position.addScaledVector(velocity, delta / 1000);
   position.y = Math.max(position.y, 0);
 
-  // TODO move to PhysicsSystem, once that exists
+  // TODO use FrictionComponent?
   const damping = Math.exp((-5 * delta) / 1000) - 1;
   velocity.addScaledVector(velocity, damping);
 
   velocity.y -= delta / 20;
   velocity.y = Math.max(velocity.y, -delta / 5);
+}
+
+/**
+ * @param {DRMT.Entity} entity
+ * @param {typeof RotationComponent} RotationComponent
+ * @param {number} delta
+ */
+export function applyAngularVelocity(entity, RotationComponent, delta) {
+  /** @type Euler */
+  const angularVelocity = entity.getComponent(AngularVelocityComponent).value;
+  /** @type Euler */
+  const rotation = entity.getComponent(RotationComponent).value;
+
+  const scale = delta / 1000;
+  rotation.x = rotation.x + angularVelocity.x * scale;
+  rotation.y = rotation.y + angularVelocity.y * scale;
+  rotation.z = rotation.z + angularVelocity.z * scale;
+
+  // TODO use a DampingComponent?
+  const damping = 0.5;
+
+  if (isPlayer(entity)) {
+    // TODO use AngularFrictionComponent?
+    rotation.x = MathUtils.clamp(
+      rotation.x,
+      PI_2 - maxPolarAngle,
+      PI_2 - minPolarAngle
+    );
+    angularVelocity.x = angularVelocity.x * damping;
+    angularVelocity.y = angularVelocity.y * damping;
+    angularVelocity.z = angularVelocity.z * damping;
+  }
 }

@@ -60,6 +60,16 @@ export class RotationComponent extends DRMT.Component {
     value: { type: YawPitchRollType },
   };
 }
+export class RotationTweenComponent extends DRMT.Component {
+  static schema = {
+    value: { type: YawPitchRollType },
+  };
+}
+export class RotationTweenStartComponent extends DRMT.Component {
+  static schema = {
+    value: { type: YawPitchRollType },
+  };
+}
 export class AngularVelocityComponent extends DRMT.Component {
   static schema = {
     value: { type: YawPitchRollType },

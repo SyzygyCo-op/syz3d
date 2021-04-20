@@ -1,7 +1,7 @@
 import * as DRMT from "dreamt";
 import * as React from "react";
 import {
-  RotationComponent,
+  RotationTweenComponent,
   UILabelComponent,
   Object3DComponent,
   BoundingBoxComponent,
@@ -17,7 +17,7 @@ const stateComponentMap = {
   object3d: Object3DComponent,
   boundingBox: BoundingBoxComponent,
   position: PositionTweenComponent,
-  rotation: RotationComponent,
+  rotation: RotationTweenComponent,
   scale: ScaleComponent,
 };
 
