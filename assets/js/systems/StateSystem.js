@@ -134,7 +134,6 @@ export class StateSystem extends DRMT.System {
       })
       .registerComponent("bump", BumpComponent);
     this.worldCache = correspondentCache;
-    this.worldDiffTimestamp = 0;
   }
 
   execute(delta, time) {
@@ -149,13 +148,12 @@ export class StateSystem extends DRMT.System {
     }
 
     this.worldDirty = false;
-    if (time - this.worldDiffTimestamp >= getNetworkFrameDuration()) {
+    if (time % getNetworkFrameDuration() === 0) {
       const diff = this.correspondent.produceDiff(this.worldCache);
       if (!DRMT.Correspondent.isEmptyDiff(diff)) {
         this.worldDirty = true;
         Object.assign(this.diffForClient, diff);
         this.correspondent.updateCache(this.worldCache, diff);
-        this.worldDiffTimestamp = time;
 
         const worldState = this.correspondent.produceDiff({});
         const localPlayerData = DRMT.Correspondent.getUpsert(

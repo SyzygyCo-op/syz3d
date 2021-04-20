@@ -59,7 +59,6 @@ export class TweenSystem extends DRMT.System {
   };
 
   execute(delta, time) {
-    const duration = getNetworkFrameDuration();
     this.queries.positionSetup.results.forEach((entity) => {
       entity.addComponent(PositionTweenComponent);
       entity.addComponent(PositionTweenStartComponent);
@@ -75,22 +74,26 @@ export class TweenSystem extends DRMT.System {
       const tween = entity.getComponent(PositionTweenComponent).value;
       /** @type Vector3 */
       const end = entity.getComponent(PositionComponent).value;
+      const duration = getNetworkFrameDuration();
       if (!isMine(entity)) {
+        /** @type Vector3 */
         const start = entity.getComponent(PositionTweenStartComponent).value;
+        /** @type Vector3 */
         const velocity = entity.getComponent(VelocityComponent).value;
-        velocity
-          .copy(end)
-          .sub(start)
-          .multiplyScalar(1000 / duration);
+        const durationSeconds = duration / 1000;
+        velocity.set(
+          calcVelocity(start.x, end.x, durationSeconds),
+          calcVelocity(start.y, end.y, durationSeconds),
+          calcVelocity(start.z, end.z, durationSeconds)
+        );
 
         applyVelocity(entity, PositionTweenComponent, delta);
 
         if (time % duration === 0) {
           start.copy(end);
-          tween.copy(end);
         }
-      } else {
-        // No tweening necessary for local entities
+      }
+      if (time % duration === 0) {
         tween.copy(end);
       }
     });
@@ -99,30 +102,38 @@ export class TweenSystem extends DRMT.System {
       const tween = entity.getComponent(RotationTweenComponent).value;
       /** @type Euler */
       const end = entity.getComponent(RotationComponent).value;
+      const duration = getNetworkFrameDuration();
       if (!isMine(entity)) {
         /** @type Euler */
         const start = entity.getComponent(RotationTweenStartComponent).value;
         /** @type Euler */
         const velocity = entity.getComponent(AngularVelocityComponent).value;
-        velocity.toVector3(v1);
-        start.toVector3(v2);
-        end.toVector3(v3);
-        v1.copy(v3)
-          .sub(v2)
-          .multiplyScalar(1000 / duration);
-
-        velocity.setFromVector3(v1, "YXZ");
+        const durationSeconds = duration / 1000;
+        velocity.set(
+          calcVelocity(start.x, end.x, durationSeconds),
+          calcVelocity(start.y, end.y, durationSeconds),
+          calcVelocity(start.z, end.z, durationSeconds),
+          "YXZ"
+        );
 
         applyAngularVelocity(entity, RotationTweenComponent, delta);
 
         if (time % duration === 0) {
           start.copy(end);
-          tween.copy(end);
         }
-      } else {
-        // No tweening necessary for local entities
+      }
+      if (time % duration === 0) {
         tween.copy(end);
       }
     });
   }
+}
+
+/**
+ * @param {number} start
+ * @param {number} end
+ * @param {number} duration In seconds
+ */
+function calcVelocity(start, end, duration) {
+  return (end - start) / duration;
 }

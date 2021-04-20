@@ -10,4 +10,4 @@ export const PLAYER_WALK_ACCEL = 0.25;
 export const PLAYER_TURN_ACCEL = Math.PI / 3;
 
 // TODO optimize
-export const USE_TWEENING = false;
+export const USE_TWEENING = true;
