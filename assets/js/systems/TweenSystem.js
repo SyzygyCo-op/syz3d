@@ -73,17 +73,17 @@ export class TweenSystem extends DRMT.System {
       const end = entity.getComponent(PositionComponent).value;
       const duration = getNetworkFrameDuration();
       if (!isMine(entity)) {
+        /** @type Vector3 */
         const start = entity.getComponent(PositionTweenStartComponent).value;
+        /** @type Vector3 */
+        const velocity = entity.getComponent(VelocityComponent).value;
+        const durationSeconds = duration / 1000;
+        velocity.set(
+          calcVelocity(start.x, end.x, durationSeconds),
+          calcVelocity(start.y, end.y, durationSeconds),
+          calcVelocity(start.z, end.z, durationSeconds)
+        );
         if (time % duration === 0 && !start.equals(end)) {
-          /** @type Vector3 */
-          /** @type Vector3 */
-          const velocity = entity.getComponent(VelocityComponent).value;
-          const durationSeconds = duration / 1000;
-          velocity.set(
-            calcVelocity(start.x, end.x, durationSeconds),
-            calcVelocity(start.y, end.y, durationSeconds),
-            calcVelocity(start.z, end.z, durationSeconds)
-          );
           start.copy(end);
         }
 
@@ -102,16 +102,16 @@ export class TweenSystem extends DRMT.System {
       if (!isMine(entity)) {
         /** @type Euler */
         const start = entity.getComponent(RotationTweenStartComponent).value;
+        /** @type Euler */
+        const velocity = entity.getComponent(AngularVelocityComponent).value;
+        const durationSeconds = duration / 1000;
+        velocity.set(
+          calcVelocity(start.x, end.x, durationSeconds),
+          calcVelocity(start.y, end.y, durationSeconds),
+          calcVelocity(start.z, end.z, durationSeconds),
+          "YXZ"
+        );
         if (time % duration === 0 && !start.equals(end)) {
-          /** @type Euler */
-          const velocity = entity.getComponent(AngularVelocityComponent).value;
-          const durationSeconds = duration / 1000;
-          velocity.set(
-            calcVelocity(start.x, end.x, durationSeconds),
-            calcVelocity(start.y, end.y, durationSeconds),
-            calcVelocity(start.z, end.z, durationSeconds),
-            "YXZ"
-          );
           start.copy(end);
         }
 
