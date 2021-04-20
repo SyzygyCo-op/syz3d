@@ -74,7 +74,7 @@ export class TweenSystem extends DRMT.System {
       const duration = getNetworkFrameDuration();
       if (!isMine(entity)) {
         const start = entity.getComponent(PositionTweenStartComponent).value;
-        if (time % duration === 0) {
+        if (time % duration === 0 && !start.equals(end)) {
           /** @type Vector3 */
           /** @type Vector3 */
           const velocity = entity.getComponent(VelocityComponent).value;
@@ -102,7 +102,7 @@ export class TweenSystem extends DRMT.System {
       if (!isMine(entity)) {
         /** @type Euler */
         const start = entity.getComponent(RotationTweenStartComponent).value;
-        if (time % duration === 0) {
+        if (time % duration === 0 && !start.equals(end)) {
           /** @type Euler */
           const velocity = entity.getComponent(AngularVelocityComponent).value;
           const durationSeconds = duration / 1000;
