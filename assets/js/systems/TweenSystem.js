@@ -14,10 +14,7 @@ import {
 import { getNetworkFrameDuration, isMine } from "../utils";
 import { applyAngularVelocity, applyVelocity } from "./AnimationSystem";
 
-const v1 = new Vector3();
-const v2 = new Vector3();
-const v3 = new Vector3();
-
+// TODO unit tests
 export class TweenSystem extends DRMT.System {
   static queries = {
     positionSetup: {
@@ -76,22 +73,21 @@ export class TweenSystem extends DRMT.System {
       const end = entity.getComponent(PositionComponent).value;
       const duration = getNetworkFrameDuration();
       if (!isMine(entity)) {
-        /** @type Vector3 */
         const start = entity.getComponent(PositionTweenStartComponent).value;
-        /** @type Vector3 */
-        const velocity = entity.getComponent(VelocityComponent).value;
-        const durationSeconds = duration / 1000;
-        velocity.set(
-          calcVelocity(start.x, end.x, durationSeconds),
-          calcVelocity(start.y, end.y, durationSeconds),
-          calcVelocity(start.z, end.z, durationSeconds)
-        );
-
-        applyVelocity(entity, PositionTweenComponent, delta);
-
         if (time % duration === 0) {
+          /** @type Vector3 */
+          /** @type Vector3 */
+          const velocity = entity.getComponent(VelocityComponent).value;
+          const durationSeconds = duration / 1000;
+          velocity.set(
+            calcVelocity(start.x, end.x, durationSeconds),
+            calcVelocity(start.y, end.y, durationSeconds),
+            calcVelocity(start.z, end.z, durationSeconds)
+          );
           start.copy(end);
         }
+
+        applyVelocity(entity, PositionTweenComponent, delta);
       }
       if (time % duration === 0) {
         tween.copy(end);
@@ -106,21 +102,20 @@ export class TweenSystem extends DRMT.System {
       if (!isMine(entity)) {
         /** @type Euler */
         const start = entity.getComponent(RotationTweenStartComponent).value;
-        /** @type Euler */
-        const velocity = entity.getComponent(AngularVelocityComponent).value;
-        const durationSeconds = duration / 1000;
-        velocity.set(
-          calcVelocity(start.x, end.x, durationSeconds),
-          calcVelocity(start.y, end.y, durationSeconds),
-          calcVelocity(start.z, end.z, durationSeconds),
-          "YXZ"
-        );
-
-        applyAngularVelocity(entity, RotationTweenComponent, delta);
-
         if (time % duration === 0) {
+          /** @type Euler */
+          const velocity = entity.getComponent(AngularVelocityComponent).value;
+          const durationSeconds = duration / 1000;
+          velocity.set(
+            calcVelocity(start.x, end.x, durationSeconds),
+            calcVelocity(start.y, end.y, durationSeconds),
+            calcVelocity(start.z, end.z, durationSeconds),
+            "YXZ"
+          );
           start.copy(end);
         }
+
+        applyAngularVelocity(entity, RotationTweenComponent, delta);
       }
       if (time % duration === 0) {
         tween.copy(end);
