@@ -83,13 +83,13 @@ export class TweenSystem extends DRMT.System {
           calcVelocity(start.y, end.y, durationSeconds),
           calcVelocity(start.z, end.z, durationSeconds)
         );
-        if (time % duration === 0 && !start.equals(end)) {
+        if (shouldUpdateIntegralValue(start, end, time, duration)) {
           start.copy(end);
         }
 
         applyVelocity(entity, PositionTweenComponent, delta);
       }
-      if (time % duration === 0 && !tween.equals(end)) {
+      if (shouldUpdateIntegralValue(tween, end, time, duration)) {
         tween.copy(end);
       }
     });
@@ -111,13 +111,13 @@ export class TweenSystem extends DRMT.System {
           calcVelocity(start.z, end.z, durationSeconds),
           "YXZ"
         );
-        if (time % duration === 0 && !start.equals(end)) {
+        if (shouldUpdateIntegralValue(start, end, time, duration)) {
           start.copy(end);
         }
 
         applyAngularVelocity(entity, RotationTweenComponent, delta);
       }
-      if (time % duration === 0 && !tween.equals(end)) {
+      if (shouldUpdateIntegralValue(tween, end, time, duration)) {
         tween.copy(end);
       }
     });
@@ -131,4 +131,14 @@ export class TweenSystem extends DRMT.System {
  */
 function calcVelocity(start, end, duration) {
   return (end - start) / duration;
+}
+
+/**
+  * @param {Vector3 | Euler} integralValue
+  * @param {Vector3 | Euler} endIntegralValue
+  * @param {number} time
+  * @param {number} intervalDuration
+  */
+function shouldUpdateIntegralValue(integralValue, endIntegralValue, time, intervalDuration) {
+  return time % intervalDuration === 0 && !integralValue.equals(/** @type any */(endIntegralValue));
 }
