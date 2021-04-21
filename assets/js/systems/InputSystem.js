@@ -192,7 +192,7 @@ export class InputSystem extends DRMT.System {
         const position = entity.getComponent(PositionComponent).value;
 
         if (position.y <= 0) {
-          velocity.y = getJumpIntensity(this.keyDownJump, delta);
+          velocity.y = getJumpIntensity(this.keyDownJump);
         }
       }
     }
