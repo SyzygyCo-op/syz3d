@@ -30,16 +30,13 @@ export class InputSystem extends DRMT.System {
   keyDownJump = false;
   keyDownShift = false;
 
-  /**
-   * @type HTMLCanvasElement
-   */
+  /** @type HTMLCanvasElement */
   canvasElement = null;
 
-  /**
-   * @param {KeyboardEvent} evt
-   */
+  /** @param {KeyboardEvent} evt */
   updateKeyDownState = (evt) => {
     const isDown = evt.type === "keydown";
+    // TODO(fix) ignore keydowns when focus is in a form input
     switch (evt.key) {
       case "a":
       case "A":
@@ -71,6 +68,9 @@ export class InputSystem extends DRMT.System {
         break;
       case "Shift":
         this.keyDownShift = isDown;
+      case "n":
+      case "N":
+        !isDown && this.toggleShowNameTags();
     }
   };
 
@@ -82,13 +82,14 @@ export class InputSystem extends DRMT.System {
 
     document.addEventListener("mousedown", this.handleMouseDown);
 
+    // TODO only bind this when pointer is locked
     document.body.addEventListener("mousemove", this.handleMouseMove);
   }
 
   dispose() {
     window.removeEventListener("keydown", this.updateKeyDownState);
     window.removeEventListener("keyup", this.updateKeyDownState);
-    // If fremoves is lost before key is released, the up event will not fire
+    // If focus is lost before key is released, the up event will not fire
     window.removeEventListener("blur", this.handleMouseDown);
 
     document.removeEventListener("mousedown", this.handleMouseDown);
@@ -97,11 +98,11 @@ export class InputSystem extends DRMT.System {
   }
 
   handleBlurWindow = () => {
-      this.keyDownRight = false;
-      this.keyDownLeft = false;
-      this.keyDownJump = false;
-      this.keyDownShift = false;
-    };
+    this.keyDownRight = false;
+    this.keyDownLeft = false;
+    this.keyDownJump = false;
+    this.keyDownShift = false;
+  };
 
   handleMouseDown = (evt) => {
     if (document.pointerLockElement || this._hasPointerLock) {
@@ -124,9 +125,7 @@ export class InputSystem extends DRMT.System {
       var movementY =
         event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
-      /**
-       * @type Euler
-       */
+      /** @type Euler */
       const angularVelocity = this.localPlayer.getComponent(
         AngularVelocityComponent
       ).value;
@@ -150,9 +149,7 @@ export class InputSystem extends DRMT.System {
     const hasAngularVelocity = entity.hasComponent(AngularVelocityComponent);
 
     if (hasAngularVelocity) {
-      /**
-       * @type Euler
-       */
+      /** @type Euler */
       const angularVelocity = entity.getComponent(AngularVelocityComponent)
         .value;
 
@@ -165,9 +162,7 @@ export class InputSystem extends DRMT.System {
     }
 
     if (hasVelocity && hasRotation) {
-      /**
-       * @type Vector3
-       */
+      /** @type Vector3 */
       const velocity = entity.getComponent(VelocityComponent).value;
       const rotation = entity.getComponent(RotationComponent).value;
 
@@ -197,15 +192,16 @@ export class InputSystem extends DRMT.System {
       }
     }
   }
+  toggleShowNameTags () {
+    const state = this.world.getSystem(StateSystem).observable;
+    state.updateSettings({ showNameTags: !state.showNameTags });
+  }
 }
 
 let jumpPrepTimer = 0;
 let jumpRestTimer = 0;
 
-/**
- * @param {boolean} keyIsDown
-  * TODO test jumping logic
- */
+/** @param {boolean} keyIsDown TODO test jumping logic */
 function getJumpIntensity(keyIsDown) {
   let retval = 0;
 
@@ -237,4 +233,3 @@ function getJumpIntensity(keyIsDown) {
 
   return retval;
 }
-

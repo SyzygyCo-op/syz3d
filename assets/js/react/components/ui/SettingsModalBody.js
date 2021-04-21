@@ -2,20 +2,27 @@ import * as React from "react";
 import * as AntD from "antd";
 import { NameTag } from "./NameTag";
 
-/**
- * @type React.CSSProperties
- */
+/** @type React.CSSProperties */
 const smallHeading = {
   fontSize: "0.75rem",
   textTransform: "uppercase",
 };
 
 /**
-  * @param {{ onAvatarEdit: () => void, localPlayerName: string }} props
+ * @typedef {import("../../../state").ISettings} ISettings
+ * @type {React.ComponentType<
+ *   AntD.FormProps<any> & {
+ *     onAvatarEdit: () => void;
+ *     localPlayerName: string;
+ *   }
+ * >}
  */
 export const SettingsModalBody = (props) => {
   return (
-    <>
+    <AntD.Form
+      onValuesChange={props.onValuesChange}
+      initialValues={props.initialValues}
+    >
       <AntD.Divider orientation="left" style={{ margin: 0 }}>
         <span style={smallHeading}>lewks</span>
       </AntD.Divider>
@@ -29,6 +36,25 @@ export const SettingsModalBody = (props) => {
           </AntD.Button>
         </AntD.Col>
       </AntD.Row>
-    </>
+      <AntD.Divider orientation="left" style={{ margin: 0 }}>
+        <span style={smallHeading}>show</span>
+      </AntD.Divider>
+      <AntD.Row style={{ margin: "1rem" }}>
+        <AntD.Col flex="auto">
+          <AntD.Form.Item
+            label="Nametags"
+            name="showNameTags"
+            valuePropName="checked"
+          >
+            <AntD.Switch />
+          </AntD.Form.Item>
+        </AntD.Col>
+        <AntD.Col>
+          <AntD.Typography.Text keyboard strong>
+            n
+          </AntD.Typography.Text>
+        </AntD.Col>
+      </AntD.Row>
+    </AntD.Form>
   );
 };

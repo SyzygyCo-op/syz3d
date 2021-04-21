@@ -1,20 +1,19 @@
 import * as DRMT from 'dreamt';
 import * as React from 'react';
 import {useThree} from 'react-three-fiber';
-import { observer } from "mobx-react-lite";
-import { ObservableState } from "../../state";
+import { ObservableState, ISettings } from "../../state";
 import {  world } from "../../world";
 import { Entity } from "./Entity";
 import {LocalPlayerTag} from "../../components";
 import {CameraSystem, StateSystem} from '../../systems';
 
-export const Scene = observer(
+export const Scene = (
   /**
    * @param {{
    *   entities: ObservableState['entitiesToRender'];
-   * }} props
+   * } & ISettings} props
    */
-  ({ entities }) => {
+  ({ entities, showNameTags }) => {
 
     const { setDefaultCamera, gl } = useThree();
 
@@ -30,7 +29,7 @@ export const Scene = observer(
         <directionalLight args={[0x8888ff, 0.2]} position={[0, -1, 0]}/>
         <directionalLight args={[0xffffaa, 1.2]} position={[-5, 25, 1]}/>
         {entities.filter(remotePlayerWhenFirstPerson).map((entity) => {
-          return <Entity entity={entity} key={entity.id} />;
+          return <Entity entity={entity} showNameTags={showNameTags} key={entity.id} />;
         })}
       </>
     );

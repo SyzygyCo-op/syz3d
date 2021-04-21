@@ -29,11 +29,13 @@ const debug = false;
 /**
  * React-THREE-Fiber component that renders an entity.
  *
- * @type React.ComponentType<{entity: DRMT.Entity}>
+ * @type React.ComponentType<{entity: DRMT.Entity} & import("../../state").ISettings>
  */
-export const Entity = ({ entity }) => {
+export const Entity = ({ entity, showNameTags }) => {
   const entityId = React.useMemo(() => entity.id, [entity]);
 
+  // TODO make sure these are mostly only updating when the component mounts
+  // perhaps just call `sync` in a mount-only effect
   const [
     {
       label,
@@ -45,6 +47,8 @@ export const Entity = ({ entity }) => {
     },
     sync,
   ] = DRMT.useStateFromComponentMap(entity, stateComponentMap);
+
+  const groupRef = React.useRef(null);
 
   React.useEffect(() => {
     if (debug) {
@@ -61,14 +65,17 @@ export const Entity = ({ entity }) => {
     console.count("render");
   }
 
-  const ref = React.useRef(null);
-
   gameLoop.useTick(/** @type any */ (sync));
 
+  /** TODO
+    * split in to smaller fns
+    * called when off screen?
+    * check for difference
+    * */
   gameLoop.useTick(() => {
-    if (ref.current) {
+    if (groupRef.current) {
       /** @type Group */
-      const group = ref.current;
+      const group = groupRef.current;
       position &&
         group.position.copy(position);
       rotation &&
@@ -77,20 +84,18 @@ export const Entity = ({ entity }) => {
     }
   });
 
+  // TODO add user setting for whether to show labels
+
   return (
-    <group ref={ref} castShadow receiveShadow>
-      {label && (
-        <Html position-y={boundingBox && boundingBox.y}>
-          <h3
-            style={{
-              transform: "translateX(-50%)",
-            }}
-          >
-            {label}
-          </h3>
+    <group ref={groupRef} castShadow receiveShadow>
+      {label && showNameTags && (
+        // TODO use distanceFactor prop
+        <Html position-y={boundingBox && boundingBox.y} center>
+          <address>{label}</address>
         </Html>
       )}
       {object3d && <primitive object={object3d} />}
     </group>
-  );
+  )
 };
+

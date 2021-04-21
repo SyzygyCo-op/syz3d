@@ -49,7 +49,7 @@ export const ReactApp = observer(
           />
           <Canvas invalidateFrameloop>
             <React.Suspense fallback={null}>
-              <Scene entities={state.entitiesToRender} />
+              <Scene entities={state.entitiesToRender} showNameTags={state.showNameTags} />
             </React.Suspense>
           </Canvas>
         </div>
@@ -64,6 +64,8 @@ export const ReactApp = observer(
             onAvatarEdit={handleAvatarEdit}
             // TODO use selectors
             localPlayerName={state.localPlayer.actual.label}
+            initialValues={{showNameTags: state.showNameTags}}
+            onValuesChange={handleSettingsChange}
           />
         </UI.Drawer>
         <UI.Drawer
@@ -89,6 +91,11 @@ export const ReactApp = observer(
 
     function handleSettingsOpen() {
       state.setOpenModal("SETTINGS");
+    }
+
+    /** @param {import("../../state").ISettings} settings */
+    function handleSettingsChange(settings) {
+      state.updateSettings(settings);
     }
 
     function handleModalClose() {

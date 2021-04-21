@@ -52,6 +52,7 @@ export async function preloadAssets() {
 
 /**
  * @typedef {'EDIT_MY_AVATAR' | 'SETTINGS'} ModalID
+  * @typedef {Pick<ObservableState, "showNameTags">} ISettings
  */
 
 export class ObservableState {
@@ -64,6 +65,8 @@ export class ObservableState {
    * @type {null | ModalID}
    */
   openModalId = null;
+
+  showNameTags = false;
 
   localPlayer = MOBX.makeAutoObservable(
     new DRMT.DualModel(() => new PlayerState(), {
@@ -104,6 +107,11 @@ export class ObservableState {
    */
   setOpenModal(modalId) {
     this.openModalId = modalId;
+  }
+
+  /** @param {ISettings} settings */
+  updateSettings(settings) {
+    Object.assign(this, settings)
   }
 }
 
