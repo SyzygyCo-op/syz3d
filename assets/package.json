@@ -23,7 +23,6 @@
     "react-draggable": "^4.4.3",
     "react-three-fiber": "^5.3.10",
     "reset-css": "^5.0.1",
-    "rxjs": "^6.6.3",
     "style-loader": "^2.0.0",
     "three": "^0.123.0"
   },
