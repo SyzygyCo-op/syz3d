@@ -2,6 +2,7 @@ export { StateSystem } from "./StateSystem";
 export { ClientSystem } from "./ClientSystem";
 export { MovementSystem } from "./MovementSystem";
 export { FrictionSystem } from "./FrictionSystem";
+export { GravitySystem } from "./GravitySystem";
 export { LoaderSystem } from "./LoaderSystem";
 export { InputSystem } from "./InputSystem";
 export { RoundingSystem } from "./RoundingSystem";

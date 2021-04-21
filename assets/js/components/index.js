@@ -87,6 +87,11 @@ export class ScaleComponent extends DRMT.Component {
     value: { type: Vector3Type },
   };
 }
+export class MassComponent extends DRMT.Component {
+  static schema = {
+    value: { type: DRMT.Types.Number },
+  };
+}
 
 /** Stores a URL pointing to a GLTF/GLB file */
 export class GltfUrlComponent extends DRMT.Component {

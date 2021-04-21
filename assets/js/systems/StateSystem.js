@@ -14,6 +14,7 @@ import {
   ScaleComponent,
   OwnershipComponent,
   FrictionComponent,
+  MassComponent,
 } from "../components";
 import { entityStore, ObservableState, PlayerState } from "../state";
 import {
@@ -200,8 +201,9 @@ export class StateSystem extends DRMT.System {
       .addComponent(OwnershipComponent, { value: getPlayerId() })
       .addComponent(FrictionComponent, {
         linear: 0.08,
-        angular: 0.2
-      });
+        angular: 0.2,
+      })
+      .addComponent(MassComponent, { value: 1 });
     this.observable.createLocalPlayer(partialPlayerData);
   }
 

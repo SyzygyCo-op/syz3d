@@ -9,6 +9,7 @@ import {
   RoundingSystem,
   CameraSystem,
   FrictionSystem,
+  GravitySystem,
 } from "./systems";
 import * as components from "./components";
 import { getPlayerName } from "./utils";
@@ -19,6 +20,7 @@ const systems = [
   InputSystem,
   MovementSystem,
   FrictionSystem,
+  GravitySystem,
   ...(USE_TWEENING ? [TweenSystem] : []),
   CameraSystem,
   RoundingSystem,

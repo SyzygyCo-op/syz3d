@@ -85,10 +85,6 @@ export function applyVelocity(entity, PositionComponent, delta) {
     position.addScaledVector(velocity, delta / 1000);
   }
 
-  position.y = Math.max(position.y, 0);
-
-  velocity.y -= delta / 20;
-  velocity.y = Math.max(velocity.y, -delta / 5);
 }
 
 /**

@@ -1,5 +1,5 @@
 import * as DRMT from "dreamt";
-import { Vector3, MathUtils, Euler } from "three";
+import { Vector3, Euler } from "three";
 import {
   FrictionComponent,
   AngularVelocityComponent,
