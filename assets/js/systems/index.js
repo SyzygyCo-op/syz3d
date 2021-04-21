@@ -1,9 +1,9 @@
 export { StateSystem } from "./StateSystem";
 export { ClientSystem } from "./ClientSystem";
-export { AnimationSystem } from "./AnimationSystem";
+export { MovementSystem } from "./MovementSystem";
+export { FrictionSystem } from "./FrictionSystem";
 export { LoaderSystem } from "./LoaderSystem";
 export { InputSystem } from "./InputSystem";
 export { RoundingSystem } from "./RoundingSystem";
 export { CameraSystem } from "./CameraSystem";
 export { TweenSystem } from "./TweenSystem";
-

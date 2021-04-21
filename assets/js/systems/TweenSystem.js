@@ -12,7 +12,7 @@ import {
   AngularVelocityComponent,
 } from "../components";
 import { getNetworkFrameDuration, isMine } from "../utils";
-import { applyAngularVelocity, applyVelocity } from "./AnimationSystem";
+import { applyAngularVelocity, applyVelocity } from "./MovementSystem";
 
 // TODO unit tests
 export class TweenSystem extends DRMT.System {

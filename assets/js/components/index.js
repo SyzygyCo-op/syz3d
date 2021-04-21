@@ -55,6 +55,13 @@ export class VelocityComponent extends DRMT.Component {
     value: { type: Vector3Type },
   };
 }
+/** larger value => more friction */
+export class FrictionComponent extends DRMT.Component {
+  static schema = {
+    linear: { type: DRMT.Types.Number },
+    angular: { type: DRMT.Types.Number },
+  };
+}
 export class RotationComponent extends DRMT.Component {
   static schema = {
     value: { type: YawPitchRollType },

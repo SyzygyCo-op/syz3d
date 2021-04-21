@@ -13,9 +13,9 @@ const PI_2 = Math.PI / 2;
 const minPolarAngle = 0;
 const maxPolarAngle = Math.PI;
 
-// TODO if not using a full-blown physics rig like Cannon, split in to multiple more focused systems, e.g. LinearMovementSystem, AngularMovementSystem, GravitySystem, FrictionSystem, CollisionSystem
+// TODO if not using a full-blown physics rig like Cannon, split in to multiple more focused systems, e.g. MovementSystem, GravitySystem, FrictionSystem, CollisionSystem
 
-export class AnimationSystem extends DRMT.System {
+export class MovementSystem extends DRMT.System {
   static queries = {
     velocity: {
       components: [VelocityComponent, PositionComponent],
@@ -76,16 +76,13 @@ export class AnimationSystem extends DRMT.System {
  * @param {number} delta
  */
 export function applyVelocity(entity, PositionComponent, delta) {
+  /** @type Vector3 */
   const velocity = entity.getComponent(VelocityComponent).value;
   /** @type Vector3 */
   const position = entity.getComponent(PositionComponent).value;
 
   position.addScaledVector(velocity, delta / 1000);
   position.y = Math.max(position.y, 0);
-
-  // TODO use FrictionComponent?
-  const damping = Math.exp((-5 * delta) / 1000) - 1;
-  velocity.addScaledVector(velocity, damping);
 
   velocity.y -= delta / 20;
   velocity.y = Math.max(velocity.y, -delta / 5);
@@ -107,18 +104,9 @@ export function applyAngularVelocity(entity, RotationComponent, delta) {
   rotation.y = rotation.y + angularVelocity.y * scale;
   rotation.z = rotation.z + angularVelocity.z * scale;
 
-  // TODO use a DampingComponent?
-  const damping = 0.5;
-
-  if (isPlayer(entity)) {
-    // TODO use AngularFrictionComponent?
-    rotation.x = MathUtils.clamp(
-      rotation.x,
-      PI_2 - maxPolarAngle,
-      PI_2 - minPolarAngle
-    );
-    angularVelocity.x = angularVelocity.x * damping;
-    angularVelocity.y = angularVelocity.y * damping;
-    angularVelocity.z = angularVelocity.z * damping;
-  }
+  rotation.x = MathUtils.clamp(
+    rotation.x,
+    PI_2 - maxPolarAngle,
+    PI_2 - minPolarAngle
+  );
 }

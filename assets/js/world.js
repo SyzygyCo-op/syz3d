@@ -2,12 +2,13 @@ import * as DRMT from "dreamt";
 import {
   StateSystem,
   ClientSystem,
-  AnimationSystem,
+  MovementSystem,
   TweenSystem,
   LoaderSystem,
   InputSystem,
   RoundingSystem,
   CameraSystem,
+  FrictionSystem,
 } from "./systems";
 import * as components from "./components";
 import { getPlayerName } from "./utils";
@@ -16,7 +17,8 @@ import { GAME_LOOP_DURATION, USE_TWEENING } from "./config";
 const systems = [
   LoaderSystem,
   InputSystem,
-  AnimationSystem,
+  MovementSystem,
+  FrictionSystem,
   ...(USE_TWEENING ? [TweenSystem] : []),
   CameraSystem,
   RoundingSystem,
