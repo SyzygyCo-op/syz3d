@@ -57,9 +57,17 @@ export async function preloadAssets() {
 
 export class ObservableState {
   /**
-   * @type DRMT.Entity[]
+    * @type Set<DRMT.Entity>
    */
-  entitiesToRender = [];
+  _entitiesToRender = new Set();
+
+  get entitiesToRender() {
+    const ret = [];
+    for(const e of this._entitiesToRender) {
+      ret.push(e)
+    }
+    return ret;
+  }
 
   /**
    * @type {null | ModalID}
@@ -89,8 +97,8 @@ export class ObservableState {
    * @param {DRMT.Entity[]} entities
    */
   setEntitiesToRender(entities) {
-    entities.forEach((entity, index) => {
-      this.entitiesToRender[index] = entity;
+    entities.forEach((entity) => {
+      this._entitiesToRender.add(entity);
     });
   }
 
@@ -98,7 +106,7 @@ export class ObservableState {
    * @param {DRMT.Entity[]} entities
    */
   resetEntitiesToRender(entities) {
-    this.entitiesToRender.length = 0;
+    this._entitiesToRender.clear();
     this.setEntitiesToRender(entities);
   }
 
