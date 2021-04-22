@@ -12,9 +12,8 @@ import {
 } from "../../components";
 import { Html } from "@react-three/drei";
 import { gameLoop } from "../../world";
-import { Group } from "three";
 import {USE_TWEENING} from "../../config";
-import {isMine} from "../../utils";
+import {makeCopier} from "../../utils";
 
 const stateComponentMap = {
   label: UILabelComponent,
@@ -69,21 +68,11 @@ export const Entity = ({ entity, showNameTags }) => {
   gameLoop.useTick(/** @type any */ (sync));
 
   /** TODO
-    * split in to smaller fns
     * called when off screen?
-    * check for difference
     * */
-  gameLoop.useTick(() => {
-    if (groupRef.current) {
-      /** @type Group */
-      const group = groupRef.current;
-      position &&
-        group.position.copy(position);
-      rotation &&
-        group.rotation.copy(rotation);
-      scale && group.scale.copy(scale);
-    }
-  });
+  gameLoop.useTick(makeCopier(groupRef.current, "position", position));
+  gameLoop.useTick(makeCopier(groupRef.current, "rotation", rotation));
+  gameLoop.useTick(makeCopier(groupRef.current, "scale", scale));
 
   // TODO add user setting for whether to show labels
 
@@ -99,4 +88,5 @@ export const Entity = ({ entity, showNameTags }) => {
     </group>
   )
 };
+
 

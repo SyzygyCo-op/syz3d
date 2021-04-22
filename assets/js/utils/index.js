@@ -2,7 +2,7 @@ import { GAME_LOOP_DURATION, GAME_LOOPS_PER_NETWORK_FRAME } from "../config";
 
 export { debounceBoundFn } from "./async";
 
-export { getForwardNormal, isOnCamera } from "./math";
+export { getForwardNormal, isOnCamera, makeCopier } from "./math";
 
 export { isPlayer, isMine } from "./entity";
 
