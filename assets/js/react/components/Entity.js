@@ -12,8 +12,9 @@ import {
 } from "../../components";
 import { Html } from "@react-three/drei";
 import { gameLoop } from "../../world";
-import {USE_TWEENING} from "../../config";
-import {makeCopier} from "../../utils";
+import { USE_TWEENING } from "../../config";
+import { makeCopier } from "../../utils";
+import {  Object3D, Vector3 } from "three";
 
 const stateComponentMap = {
   label: UILabelComponent,
@@ -37,18 +38,9 @@ export const Entity = ({ entity, showNameTags }) => {
   // TODO make sure these are mostly only updating when the component mounts
   // perhaps just call `sync` in a mount-only effect
   const [
-    {
-      label,
-      object3d,
-      boundingBox,
-      position,
-      rotation,
-      scale,
-    },
+    { label, object3d, boundingBox, position, rotation, scale },
     sync,
   ] = DRMT.useStateFromComponentMap(entity, stateComponentMap);
-
-  const groupRef = React.useRef(null);
 
   React.useEffect(() => {
     if (debug) {
@@ -67,9 +59,27 @@ export const Entity = ({ entity, showNameTags }) => {
 
   gameLoop.useTick(/** @type any */ (sync));
 
-  /** TODO
-    * called when off screen?
-    * */
+  return (
+    <EntityRender position={position} rotation={rotation} scale={scale} label={label} object3d={object3d} boundingBox={boundingBox} showNameTags={showNameTags} />
+  );
+};
+
+/**
+ * @type React.ComponentType<{position: Vector3, rotation: Vector3, scale:
+ *   Vector3, label: string, object3d: Object3D, boundingBox: Vector3} &
+ *   import("../../state").ISettings>
+ */
+export const EntityRender = ({
+  position,
+  rotation,
+  scale,
+  label,
+  object3d,
+  boundingBox,
+  showNameTags,
+}) => {
+  const groupRef = React.useRef(null);
+  /** TODO called when off screen? */
   gameLoop.useTick(makeCopier(groupRef.current, "position", position));
   gameLoop.useTick(makeCopier(groupRef.current, "rotation", rotation));
   gameLoop.useTick(makeCopier(groupRef.current, "scale", scale));
@@ -86,7 +96,5 @@ export const Entity = ({ entity, showNameTags }) => {
       )}
       {object3d && <primitive object={object3d} />}
     </group>
-  )
+  );
 };
-
-
