@@ -1,11 +1,11 @@
 import * as DRMT from 'dreamt';
 import * as React from 'react';
-import {useThree} from 'react-three-fiber';
+import {useThree} from '@react-three/fiber';
 import { ObservableState, ISettings } from "../../state";
 import {  world } from "../../world";
 import { Entity } from "./Entity";
 import {LocalPlayerTag} from "../../components";
-import {CameraSystem, StateSystem} from '../../systems';
+import {StateSystem} from '../../systems';
 
 export const Scene = (
   /**
@@ -15,10 +15,9 @@ export const Scene = (
    */
   ({ entities, showNameTags }) => {
 
-    const { setDefaultCamera, gl } = useThree();
+    const { gl } = useThree();
 
     React.useEffect(() => {
-      world.getSystem(CameraSystem).setDefaultCamera = setDefaultCamera;
       world.getSystem(StateSystem).canvasElement = gl.domElement;
     }, [])
 

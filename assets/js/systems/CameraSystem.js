@@ -1,12 +1,12 @@
+import { debounce } from "debounce";
 import * as DRMT from "dreamt";
-import { PerspectiveCamera } from "three";
+import { Camera, PerspectiveCamera } from "three";
 import {
   BoundingBoxComponent,
   LocalPlayerTag,
   PositionComponent,
   RotationComponent,
 } from "../components";
-
 
 export class CameraSystem extends DRMT.System {
   static queries = {
@@ -17,18 +17,17 @@ export class CameraSystem extends DRMT.System {
 
   /** @type {(camera: PerspectiveCamera) => void | null} */
   setDefaultCamera = null;
-  isCameraReady = false;
+  isCameraReady = true;
 
   init() {
-    this.camera = new PerspectiveCamera();
+    this.camera = new PerspectiveCamera(
+      50,
+      window.innerWidth / window.innerHeight
+    );
+    addResizeHandler(this.camera);
   }
 
   execute(delta, time) {
-    if(!this.isCameraReady && this.setDefaultCamera) {
-      this.setDefaultCamera(this.camera);
-      this.isCameraReady = true;
-    }
-
     this.localPlayer = this.queries.localPlayer.results[0];
 
     if (this.isCameraReady && this.localPlayer) {
@@ -52,4 +51,15 @@ export class CameraSystem extends DRMT.System {
       }
     }
   }
+}
+
+/** @param {PerspectiveCamera} camera */
+function addResizeHandler(camera) {
+  window.addEventListener(
+    "resize",
+    debounce(() => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+    }, 200)
+  );
 }

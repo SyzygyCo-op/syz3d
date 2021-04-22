@@ -1,10 +1,12 @@
 import * as React from "react";
 import { observer } from "mobx-react-lite";
-import { Canvas, invalidate } from "react-three-fiber";
+import { Canvas, invalidate } from "@react-three/fiber";
 import * as UI from "./ui";
 import { ObservableState, avatars } from "../../state";
-import { gameLoop } from "../../world";
+import { gameLoop, world } from "../../world";
 import { Scene } from "./Scene";
+import {AdaptiveDpr, AdaptiveEvents, Preload} from "@react-three/drei";
+import {CameraSystem} from "../../systems";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -39,6 +41,8 @@ export const ReactApp = observer(
   ({ state }) => {
     gameLoop.useTick(invalidateOnTick);
 
+    const camera = world.getSystem(CameraSystem).camera;
+
     return (
       <ErrorBoundary>
         <div className="App">
@@ -47,8 +51,11 @@ export const ReactApp = observer(
             onSettingsOpen={handleSettingsOpen}
             localPlayerName={state.localPlayer.actual.label}
           />
-          <Canvas invalidateFrameloop>
+          <Canvas frameloop="demand" camera={camera} mode="concurrent">
+            <AdaptiveDpr pixelated/>
+            <AdaptiveEvents/>
             <React.Suspense fallback={null}>
+              <Preload all/>
               <Scene entities={state.entitiesToRender} showNameTags={state.showNameTags} />
             </React.Suspense>
           </Canvas>
