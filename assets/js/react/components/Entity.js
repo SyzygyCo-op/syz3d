@@ -13,6 +13,7 @@ import {
 import { gameLoop } from "../../world";
 import { USE_TWEENING } from "../../config";
 import {EntityRender} from "./EntityRender";
+import {useThree} from "@react-three/fiber";
 
 const stateComponentMap = {
   label: UILabelComponent,
@@ -32,6 +33,10 @@ const debug = false;
  */
 export const Entity = ({ entity, showNameTags }) => {
   const entityId = React.useMemo(() => entity.id, [entity]);
+
+  const { camera } = useThree();
+
+  const [ isFar, setFar ] = React.useState(true);
 
   // TODO make sure these are mostly only updating when the component mounts
   // perhaps just call `sync` in a mount-only effect
@@ -57,8 +62,17 @@ export const Entity = ({ entity, showNameTags }) => {
 
   gameLoop.useTick(/** @type any */ (sync));
 
+  gameLoop.useTick(() => {
+    if(position && showNameTags) {
+      const newValue = camera.position.distanceTo(position) > 5;
+      if(newValue !== isFar) {
+        setFar(newValue);
+      }
+    }
+  })
+
   return (
-    <EntityRender position={position} rotation={rotation} scale={scale} label={label} object3d={object3d} boundingBox={boundingBox} showNameTags={showNameTags} />
+    <EntityRender position={position} rotation={rotation} scale={scale} label={label} object3d={object3d} boundingBox={boundingBox} showNameTags={showNameTags && !isFar} />
   );
 };
 

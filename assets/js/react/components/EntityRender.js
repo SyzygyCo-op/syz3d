@@ -3,6 +3,7 @@ import { gameLoop } from "../../world";
 import { makeCopier } from "../../utils";
 import { Object3D, Vector3 } from "three";
 import { Html } from "@react-three/drei";
+import {useThree} from "@react-three/fiber";
 /**
  * @type React.ComponentType<{position: Vector3, rotation: Vector3, scale:
  *   Vector3, label: string, object3d: Object3D, boundingBox: Vector3} &
@@ -27,7 +28,7 @@ export const EntityRender = ({
     <group ref={groupRef} castShadow receiveShadow>
       {label && showNameTags && (
         // TODO use distanceFactor prop
-        <Html position-y={boundingBox && boundingBox.y} center>
+        <Html position-y={boundingBox && boundingBox.y} center distanceFactor={3}>
           <address>{label}</address>
         </Html>
       )}
