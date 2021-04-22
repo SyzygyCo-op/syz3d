@@ -134,11 +134,16 @@ function calcVelocity(start, end, duration) {
 }
 
 /**
-  * @param {Vector3 | Euler} integralValue
-  * @param {Vector3 | Euler} endIntegralValue
-  * @param {number} time
-  * @param {number} intervalDuration
-  */
-function shouldUpdateIntegralValue(integralValue, endIntegralValue, time, intervalDuration) {
-  return time % intervalDuration === 0 && !integralValue.equals(/** @type any */(endIntegralValue));
+ * @param {Vector3 | Euler} integralValue
+ * @param {Vector3 | Euler} endIntegralValue
+ * @param {number} time
+ * @param {number} intervalDuration
+ */
+function shouldUpdateIntegralValue(
+  integralValue,
+  endIntegralValue,
+  time,
+  intervalDuration
+) {
+  return time % intervalDuration === 0;
 }
