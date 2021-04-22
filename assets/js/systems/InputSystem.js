@@ -37,7 +37,6 @@ export class InputSystem extends DRMT.System {
   /** @param {KeyboardEvent} evt */
   updateKeyDownState = (evt) => {
     const isDown = evt.type === "keydown";
-    // TODO(fix) ignore keydowns when focus is in a form input
     switch (evt.key) {
       case "a":
       case "A":
@@ -78,8 +77,7 @@ export class InputSystem extends DRMT.System {
   init() {
     window.addEventListener("keydown", this.updateKeyDownState);
     window.addEventListener("keyup", this.updateKeyDownState);
-    // If focus is lost before key is released, the up event will not fire
-    window.addEventListener("blur", this.handleMouseDown);
+    window.addEventListener("blur", this.handleWindowBlur);
 
     document.addEventListener("mousedown", this.handleMouseDown);
 
@@ -90,15 +88,15 @@ export class InputSystem extends DRMT.System {
   dispose() {
     window.removeEventListener("keydown", this.updateKeyDownState);
     window.removeEventListener("keyup", this.updateKeyDownState);
-    // If focus is lost before key is released, the up event will not fire
-    window.removeEventListener("blur", this.handleMouseDown);
+    window.removeEventListener("blur", this.handleWindowBlur);
 
     document.removeEventListener("mousedown", this.handleMouseDown);
 
     document.body.removeEventListener("mousemove", this.handleMouseMove);
   }
 
-  handleBlurWindow = () => {
+  handleWindowBlur = (evt) => {
+    // If focus is lost before key is released, the up event will not fire
     this.keyDownRight = false;
     this.keyDownLeft = false;
     this.keyDownJump = false;
@@ -128,9 +126,8 @@ export class InputSystem extends DRMT.System {
         event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
       /** @type Euler */
-      const angularVelocity = localPlayer.getComponent(
-        AngularVelocityComponent
-      ).value;
+      const angularVelocity = localPlayer.getComponent(AngularVelocityComponent)
+        .value;
 
       angularVelocity.x += movementY * 0.04;
       angularVelocity.y -= movementX * 0.04;
@@ -143,62 +140,67 @@ export class InputSystem extends DRMT.System {
    */
   execute(delta, _time) {
     const entity = this.getLocalPlayer();
-    this.canvasElement = this.world.getSystem(StateSystem).canvasElement;
+    const state = this.world.getSystem(StateSystem);
 
     const hasVelocity = entity.hasComponent(VelocityComponent);
     const hasRotation = entity.hasComponent(RotationComponent);
     const hasAngularVelocity = entity.hasComponent(AngularVelocityComponent);
 
-    if (hasAngularVelocity) {
-      /** @type Euler */
-      const angularVelocity = entity.getComponent(AngularVelocityComponent)
-        .value;
+    this.canvasElement = state.canvasElement;
+    if (!state.observable.openModalId) {
+      if (hasAngularVelocity) {
+        /** @type Euler */
+        const angularVelocity = entity.getComponent(AngularVelocityComponent)
+          .value;
 
-      if (this.keyDownLeft) {
-        angularVelocity.y += PLAYER_TURN_ACCEL;
-      }
-      if (this.keyDownRight) {
-        angularVelocity.y -= PLAYER_TURN_ACCEL;
-      }
-    }
-
-    if (hasVelocity && hasRotation) {
-      /** @type Vector3 */
-      const velocity = entity.getComponent(VelocityComponent).value;
-      const rotation = entity.getComponent(RotationComponent).value;
-
-      if (this.keyDownUp || this.keyDownDown) {
-        const accel = this.keyDownShift ? PLAYER_WALK_ACCEL : PLAYER_RUN_ACCEL;
-        const forward = getForwardNormal(rotation);
-
-        if (this.keyDownUp) {
-          velocity.add(forward.multiplyScalar(accel));
+        if (this.keyDownLeft) {
+          angularVelocity.y += PLAYER_TURN_ACCEL;
         }
-        if (this.keyDownDown) {
-          velocity.add(forward.multiplyScalar(-accel));
+        if (this.keyDownRight) {
+          angularVelocity.y -= PLAYER_TURN_ACCEL;
         }
       }
 
-      // Jumping and gravity
-      if (
-        entity.hasComponent(PositionComponent) &&
-        entity.hasComponent(VelocityComponent)
-      ) {
+      if (hasVelocity && hasRotation) {
+        /** @type Vector3 */
         const velocity = entity.getComponent(VelocityComponent).value;
-        const position = entity.getComponent(PositionComponent).value;
+        const rotation = entity.getComponent(RotationComponent).value;
 
-        if (position.y <= 0) {
-          velocity.y = getJumpIntensity(this.keyDownJump);
+        if (this.keyDownUp || this.keyDownDown) {
+          const accel = this.keyDownShift
+            ? PLAYER_WALK_ACCEL
+            : PLAYER_RUN_ACCEL;
+          const forward = getForwardNormal(rotation);
+
+          if (this.keyDownUp) {
+            velocity.add(forward.multiplyScalar(accel));
+          }
+          if (this.keyDownDown) {
+            velocity.add(forward.multiplyScalar(-accel));
+          }
+        }
+
+        // Jumping and gravity
+        if (
+          entity.hasComponent(PositionComponent) &&
+          entity.hasComponent(VelocityComponent)
+        ) {
+          const velocity = entity.getComponent(VelocityComponent).value;
+          const position = entity.getComponent(PositionComponent).value;
+
+          if (position.y <= 0) {
+            velocity.y = getJumpIntensity(this.keyDownJump);
+          }
         }
       }
     }
   }
-  toggleShowNameTags () {
+  toggleShowNameTags() {
     const state = this.world.getSystem(StateSystem).observable;
     state.updateSettings({ showNameTags: !state.showNameTags });
   }
   getLocalPlayer() {
-    return this.queries.players.results.find(isMine)
+    return this.queries.players.results.find(isMine);
   }
 }
 
