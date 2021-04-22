@@ -4,7 +4,7 @@ export { debounceBoundFn } from "./async";
 
 export { getForwardNormal, isOnCamera } from "./math";
 
-export { isPlayer, isMine } from './entity';
+export { isPlayer, isMine, findMy } from './entity';
 
 export function getPlayerId() {
   // @ts-ignore

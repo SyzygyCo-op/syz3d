@@ -2,7 +2,8 @@ import * as DRMT from "dreamt";
 import { Euler, Vector3 } from "three";
 import {
   AngularVelocityComponent,
-  LocalPlayerTag,
+  OwnershipComponent,
+  PlayerTag,
   PositionComponent,
   RotationComponent,
   VelocityComponent,
@@ -14,12 +15,12 @@ import {
   GAME_LOOP_DURATION,
 } from "../config";
 import { StateSystem } from "./StateSystem";
-import { getForwardNormal } from "../utils";
+import { getForwardNormal, isMine } from "../utils";
 
 export class InputSystem extends DRMT.System {
   static queries = {
-    localPlayer: {
-      components: [LocalPlayerTag],
+    players: {
+      components: [PlayerTag, OwnershipComponent],
     },
   };
 
@@ -115,10 +116,11 @@ export class InputSystem extends DRMT.System {
   };
 
   handleMouseMove = (event) => {
+    const localPlayer = this.getLocalPlayer();
     if (
       document.pointerLockElement &&
-      this.localPlayer &&
-      this.localPlayer.hasComponent(AngularVelocityComponent)
+      localPlayer &&
+      localPlayer.hasComponent(AngularVelocityComponent)
     ) {
       var movementX =
         event.movementX || event.mozMovementX || event.webkitMovementX || 0;
@@ -126,7 +128,7 @@ export class InputSystem extends DRMT.System {
         event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
       /** @type Euler */
-      const angularVelocity = this.localPlayer.getComponent(
+      const angularVelocity = localPlayer.getComponent(
         AngularVelocityComponent
       ).value;
 
@@ -140,9 +142,8 @@ export class InputSystem extends DRMT.System {
    * @param {number} _time
    */
   execute(delta, _time) {
+    const entity = this.getLocalPlayer();
     this.canvasElement = this.world.getSystem(StateSystem).canvasElement;
-
-    const entity = (this.localPlayer = this.queries.localPlayer.results[0]);
 
     const hasVelocity = entity.hasComponent(VelocityComponent);
     const hasRotation = entity.hasComponent(RotationComponent);
@@ -195,6 +196,9 @@ export class InputSystem extends DRMT.System {
   toggleShowNameTags () {
     const state = this.world.getSystem(StateSystem).observable;
     state.updateSettings({ showNameTags: !state.showNameTags });
+  }
+  getLocalPlayer() {
+    return this.queries.players.results.find(isMine)
   }
 }
 

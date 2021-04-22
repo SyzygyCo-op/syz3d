@@ -4,8 +4,8 @@ import {useThree} from '@react-three/fiber';
 import { ObservableState, ISettings } from "../../state";
 import {  world } from "../../world";
 import { Entity } from "./Entity";
-import {LocalPlayerTag} from "../../components";
 import {StateSystem} from '../../systems';
+import {isMine} from '../../utils';
 
 export const Scene = (
   /**
@@ -23,7 +23,7 @@ export const Scene = (
 
     return (
       <>
-        <ambientLight args={[0x6688cc]}/>
+        <ambientLight args={[0x5a77aa]}/>
         <directionalLight args={[0xff9999, 0.5]} position={[-1, 1, 2]}/>
         <directionalLight args={[0x8888ff, 0.2]} position={[0, -1, 0]}/>
         <directionalLight args={[0xffffaa, 1.2]} position={[-5, 25, 1]}/>
@@ -35,7 +35,7 @@ export const Scene = (
 
     /** @param {DRMT.Entity} entity */
     function remotePlayerWhenFirstPerson(entity) {
-      return !entity.hasComponent(LocalPlayerTag)
+      return !isMine(entity)
     }
   }
 )

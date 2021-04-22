@@ -14,6 +14,7 @@ import { Html } from "@react-three/drei";
 import { gameLoop } from "../../world";
 import { Group } from "three";
 import {USE_TWEENING} from "../../config";
+import {isMine} from "../../utils";
 
 const stateComponentMap = {
   label: UILabelComponent,
@@ -52,13 +53,13 @@ export const Entity = ({ entity, showNameTags }) => {
 
   React.useEffect(() => {
     if (debug) {
-      console.log("mounted", entityId, label);
+      console.log("mounted", entityId, label, object3d);
       return () => console.log("unmounting", entityId);
     }
   }, []);
 
   React.useEffect(() => {
-    if (debug) console.log("rerender", entityId, label, object3d, boundingBox);
+    if (debug) console.log("rerender", entityId, label, object3d);
   }, [entity, label, object3d, boundingBox]);
 
   if (debug) {

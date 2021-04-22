@@ -28,7 +28,6 @@ const systems = [
   ClientSystem,
 ];
 
-
 /** @type DRMT.World */
 export let world;
 

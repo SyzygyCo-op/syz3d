@@ -18,3 +18,4 @@ function getOwner(entity) {
 export function isMine(entity) {
   return getOwner(entity) !== null && getOwner(entity) === getPlayerId();
 }
+

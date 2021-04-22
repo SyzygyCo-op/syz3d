@@ -24,6 +24,7 @@ preloadAssets().then(() => {
   console.info("starting game loop");
   gameLoop.start();
   createLocalPlayer();
+
   startReactApp();
 
   NProgress.done();

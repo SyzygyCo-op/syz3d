@@ -2,7 +2,6 @@ import * as DRMT from "dreamt";
 import { Euler, Vector3 } from "three";
 import {
   PlayerTag,
-  LocalPlayerTag,
   UILabelComponent,
   RenderToCanvasTag,
   PositionComponent,
@@ -18,6 +17,7 @@ import {
 } from "../components";
 import { entityStore, ObservableState, PlayerState } from "../state";
 import {
+  isMine,
   getNetworkFrameDuration,
   getPlayerEntityId,
   getPlayerId,
@@ -32,8 +32,8 @@ export class StateSystem extends DRMT.System {
         removed: true,
       },
     },
-    localPlayer: {
-      components: [LocalPlayerTag],
+    players: {
+      components: [PlayerTag, OwnershipComponent],
     },
   };
 
@@ -194,7 +194,6 @@ export class StateSystem extends DRMT.System {
   createLocalPlayer(partialPlayerData) {
     this.correspondent
       .createEntity(getPlayerEntityId())
-      .addComponent(LocalPlayerTag)
       .addComponent(PlayerTag)
       .addComponent(VelocityComponent)
       .addComponent(AngularVelocityComponent)
@@ -207,9 +206,12 @@ export class StateSystem extends DRMT.System {
     this.observable.createLocalPlayer(partialPlayerData);
   }
 
+  getLocalPlayer() {
+    return this.queries.players.results.find(isMine);
+  }
+
   /** @param {DRMT.IEntityComponentDiff} diff */
   updateWorld(diff) {
-    const localPlayer = this.queries.localPlayer.results[0];
     // TODO change this vvv if the server ever becomes authoritative
     // TODO add method for removing entities from a diff
     delete diff.upsert[getPlayerEntityId()];
@@ -221,7 +223,7 @@ export class StateSystem extends DRMT.System {
   reinit() {
     this.correspondent.registerEntity(
       getPlayerEntityId(),
-      this.queries.localPlayer.results[0]
+      this.getLocalPlayer()
     );
   }
 }

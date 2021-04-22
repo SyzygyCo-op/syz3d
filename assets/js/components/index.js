@@ -3,8 +3,6 @@ import * as THREE from "three";
 
 export class PlayerTag extends DRMT.TagComponent {}
 
-export class LocalPlayerTag extends DRMT.TagComponent {}
-
 const Object3DType = DRMT.createType({
   name: "Object3D",
   default: new THREE.Object3D(),

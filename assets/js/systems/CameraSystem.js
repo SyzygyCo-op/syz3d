@@ -1,23 +1,27 @@
 import { debounce } from "debounce";
 import * as DRMT from "dreamt";
-import { Camera, PerspectiveCamera } from "three";
+import { PerspectiveCamera } from "three";
 import {
   BoundingBoxComponent,
-  LocalPlayerTag,
+  OwnershipComponent,
+  PlayerTag,
   PositionComponent,
   RotationComponent,
 } from "../components";
+import { isMine } from "../utils";
 
 export class CameraSystem extends DRMT.System {
   static queries = {
-    localPlayer: {
-      components: [LocalPlayerTag],
+    players: {
+      components: [
+        PlayerTag,
+        OwnershipComponent,
+        BoundingBoxComponent,
+        PositionComponent,
+        RotationComponent,
+      ],
     },
   };
-
-  /** @type {(camera: PerspectiveCamera) => void | null} */
-  setDefaultCamera = null;
-  isCameraReady = true;
 
   init() {
     this.camera = new PerspectiveCamera(
@@ -28,28 +32,22 @@ export class CameraSystem extends DRMT.System {
   }
 
   execute(delta, time) {
-    this.localPlayer = this.queries.localPlayer.results[0];
-
-    if (this.isCameraReady && this.localPlayer) {
-      if (this.localPlayer.hasComponent(PositionComponent)) {
-        const position = this.localPlayer.getComponent(PositionComponent).value;
+    this.queries.players.results.forEach((entity) => {
+      if (isMine(entity)) {
+        const position = entity.getComponent(PositionComponent).value;
+        const rotation = entity.getComponent(RotationComponent).value;
+        const box = entity.getComponent(BoundingBoxComponent).value;
         this.camera.position.copy(position);
-      }
 
-      if (this.localPlayer.hasComponent(RotationComponent)) {
-        const rotation = this.localPlayer.getComponent(RotationComponent).value;
         this.camera.rotation.copy(rotation);
         this.camera.rotation.y += Math.PI;
         this.camera.rotation.x *= -1;
-      }
 
-      if (this.localPlayer.hasComponent(BoundingBoxComponent)) {
-        const box = this.localPlayer.getComponent(BoundingBoxComponent).value;
         // Generically position the camera at 3/4 the avatar's height
         this.camera.position.y += (box.y / 4) * 3;
-        // TODO is camera positioned to far in front of player?
+        // TODO is camera positioned too far in front of player?
       }
-    }
+    });
   }
 }
 
