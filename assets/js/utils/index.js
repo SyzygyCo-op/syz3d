@@ -1,10 +1,10 @@
-import {GAME_LOOP_DURATION, GAME_LOOPS_PER_NETWORK_FRAME} from "../config";
+import { GAME_LOOP_DURATION, GAME_LOOPS_PER_NETWORK_FRAME } from "../config";
 
 export { debounceBoundFn } from "./async";
 
 export { getForwardNormal, isOnCamera } from "./math";
 
-export { isPlayer, isMine, findMy } from './entity';
+export { isPlayer, isMine } from "./entity";
 
 export function getPlayerId() {
   // @ts-ignore
@@ -29,4 +29,3 @@ export function getRoomToken() {
 export function getNetworkFrameDuration() {
   return GAME_LOOP_DURATION * GAME_LOOPS_PER_NETWORK_FRAME;
 }
-
