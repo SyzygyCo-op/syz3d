@@ -21,7 +21,7 @@ defmodule  Syz3d.Game do
         "glft_url" => "/3d/RiverIsland/model.glb",
         "position" => [0, 0, 0],
         "rotation" => [0, 0, 0, "YXZ"],
-        "render_to_canvas" => true
+        "scale" => [1, 1, 1],
       },
     }
   end

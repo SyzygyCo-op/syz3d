@@ -56,7 +56,7 @@ export const ReactApp = observer(
             <AdaptiveEvents/>
             <React.Suspense fallback={null}>
               <Preload all/>
-              <Scene entities={state.entitiesToRender} showNameTags={state.showNameTags} />
+              <Scene stationaryObject3DList={state.stationaryObject3DList} movingObject3DList={state.movingObject3DList} showNameTags={state.showNameTags} />
             </React.Suspense>
           </Canvas>
         </div>

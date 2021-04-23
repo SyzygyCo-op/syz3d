@@ -56,18 +56,6 @@ export async function preloadAssets() {
  */
 
 export class ObservableState {
-  /**
-    * @type Set<DRMT.Entity>
-   */
-  _entitiesToRender = new Set();
-
-  get entitiesToRender() {
-    const ret = [];
-    for(const e of this._entitiesToRender) {
-      ret.push(e)
-    }
-    return ret;
-  }
 
   /**
    * @type {null | ModalID}
@@ -94,20 +82,63 @@ export class ObservableState {
   }
 
   /**
+    * @type Set<DRMT.Entity>
+   */
+  _stationaryObject3DList = new Set();
+  // TODO copy-pasta
+  /**
+    * @type Set<DRMT.Entity>
+   */
+  _movingObject3DList = new Set();
+
+  get stationaryObject3DList() {
+    const ret = [];
+    for(const e of this._stationaryObject3DList) {
+      ret.push(e)
+    }
+    return ret;
+  }
+
+  get movingObject3DList() {
+    const ret = [];
+    for(const e of this._movingObject3DList) {
+      ret.push(e)
+    }
+    return ret;
+  }
+
+  /**
    * @param {DRMT.Entity[]} entities
    */
-  setEntitiesToRender(entities) {
+  setStationaryObject3DList(entities) {
     entities.forEach((entity) => {
-      this._entitiesToRender.add(entity);
+      this._stationaryObject3DList.add(entity);
     });
   }
 
   /**
    * @param {DRMT.Entity[]} entities
    */
-  resetEntitiesToRender(entities) {
-    this._entitiesToRender.clear();
-    this.setEntitiesToRender(entities);
+  setMovingObject3DList(entities) {
+    entities.forEach((entity) => {
+      this._movingObject3DList.add(entity);
+    });
+  }
+
+  /**
+   * @param {DRMT.Entity[]} entities
+   */
+  resetStationaryObject3DList(entities) {
+    this._stationaryObject3DList.clear();
+    this.setStationaryObject3DList(entities);
+  }
+
+  /**
+   * @param {DRMT.Entity[]} entities
+   */
+  resetMovingObject3DList(entities) {
+    this._movingObject3DList.clear();
+    this.setMovingObject3DList(entities)
   }
 
   /**

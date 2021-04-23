@@ -8,7 +8,7 @@ import { Html } from "@react-three/drei";
  *   Vector3, label: string, object3d: Object3D, boundingBox: Vector3} &
  *   import("../../state").ISettings>
  */
-export const EntityRender = ({
+export const MovingObject3DRender = ({
   position,
   rotation,
   scale,
@@ -32,7 +32,7 @@ export const EntityRender = ({
   });
 
   return (
-    <group ref={groupRef} castShadow receiveShadow>
+    <group ref={groupRef}>
       {label && showNameTags && (
         // TODO use distanceFactor prop
         <Html position-y={boundingBox && boundingBox.y} center distanceFactor={3}>

@@ -3,7 +3,6 @@ import { Euler, Vector3 } from "three";
 import {
   PlayerTag,
   UILabelComponent,
-  RenderToCanvasTag,
   PositionComponent,
   GltfUrlComponent,
   BumpComponent,
@@ -14,6 +13,7 @@ import {
   OwnershipComponent,
   FrictionComponent,
   MassComponent,
+  Object3DComponent,
 } from "../components";
 import { entityStore, ObservableState, PlayerState } from "../state";
 import {
@@ -27,8 +27,14 @@ import { correspondentCache } from "../state";
 
 export class StateSystem extends DRMT.System {
   static queries = {
-    toRender: {
-      components: [RenderToCanvasTag],
+    stationaryObject3D: {
+      components: [Object3DComponent, DRMT.Not(VelocityComponent), DRMT.Not(AngularVelocityComponent)],
+      listen: {
+        removed: true,
+      },
+    },
+    movingObject3D: {
+      components: [Object3DComponent, VelocityComponent, AngularVelocityComponent, OwnershipComponent],
       listen: {
         removed: true,
       },
@@ -50,10 +56,6 @@ export class StateSystem extends DRMT.System {
       entityStore: entityStore,
       isMine: (entity) => hasOwner(entity) && isMine(entity)
     })
-      .registerComponent("render_to_canvas", RenderToCanvasTag, {
-        read: () => {},
-        write: (compo) => !!compo,
-      })
       .registerComponent("is_player", PlayerTag, {
         read: () => {},
         write: (compo) => !!compo,
@@ -138,14 +140,25 @@ export class StateSystem extends DRMT.System {
   }
 
   execute(delta, time) {
-    const entitiesToRender = this.queries.toRender.results;
-    if (this.queries.toRender.removed.length > 0) {
-      this.observable.resetEntitiesToRender(entitiesToRender);
+    const stationaryObject3DResults = this.queries.stationaryObject3D.results;
+    const movingObject3DResults = this.queries.movingObject3D.results;
+
+    if (this.queries.stationaryObject3D.removed.length > 0) {
+      this.observable.resetStationaryObject3DList(stationaryObject3DResults);
     } else if (
-      this.queries.toRender.results.length >
-      this.observable.entitiesToRender.length
+      stationaryObject3DResults.length >
+      this.observable.stationaryObject3DList.length
     ) {
-      this.observable.setEntitiesToRender(entitiesToRender);
+      this.observable.setStationaryObject3DList(stationaryObject3DResults);
+    }
+
+    if (this.queries.movingObject3D.removed.length > 0) {
+      this.observable.resetMovingObject3DList(movingObject3DResults);
+    } else if (
+      movingObject3DResults.length >
+      this.observable.movingObject3DList.length
+    ) {
+      this.observable.setMovingObject3DList(movingObject3DResults);
     }
 
     this.worldDirty = false;

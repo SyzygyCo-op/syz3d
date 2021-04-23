@@ -116,8 +116,6 @@ export class UILabelComponent extends DRMT.Component {
   };
 }
 
-export class RenderToCanvasTag extends DRMT.TagComponent {}
-
 export class BumpComponent extends DRMT.Component {
   static schema = {
     value: { type: DRMT.Types.Number },

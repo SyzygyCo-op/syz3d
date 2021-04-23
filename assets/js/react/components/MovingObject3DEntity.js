@@ -12,7 +12,7 @@ import {
 } from "../../components";
 import { gameLoop } from "../../world";
 import { USE_TWEENING } from "../../config";
-import { EntityRender } from "./EntityRender";
+import { MovingObject3DRender } from "./MovingObject3DRender";
 import { useThree } from "@react-three/fiber";
 
 const stateComponentMap = {
@@ -33,7 +33,7 @@ const debug = false;
  *
  * @type React.ComponentType<{entity: DRMT.Entity} & import("../../state").ISettings>
  */
-export const Entity = ({ entity, showNameTags }) => {
+export const MovingObject3DEntity = ({ entity, showNameTags }) => {
   const entityId = React.useMemo(() => entity.id, [entity]);
 
   const { camera } = useThree();
@@ -64,6 +64,7 @@ export const Entity = ({ entity, showNameTags }) => {
 
   gameLoop.useTick(/** @type any */ (sync));
 
+  // TODO use fog instead
   gameLoop.useTick(() => {
     if (position && label && showNameTags) {
       const newValue = camera.position.distanceTo(position) > 5;
@@ -74,7 +75,7 @@ export const Entity = ({ entity, showNameTags }) => {
   });
 
   return (
-    <EntityRender
+    <MovingObject3DRender
       position={position}
       rotation={rotation}
       scale={scale}
