@@ -63,7 +63,7 @@ export const Entity = ({ entity, showNameTags }) => {
   gameLoop.useTick(/** @type any */ (sync));
 
   gameLoop.useTick(() => {
-    if(position && showNameTags) {
+    if(position && label && showNameTags) {
       const newValue = camera.position.distanceTo(position) > 5;
       if(newValue !== isFar) {
         setFar(newValue);
