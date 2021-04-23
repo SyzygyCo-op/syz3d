@@ -21,6 +21,7 @@ import {
   getNetworkFrameDuration,
   getPlayerEntityId,
   getPlayerId,
+  hasOwner,
 } from "../utils";
 import { correspondentCache } from "../state";
 
@@ -47,9 +48,7 @@ export class StateSystem extends DRMT.System {
   init() {
     this.correspondent = new DRMT.Correspondent(this.world, {
       entityStore: entityStore,
-      isMine: (entity) =>
-        entity.hasComponent(OwnershipComponent) &&
-        entity.getComponent(OwnershipComponent).value === getPlayerId(),
+      isMine: (entity) => hasOwner(entity) && isMine(entity)
     })
       .registerComponent("render_to_canvas", RenderToCanvasTag, {
         read: () => {},

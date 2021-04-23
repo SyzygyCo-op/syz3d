@@ -10,7 +10,12 @@ import {
 export class GravitySystem extends DRMT.System {
   static queries = {
     entities: {
-      components: [MassComponent, OwnershipComponent],
+      components: [
+        MassComponent,
+        OwnershipComponent,
+        VelocityComponent,
+        PositionComponent,
+      ],
     },
   };
 
@@ -20,22 +25,17 @@ export class GravitySystem extends DRMT.System {
    */
   execute(delta, time) {
     this.queries.entities.results.forEach((entity) => {
-      if (
-        entity.hasComponent(VelocityComponent) &&
-        entity.hasComponent(PositionComponent)
-      ) {
-        /** @type Vector3 */
-        const position = entity.getComponent(PositionComponent).value;
-        /** @type Vector3 */
-        const velocity = entity.getComponent(VelocityComponent).value;
+      /** @type Vector3 */
+      const position = entity.getComponent(PositionComponent).value;
+      /** @type Vector3 */
+      const velocity = entity.getComponent(VelocityComponent).value;
 
-        if (position.y > 0) {
-          velocity.y -= delta / 20;
-          velocity.y = Math.max(velocity.y, -delta / 5);
-        }
-        // TODO move to collisionsystem?
-        position.y = Math.max(position.y, 0);
+      if (position.y > 0) {
+        velocity.y -= delta / 20;
+        velocity.y = Math.max(velocity.y, -delta / 5);
       }
+      // TODO move to collisionsystem?
+      position.y = Math.max(position.y, 0);
     });
   }
 }

@@ -20,7 +20,14 @@ import { getForwardNormal, isMine } from "../utils";
 export class InputSystem extends DRMT.System {
   static queries = {
     players: {
-      components: [PlayerTag, OwnershipComponent],
+      components: [
+        PlayerTag,
+        OwnershipComponent,
+        PositionComponent,
+        RotationComponent,
+        VelocityComponent,
+        AngularVelocityComponent,
+      ],
     },
   };
 
@@ -115,11 +122,7 @@ export class InputSystem extends DRMT.System {
 
   handleMouseMove = (event) => {
     const localPlayer = this.getLocalPlayer();
-    if (
-      document.pointerLockElement &&
-      localPlayer &&
-      localPlayer.hasComponent(AngularVelocityComponent)
-    ) {
+    if (document.pointerLockElement && localPlayer) {
       var movementX =
         event.movementX || event.mozMovementX || event.webkitMovementX || 0;
       var movementY =
@@ -142,56 +145,42 @@ export class InputSystem extends DRMT.System {
     const entity = this.getLocalPlayer();
     const state = this.world.getSystem(StateSystem);
 
-    const hasVelocity = entity.hasComponent(VelocityComponent);
-    const hasRotation = entity.hasComponent(RotationComponent);
-    const hasAngularVelocity = entity.hasComponent(AngularVelocityComponent);
-
     this.canvasElement = state.canvasElement;
-    if (!state.observable.openModalId) {
-      if (hasAngularVelocity) {
-        /** @type Euler */
-        const angularVelocity = entity.getComponent(AngularVelocityComponent)
-          .value;
+    // TODO(perf) also check if any key at all is pressed
+    if (entity && !state.observable.openModalId) {
+      /** @type Vector3 */
+      const position = entity.getComponent(PositionComponent).value;
+      /** @type Vector3 */
+      const velocity = entity.getComponent(VelocityComponent).value;
+      /** @type Euler */
+      const rotation = entity.getComponent(RotationComponent).value;
+      /** @type Euler */
+      const angularVelocity = entity.getComponent(AngularVelocityComponent)
+        .value;
 
-        if (this.keyDownLeft) {
-          angularVelocity.y += PLAYER_TURN_ACCEL;
+      if (this.keyDownLeft) {
+        angularVelocity.y += PLAYER_TURN_ACCEL;
+      }
+      if (this.keyDownRight) {
+        angularVelocity.y -= PLAYER_TURN_ACCEL;
+      }
+
+
+      if (this.keyDownUp || this.keyDownDown) {
+        const accel = this.keyDownShift ? PLAYER_WALK_ACCEL : PLAYER_RUN_ACCEL;
+        const forward = getForwardNormal(rotation);
+
+        if (this.keyDownUp) {
+          velocity.add(forward.multiplyScalar(accel));
         }
-        if (this.keyDownRight) {
-          angularVelocity.y -= PLAYER_TURN_ACCEL;
+        if (this.keyDownDown) {
+          velocity.add(forward.multiplyScalar(-accel));
         }
       }
 
-      if (hasVelocity && hasRotation) {
-        /** @type Vector3 */
-        const velocity = entity.getComponent(VelocityComponent).value;
-        const rotation = entity.getComponent(RotationComponent).value;
-
-        if (this.keyDownUp || this.keyDownDown) {
-          const accel = this.keyDownShift
-            ? PLAYER_WALK_ACCEL
-            : PLAYER_RUN_ACCEL;
-          const forward = getForwardNormal(rotation);
-
-          if (this.keyDownUp) {
-            velocity.add(forward.multiplyScalar(accel));
-          }
-          if (this.keyDownDown) {
-            velocity.add(forward.multiplyScalar(-accel));
-          }
-        }
-
-        // Jumping and gravity
-        if (
-          entity.hasComponent(PositionComponent) &&
-          entity.hasComponent(VelocityComponent)
-        ) {
-          const velocity = entity.getComponent(VelocityComponent).value;
-          const position = entity.getComponent(PositionComponent).value;
-
-          if (position.y <= 0) {
-            velocity.y = getJumpIntensity(this.keyDownJump);
-          }
-        }
+      // Jumping and gravity
+      if (position.y <= 0) {
+        velocity.y = getJumpIntensity(this.keyDownJump);
       }
     }
   }

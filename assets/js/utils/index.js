@@ -4,7 +4,7 @@ export { debounceBoundFn } from "./async";
 
 export { getForwardNormal, isOnCamera, makeCopier } from "./math";
 
-export { isPlayer, isMine } from "./entity";
+export { isPlayer, isMine, hasOwner } from "./entity";
 
 export function getPlayerId() {
   // @ts-ignore

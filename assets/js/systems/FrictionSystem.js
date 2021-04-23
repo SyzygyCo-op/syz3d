@@ -10,7 +10,12 @@ import {
 export class FrictionSystem extends DRMT.System {
   static queries = {
     entities: {
-      components: [FrictionComponent, OwnershipComponent],
+      components: [
+        FrictionComponent,
+        OwnershipComponent,
+        VelocityComponent,
+        AngularVelocityComponent,
+      ],
     },
   };
 
@@ -21,20 +26,22 @@ export class FrictionSystem extends DRMT.System {
   execute(delta, time) {
     this.queries.entities.results.forEach((entity) => {
       const friction = entity.getComponent(FrictionComponent);
-      if (entity.hasComponent(VelocityComponent)) {
-        /** @type Vector3 */
-        const velocity = entity.getComponent(VelocityComponent).value;
-        if (velocity.x || velocity.y || velocity.z) {
-          velocity.addScaledVector(velocity, -1 * friction.linear);
-        }
+      /** @type Vector3 */
+      const velocity = entity.getComponent(VelocityComponent).value;
+      /** @type Euler */
+      const angularVelocity = entity.getComponent(AngularVelocityComponent).value;
+
+      // TODO(perf) do these if statements really help?
+      if (velocity.x || velocity.y || velocity.z) {
+        velocity.addScaledVector(velocity, -1 * friction.linear);
       }
 
-      if (entity.hasComponent(AngularVelocityComponent)) {
-        /** @type Euler */
-        const velocity = entity.getComponent(AngularVelocityComponent).value;
-        if (velocity.x || velocity.y || velocity.z) {
-          Vector3.prototype.addScaledVector.call(velocity, velocity, -1 * friction.angular)
-        }
+      if (angularVelocity.x || angularVelocity.y || angularVelocity.z) {
+        Vector3.prototype.addScaledVector.call(
+          angularVelocity,
+          angularVelocity,
+          -1 * friction.angular
+        );
       }
     });
   }

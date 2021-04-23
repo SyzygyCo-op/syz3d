@@ -23,9 +23,9 @@ export class MovementSystem extends DRMT.System {
     angularVelocity: {
       components: [AngularVelocityComponent, RotationComponent],
     },
-    test: {
-      components: [OwnershipComponent],
-    },
+    // test: {
+    //   components: [OwnershipComponent],
+    // },
   };
 
   /**
@@ -45,28 +45,28 @@ export class MovementSystem extends DRMT.System {
       }
     });
 
-    this.queries.test.results.forEach((entity) => {
-      if (isMine(entity) && !isPlayer(entity)) {
-        if (!entity.hasComponent(VelocityComponent)) {
-          entity.addComponent(VelocityComponent);
-        }
-        if (!entity.hasComponent(AngularVelocityComponent)) {
-          entity.addComponent(AngularVelocityComponent, {
-            value: new Euler(
-              0,
-              Math.random() * 0.7 + 0.5,
-              Math.random() * 0.7 + 0.5
-            ),
-          });
-        }
-        /** @type Vector3 */
-        const velocity = entity.getComponent(VelocityComponent).value;
-        /** @type Euler */
-        const rotation = entity.getComponent(RotationComponent).value;
+    // this.queries.test.results.forEach((entity) => {
+    //   if (isMine(entity) && !isPlayer(entity)) {
+    //     if (!entity.hasComponent(VelocityComponent)) {
+    //       entity.addComponent(VelocityComponent);
+    //     }
+    //     if (!entity.hasComponent(AngularVelocityComponent)) {
+    //       entity.addComponent(AngularVelocityComponent, {
+    //         value: new Euler(
+    //           0,
+    //           Math.random() * 0.7 + 0.5,
+    //           Math.random() * 0.7 + 0.5
+    //         ),
+    //       });
+    //     }
+    //     /** @type Vector3 */
+    //     const velocity = entity.getComponent(VelocityComponent).value;
+    //     /** @type Euler */
+    //     const rotation = entity.getComponent(RotationComponent).value;
 
-        velocity.copy(getForwardNormal(rotation).multiplyScalar(3));
-      }
-    });
+    //     velocity.copy(getForwardNormal(rotation).multiplyScalar(3));
+    //   }
+    // });
   }
 }
 
