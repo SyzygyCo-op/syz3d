@@ -30,16 +30,3 @@ export function isOnCamera(objectPos, camera) {
   return deltaCamObj.angleTo(camDir) > Math.PI / 2
 }
 
-/**
-  * @param {Object3D} object
-  * @param {"position" | "rotation" | "scale"} targetPropertyName
-  * @param {any} source
-  */
-export function makeCopier(object, targetPropertyName, source) {
-  return function copier() {
-    if (object && source) {
-      const target = object[targetPropertyName];
-      target.copy(source);
-    }
-  }
-}

@@ -1,11 +1,10 @@
 import * as React from "react";
 import { gameLoop } from "../../world";
-import { makeCopier } from "../../utils";
-import { Object3D, Vector3 } from "three";
+import { Object3D, Vector3, Group, Euler } from "three";
 import { Html } from "@react-three/drei";
-import {useThree} from "@react-three/fiber";
+
 /**
- * @type React.ComponentType<{position: Vector3, rotation: Vector3, scale:
+ * @type React.ComponentType<{position: Vector3, rotation: Euler, scale:
  *   Vector3, label: string, object3d: Object3D, boundingBox: Vector3} &
  *   import("../../state").ISettings>
  */
@@ -20,9 +19,17 @@ export const EntityRender = ({
 }) => {
   const groupRef = React.useRef(null);
   /** TODO called when off screen? */
-  gameLoop.useTick(makeCopier(groupRef.current, "position", position));
-  gameLoop.useTick(makeCopier(groupRef.current, "rotation", rotation));
-  gameLoop.useTick(makeCopier(groupRef.current, "scale", scale));
+  gameLoop.useTick(() => {
+    if (groupRef.current) {
+      /** @type Group */
+      const group = groupRef.current;
+      position &&
+        group.position.copy(position);
+      rotation &&
+        group.rotation.copy(rotation);
+      scale && group.scale.copy(scale);
+    }
+  });
 
   return (
     <group ref={groupRef} castShadow receiveShadow>
