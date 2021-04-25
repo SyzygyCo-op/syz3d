@@ -6,6 +6,7 @@ import {
   PositionComponent,
   VelocityComponent,
 } from "../components";
+import {CollisionSystem} from "./CollisionSystem";
 
 export class GravitySystem extends DRMT.System {
   static queries = {
@@ -26,16 +27,14 @@ export class GravitySystem extends DRMT.System {
   execute(delta, time) {
     this.queries.entities.results.forEach((entity) => {
       /** @type Vector3 */
-      const position = entity.getComponent(PositionComponent).value;
-      /** @type Vector3 */
       const velocity = entity.getComponent(VelocityComponent).value;
 
-      if (position.y > 0) {
-        velocity.y -= delta / 20;
-        velocity.y = Math.max(velocity.y, -delta / 5);
+      if (this.world.getSystem(CollisionSystem).playerOnFloor) {
+        velocity.y = 0;
+      } else {
+        velocity.y -= delta * 0.1;
+        velocity.y = Math.max(velocity.y, -delta * 2);
       }
-      // TODO move to collisionsystem?
-      position.y = Math.max(position.y, 0);
     });
   }
 }

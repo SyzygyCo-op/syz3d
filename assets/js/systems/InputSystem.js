@@ -16,6 +16,7 @@ import {
 } from "../config";
 import { StateSystem } from "./StateSystem";
 import { getForwardNormal, isMine } from "../utils";
+import {CollisionSystem} from "./CollisionSystem";
 
 export class InputSystem extends DRMT.System {
   static queries = {
@@ -179,7 +180,7 @@ export class InputSystem extends DRMT.System {
       }
 
       // Jumping and gravity
-      if (position.y <= 0) {
+      if (this.world.getSystem(CollisionSystem).playerOnFloor) {
         velocity.y = getJumpIntensity(this.keyDownJump);
       }
     }
@@ -209,7 +210,7 @@ function getJumpIntensity(keyIsDown) {
   const isNonZero = isRested && isPrepped;
 
   if (isNonZero) {
-    retval = Math.sqrt(jumpPrepTimer) * 7;
+    retval = Math.sqrt(jumpPrepTimer) * 32;
     jumpPrepTimer = 0;
     jumpRestTimer = 0;
   }

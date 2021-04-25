@@ -53,7 +53,7 @@ export class VelocityComponent extends DRMT.Component {
     value: { type: Vector3Type },
   };
 }
-/** larger value => more friction */
+/** Larger value => more friction */
 export class FrictionComponent extends DRMT.Component {
   static schema = {
     linear: { type: DRMT.Types.Number },
@@ -101,6 +101,15 @@ export class GltfUrlComponent extends DRMT.Component {
 export class Object3DComponent extends DRMT.Component {
   static schema = {
     value: { type: Object3DType },
+  };
+}
+
+export class UseGlftForCollisionTag extends DRMT.TagComponent {}
+
+export class CollisionComponent extends DRMT.Component {
+  static schema = {
+    shape: { type: DRMT.Types.String },
+    args: { type: DRMT.Types.Array },
   };
 }
 

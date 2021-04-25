@@ -14,6 +14,8 @@ import {
   FrictionComponent,
   MassComponent,
   Object3DComponent,
+  CollisionComponent,
+  UseGlftForCollisionTag
 } from "../components";
 import { entityStore, ObservableState, PlayerState } from "../state";
 import {
@@ -57,6 +59,10 @@ export class StateSystem extends DRMT.System {
       isMine: (entity) => hasOwner(entity) && isMine(entity)
     })
       .registerComponent("is_player", PlayerTag, {
+        read: () => {},
+        write: (compo) => !!compo,
+      })
+      .registerComponent("use_gltf_for_collision", UseGlftForCollisionTag, {
         read: () => {},
         write: (compo) => !!compo,
       })
@@ -214,7 +220,11 @@ export class StateSystem extends DRMT.System {
         linear: 0.08,
         angular: 0.2,
       })
-      .addComponent(MassComponent, { value: 1 });
+      .addComponent(MassComponent, { value: 1 })
+      .addComponent(CollisionComponent, {
+        shape: "sphere",
+        args: [0.3]
+      });
     this.observable.createLocalPlayer(partialPlayerData);
   }
 

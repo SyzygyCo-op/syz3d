@@ -18,10 +18,17 @@ defmodule  Syz3d.Game do
   def get_initial_data() do
     %{
       "river_island" => %{
-        "glft_url" => "/3d/RiverIsland/model.glb",
+        "glft_url" => "/3d/example-collision-world.glb",
         "position" => [0, 0, 0],
         "rotation" => [0, 0, 0, "YXZ"],
         "scale" => [1, 1, 1],
+      },
+      "river_island_collision" => %{
+        "glft_url" => "/3d/example-collision-world.glb",
+        "position" => [0, 0, 0],
+        "rotation" => [0, 0, 0, "YXZ"],
+        "scale" => [1, 1, 1],
+        "use_gltf_for_collision" => true
       },
     }
   end
@@ -46,7 +53,6 @@ defmodule  Syz3d.Game do
         "owner" => player_id,
           # "velocity" => [0, 0, 0],
           # "angular_velocity" => [0, :rand.uniform() * 0.3 + 0.1, 0],
-        "render_to_canvas" => true
       }
     end)
   end

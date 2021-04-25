@@ -8,3 +8,4 @@ export { InputSystem } from "./InputSystem";
 export { RoundingSystem } from "./RoundingSystem";
 export { CameraSystem } from "./CameraSystem";
 export { TweenSystem } from "./TweenSystem";
+export { CollisionSystem } from "./CollisionSystem";
