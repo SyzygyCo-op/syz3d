@@ -28,6 +28,7 @@ export const Scene =
         <directionalLight args={[0xff9999, 0.5]} position={[-1, 1, 2]} />
         <directionalLight args={[0x8888ff, 0.2]} position={[0, -1, 0]} />
         <directionalLight args={[0xffffaa, 1.2]} position={[-5, 25, 1]} />
+        <fog attach="fog" args={[0xddeeff, 2, 40]} />
         {stationaryObject3DList.map((entity) => {
           return (
             <StationaryObject3DEntity
