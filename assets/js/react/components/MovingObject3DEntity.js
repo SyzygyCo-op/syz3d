@@ -29,8 +29,6 @@ const debug = false;
 /**
  * React-THREE-Fiber component that renders an entity.
  *
- * TODO(perf): use simpler component for non-moving entities
- *
  * @type React.ComponentType<{entity: DRMT.Entity} & import("../../state").ISettings>
  */
 export const MovingObject3DEntity = ({ entity, showNameTags }) => {

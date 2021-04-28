@@ -18,7 +18,6 @@ export const MovingObject3DRender = ({
   showNameTags,
 }) => {
   const groupRef = React.useRef(null);
-  /** TODO called when off screen? */
   gameLoop.useTick(() => {
     if (groupRef.current) {
       /** @type Group */
@@ -34,7 +33,6 @@ export const MovingObject3DRender = ({
   return (
     <group ref={groupRef}>
       {label && showNameTags && (
-        // TODO use distanceFactor prop
         <Html position-y={boundingBox && boundingBox.y} center distanceFactor={3}>
           <address>{label}</address>
         </Html>

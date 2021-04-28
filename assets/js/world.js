@@ -94,14 +94,13 @@ function registerSystems() {
   systems.forEach((System) => {
     world.registerSystem(System);
     const sys = world.getSystem(System);
-    // TODO remove if
+    // TODO should reinit be called if not hot reloading?
     sys.reinit();
   });
 }
 function unregisterSystems() {
   systems.forEach((System) => {
     const sys = world.getSystem(System);
-    // TODO remove if
     sys.dispose();
     world.unregisterSystem(System);
   });
