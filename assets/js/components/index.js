@@ -1,6 +1,8 @@
 import * as DRMT from "dreamt";
 import * as THREE from "three";
 
+export {CollisionBodyComponent} from './CollisionBody';
+
 export class PlayerTag extends DRMT.TagComponent {}
 
 const Object3DType = DRMT.createType({
@@ -106,12 +108,6 @@ export class Object3DComponent extends DRMT.Component {
 
 export class UseGlftForCollisionTag extends DRMT.TagComponent {}
 
-export class CollisionComponent extends DRMT.Component {
-  static schema = {
-    shape: { type: DRMT.Types.String },
-    args: { type: DRMT.Types.Array },
-  };
-}
 
 export class BoundingBoxComponent extends DRMT.Component {
   static schema = {

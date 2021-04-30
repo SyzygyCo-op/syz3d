@@ -14,8 +14,9 @@ import {
   FrictionComponent,
   MassComponent,
   Object3DComponent,
-  CollisionComponent,
-  UseGlftForCollisionTag
+  CollisionBodyComponent,
+  UseGlftForCollisionTag,
+  CollisionBody,
 } from "../components";
 import { entityStore, ObservableState, PlayerState } from "../state";
 import {
@@ -30,13 +31,22 @@ import { correspondentCache } from "../state";
 export class StateSystem extends DRMT.System {
   static queries = {
     stationaryObject3D: {
-      components: [Object3DComponent, DRMT.Not(VelocityComponent), DRMT.Not(AngularVelocityComponent)],
+      components: [
+        Object3DComponent,
+        DRMT.Not(VelocityComponent),
+        DRMT.Not(AngularVelocityComponent),
+      ],
       listen: {
         removed: true,
       },
     },
     movingObject3D: {
-      components: [Object3DComponent, VelocityComponent, AngularVelocityComponent, OwnershipComponent],
+      components: [
+        Object3DComponent,
+        VelocityComponent,
+        AngularVelocityComponent,
+        OwnershipComponent,
+      ],
       listen: {
         removed: true,
       },
@@ -56,7 +66,7 @@ export class StateSystem extends DRMT.System {
   init() {
     this.correspondent = new DRMT.Correspondent(this.world, {
       entityStore: entityStore,
-      isMine: (entity) => hasOwner(entity) && isMine(entity)
+      isMine: (entity) => hasOwner(entity) && isMine(entity),
     })
       .registerComponent("is_player", PlayerTag, {
         read: () => {},
@@ -161,8 +171,7 @@ export class StateSystem extends DRMT.System {
     if (this.queries.movingObject3D.removed.length > 0) {
       this.observable.resetMovingObject3DList(movingObject3DResults);
     } else if (
-      movingObject3DResults.length >
-      this.observable.movingObject3DList.length
+      movingObject3DResults.length > this.observable.movingObject3DList.length
     ) {
       this.observable.setMovingObject3DList(movingObject3DResults);
     }
@@ -221,9 +230,8 @@ export class StateSystem extends DRMT.System {
         angular: 0.2,
       })
       .addComponent(MassComponent, { value: 1 })
-      .addComponent(CollisionComponent, {
-        shape: "sphere",
-        args: [0.3]
+      .addComponent(CollisionBodyComponent, {
+        value: new CollisionBody("sphere", [0.5]),
       });
     this.observable.createLocalPlayer(partialPlayerData);
   }
