@@ -14,15 +14,7 @@ import { gameLoop } from "../../world";
 import { USE_TWEENING } from "../../config";
 import { MovingObject3DRender } from "./MovingObject3DRender";
 import { useThree } from "@react-three/fiber";
-
-const stateComponentMap = {
-  label: UILabelComponent,
-  object3d: Object3DComponent,
-  boundingBox: BoundingBoxComponent,
-  position: USE_TWEENING ? PositionTweenComponent : PositionComponent,
-  rotation: USE_TWEENING ? RotationTweenComponent : RotationComponent,
-  scale: ScaleComponent,
-};
+import { isMine } from "../../utils";
 
 const debug = false;
 
@@ -33,6 +25,20 @@ const debug = false;
  */
 export const MovingObject3DEntity = ({ entity, showNameTags }) => {
   const entityId = React.useMemo(() => entity.id, [entity]);
+
+  const isLocalPlayer = React.useMemo(() => isMine(entity), [entity]);
+
+  const stateComponentMap = React.useMemo(
+    () => ({
+      label: UILabelComponent,
+      object3d: Object3DComponent,
+      boundingBox: BoundingBoxComponent,
+      position: USE_TWEENING && !isLocalPlayer ? PositionTweenComponent : PositionComponent,
+      rotation: USE_TWEENING && !isLocalPlayer ? RotationTweenComponent : RotationComponent,
+      scale: ScaleComponent,
+    }),
+    [USE_TWEENING, isLocalPlayer]
+  );
 
   const { camera } = useThree();
 
