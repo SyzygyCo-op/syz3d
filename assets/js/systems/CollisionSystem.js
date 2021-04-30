@@ -5,7 +5,7 @@ import {
   PositionComponent,
   VelocityComponent,
   AngularVelocityComponent,
-  CollisionComponent,
+  CollisionBodyComponent,
   UseGlftForCollisionTag,
   Object3DComponent,
 } from "../components";
@@ -29,7 +29,7 @@ export class CollisionSystem extends DRMT.System {
     },
     dynamicBodies: {
       components: [
-        CollisionComponent,
+        CollisionBodyComponent,
         PositionComponent,
         VelocityComponent,
         OwnershipComponent,
@@ -51,7 +51,7 @@ export class CollisionSystem extends DRMT.System {
       if (isMine(entity)) {
         /** @type Vector3 */
         const position = entity.getComponent(PositionComponent).value;
-        const [radius] = entity.getComponent(CollisionComponent).args;
+        const radius = entity.getComponent(CollisionBodyComponent).value.args[0];
         sphereCollider.center.copy(position);
         sphereCollider.radius = radius;
         const result = this.octree.sphereIntersect(sphereCollider);
