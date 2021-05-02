@@ -11,7 +11,7 @@ import {
 } from "../components";
 import { Octree } from "three/examples/jsm/math/Octree";
 import { isMine } from "../utils";
-import {Capsule} from "three/examples/jsm/math/Capsule";
+import { Capsule } from "three/examples/jsm/math/Capsule";
 
 const sphereCollider = new Sphere(new Vector3(), 0);
 const capsuleCollider = new Capsule(new Vector3(), new Vector3(), 0);

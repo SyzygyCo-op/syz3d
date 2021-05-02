@@ -26,7 +26,7 @@ import {
   hasOwner,
 } from "../utils";
 import { correspondentCache } from "../state";
-import {CollisionBody} from "../components/CollisionBody";
+import { CollisionBody } from "../components/CollisionBody";
 
 export class StateSystem extends DRMT.System {
   static queries = {
@@ -35,7 +35,6 @@ export class StateSystem extends DRMT.System {
         Object3DComponent,
         DRMT.Not(VelocityComponent),
         DRMT.Not(AngularVelocityComponent),
-        DRMT.Not(UseGlftForCollisionTag)
       ],
       listen: {
         removed: true,
@@ -232,7 +231,11 @@ export class StateSystem extends DRMT.System {
       })
       .addComponent(MassComponent, { value: 1 })
       .addComponent(CollisionBodyComponent, {
-        value: new CollisionBody("capsule", [new Vector3(), new Vector3(0, 0.3, 0), 0.3]),
+        value: new CollisionBody("capsule", [
+          new Vector3(),
+          new Vector3(0, 0.3, 0),
+          0.3,
+        ]),
       });
     this.observable.createLocalPlayer(partialPlayerData);
   }
