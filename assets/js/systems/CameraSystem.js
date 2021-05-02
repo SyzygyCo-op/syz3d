@@ -9,6 +9,7 @@ import {
   RotationComponent,
 } from "../components";
 import { isMine } from "../utils";
+import {StateSystem} from "./StateSystem";
 
 export class CameraSystem extends DRMT.System {
   static queries = {
@@ -35,14 +36,11 @@ export class CameraSystem extends DRMT.System {
     this.queries.players.results.forEach((entity) => {
       if (isMine(entity)) {
         const position = entity.getComponent(PositionComponent).value;
-        const rotation = entity.getComponent(RotationComponent).value;
+        const lookDirection = entity.getComponent(RotationComponent).value;
         const box = entity.getComponent(BoundingBoxComponent).value;
-        this.camera.position.copy(position);
 
-        this.camera.rotation.copy(rotation);
-        this.camera.rotation.y += Math.PI;
-        this.camera.rotation.x *= -1;
-
+        const offset = this.world.getSystem(StateSystem).observable.isUsing3rdPersonCamera ? 2 : 0.01;
+        DRMT.camera.apply3rdPersonView(this.camera, position, lookDirection, offset);
         // Generically position the camera at 3/4 the avatar's height
         this.camera.position.y += (box.y / 4) * 3;
         // TODO is camera positioned too far in front of player?

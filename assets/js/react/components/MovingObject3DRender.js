@@ -2,11 +2,17 @@ import * as React from "react";
 import { gameLoop } from "../../world";
 import { Object3D, Vector3, Group, Euler } from "three";
 import { Html } from "@react-three/drei";
+import { CollisionBody } from "../../components/CollisionBody";
+import { Capsule } from "./Capsule";
+
+const collisionBodyRenderMap = {
+  capsule: Capsule,
+};
 
 /**
  * @type React.ComponentType<{position: Vector3, rotation: Euler, scale:
- *   Vector3, label: string, object3d: Object3D, boundingBox: Vector3} &
- *   import("../../state").ISettings>
+ *   Vector3, label: string, object3d: Object3D, boundingBox: Vector3,
+ *   collisionBody: CollisionBody} & import("../../state").ISettings>
  */
 export const MovingObject3DRender = ({
   position,
@@ -16,28 +22,42 @@ export const MovingObject3DRender = ({
   object3d,
   boundingBox,
   showNameTags,
+  collisionBody,
 }) => {
-  const groupRef = React.useRef(null);
+  const positionGroupRef = React.useRef(null);
+  const rotationScaleGroupRef = React.useRef(null);
   gameLoop.useTick(() => {
-    if (groupRef.current) {
+    if (positionGroupRef.current) {
       /** @type Group */
-      const group = groupRef.current;
-      position &&
-        group.position.copy(position);
-      rotation &&
-        group.rotation.copy(rotation);
+      const group = positionGroupRef.current;
+      position && group.position.copy(position);
+    }
+    if (rotationScaleGroupRef.current) {
+      /** @type Group */
+      const group = rotationScaleGroupRef.current;
+      rotation && group.rotation.copy(rotation);
       scale && group.scale.copy(scale);
     }
   });
 
+  const CollisionBody =
+    collisionBody && collisionBodyRenderMap[collisionBody.type];
+
   return (
-    <group ref={groupRef}>
-      {label && showNameTags && (
-        <Html position-y={boundingBox && boundingBox.y} center distanceFactor={3}>
-          <address>{label}</address>
-        </Html>
-      )}
-      {object3d && <primitive object={object3d} />}
+    <group ref={positionGroupRef}>
+      <group ref={rotationScaleGroupRef}>
+        {label && showNameTags && (
+          <Html
+            position-y={boundingBox && boundingBox.y}
+            center
+            distanceFactor={3}
+          >
+            <address>{label}</address>
+          </Html>
+        )}
+        {object3d && <primitive object={object3d} />}
+      </group>
+      {collisionBody && <CollisionBody args={collisionBody.args} />}
     </group>
   );
 };

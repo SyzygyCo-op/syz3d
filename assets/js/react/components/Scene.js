@@ -37,7 +37,7 @@ export const Scene =
             />
           );
         })}
-        {movingObject3DList.filter(remotePlayerWhenFirstPerson).map((entity) => {
+        {movingObject3DList.filter(isEntityOccluded).map((entity) => {
           return (
             <MovingObject3DEntity
               entity={entity}
@@ -50,7 +50,9 @@ export const Scene =
     );
 
     /** @param {DRMT.Entity} entity */
-    function remotePlayerWhenFirstPerson(entity) {
-      return isPlayer(entity) ? !isMine(entity) : true;
+    function isEntityOccluded(entity) {
+      const isUsing3rdPersonCamera = world.getSystem(StateSystem).observable.isUsing3rdPersonCamera;
+
+      return isUsing3rdPersonCamera ? true : isPlayer(entity) ? !isMine(entity) : true;
     }
   };

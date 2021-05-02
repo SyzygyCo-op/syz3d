@@ -11,8 +11,10 @@ import {
 } from "../components";
 import { Octree } from "three/examples/jsm/math/Octree";
 import { isMine } from "../utils";
+import {Capsule} from "three/examples/jsm/math/Capsule";
 
 const sphereCollider = new Sphere(new Vector3(), 0);
+const capsuleCollider = new Capsule(new Vector3(), new Vector3(), 0);
 
 export class CollisionSystem extends DRMT.System {
   static queries = {
@@ -51,17 +53,18 @@ export class CollisionSystem extends DRMT.System {
       if (isMine(entity)) {
         /** @type Vector3 */
         const position = entity.getComponent(PositionComponent).value;
-        const radius = entity.getComponent(CollisionBodyComponent).value.args[0];
-        sphereCollider.center.copy(position);
-        sphereCollider.radius = radius;
-        const result = this.octree.sphereIntersect(sphereCollider);
+        const body = entity.getComponent(CollisionBodyComponent).value;
+        capsuleCollider.start.copy(body.args[0]).add(position);
+        capsuleCollider.end.copy(body.args[1]).add(position);
+        capsuleCollider.radius = body.args[2];
+        const result = this.octree.capsuleIntersect(capsuleCollider);
 
         this.playerOnFloor = false;
 
         if (result) {
           this.playerOnFloor = result.normal.y > 0;
 
-          position.add(result.normal.multiplyScalar(result.depth * 0.5));
+          position.add(result.normal.multiplyScalar(result.depth));
         }
       }
     });

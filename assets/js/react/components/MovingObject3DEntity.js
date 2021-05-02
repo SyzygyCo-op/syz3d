@@ -9,6 +9,7 @@ import {
   PositionTweenComponent,
   PositionComponent,
   RotationComponent,
+  CollisionBodyComponent,
 } from "../../components";
 import { gameLoop } from "../../world";
 import { USE_TWEENING } from "../../config";
@@ -26,18 +27,19 @@ const debug = false;
 export const MovingObject3DEntity = ({ entity, showNameTags }) => {
   const entityId = React.useMemo(() => entity.id, [entity]);
 
-  const isLocalPlayer = React.useMemo(() => isMine(entity), [entity]);
+  const isMyEntity = React.useMemo(() => isMine(entity), [entity]);
 
   const stateComponentMap = React.useMemo(
     () => ({
       label: UILabelComponent,
       object3d: Object3DComponent,
       boundingBox: BoundingBoxComponent,
-      position: USE_TWEENING && !isLocalPlayer ? PositionTweenComponent : PositionComponent,
-      rotation: USE_TWEENING && !isLocalPlayer ? RotationTweenComponent : RotationComponent,
+      position: USE_TWEENING && !isMyEntity ? PositionTweenComponent : PositionComponent,
+      rotation: USE_TWEENING && !isMyEntity ? RotationTweenComponent : RotationComponent,
       scale: ScaleComponent,
+      collisionBody: CollisionBodyComponent
     }),
-    [USE_TWEENING, isLocalPlayer]
+    [USE_TWEENING, isMyEntity]
   );
 
   const { camera } = useThree();
@@ -47,7 +49,7 @@ export const MovingObject3DEntity = ({ entity, showNameTags }) => {
   // TODO make sure these are mostly only updating when the component mounts
   // perhaps just call `sync` in a mount-only effect
   const [
-    { label, object3d, boundingBox, position, rotation, scale },
+    { label, object3d, boundingBox, position, rotation, scale, collisionBody },
     sync,
   ] = DRMT.useStateFromComponentMap(entity, stateComponentMap);
 
@@ -87,6 +89,7 @@ export const MovingObject3DEntity = ({ entity, showNameTags }) => {
       object3d={object3d}
       boundingBox={boundingBox}
       showNameTags={showNameTags && !isFar}
+      collisionBody={collisionBody}
     />
   );
 };

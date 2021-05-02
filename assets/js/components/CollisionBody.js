@@ -3,12 +3,12 @@ import * as DRMT from "dreamt";
 export class CollisionBody {
   /** @type {"sphere" | "capsule"} */
   type = "sphere";
-  /** @type {number[]} */
+  /** @type {any[]} */
   args = [];
 
   /**
    * @param {"sphere" | "capsule"} type
-   * @param {number[]} args
+   * @param {any[]} args
    */
   constructor(type, args) {
     this.type = type;
@@ -18,7 +18,10 @@ export class CollisionBody {
   /** @param {CollisionBody} src */
   copy(src) {
     this.type = src.type;
-    DRMT.copyArray(src.args, this.args);
+    src.args.forEach((arg) => {
+      const clone = arg.clone ? arg.clone() : arg;
+      this.args.push(clone);
+    })
     return this;
   }
 
