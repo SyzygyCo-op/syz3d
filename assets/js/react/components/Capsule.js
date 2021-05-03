@@ -7,6 +7,7 @@ import { CollisionMaterial } from "./CollisionMaterial";
 export const Capsule = ({ args: [start, end, radius] }) => {
   const rotation = React.useMemo(calculateRotation, [start, end]);
   const middle = React.useMemo(calculateMiddle, [start, end]);
+  const length = React.useMemo(calculateLength, [start, end]);
 
   return (
     <group>
@@ -33,5 +34,9 @@ export const Capsule = ({ args: [start, end, radius] }) => {
 
   function calculateMiddle() {
     return end.clone().sub(start).divideScalar(2).add(start);
+  }
+
+  function calculateLength() {
+    return start.distanceTo(end)
   }
 };
