@@ -13,6 +13,7 @@ import { Octree } from "three/examples/jsm/math/Octree";
 import { isMine } from "../utils";
 import { Capsule } from "three/examples/jsm/math/Capsule";
 import {StateSystem} from "./StateSystem";
+import {CollisionBody} from "../components/CollisionBody";
 
 const sphereCollider = new Sphere(new Vector3(), 0);
 const capsuleCollider = new Capsule(new Vector3(), new Vector3(), 0);
@@ -54,10 +55,13 @@ export class CollisionSystem extends DRMT.System {
       if (isMine(entity)) {
         /** @type Vector3 */
         const position = entity.getComponent(PositionComponent).value;
+        /** @type Vector3 */
+        const velocity = entity.getComponent(VelocityComponent).value;
+      /** @type CollisionBody */
         const body = entity.getComponent(CollisionBodyComponent).value;
-        capsuleCollider.start.copy(body.args[0]).add(position);
-        capsuleCollider.end.copy(body.args[1]).add(position);
-        capsuleCollider.radius = body.args[2];
+        capsuleCollider.start.copy(body.shapeArgs[0]).add(position);
+        capsuleCollider.end.copy(body.shapeArgs[1]).add(position);
+        capsuleCollider.radius = body.shapeArgs[2];
         const result = this.octree.capsuleIntersect(capsuleCollider);
 
         this.playerOnFloor = false;
@@ -65,7 +69,11 @@ export class CollisionSystem extends DRMT.System {
         if (result) {
           this.playerOnFloor = result.normal.y > 0;
 
-          position.add(result.normal.multiplyScalar(result.depth));
+          /** @type Vector3 */
+          const collision = result.normal.multiplyScalar(result.depth);
+          // console.log(collision.x, collision.z);
+          position.add(collision);
+          velocity.add(collision.multiplyScalar(delta * body.restitutionFactor))
         }
       }
     });

@@ -41,7 +41,7 @@ export const MovingObject3DRender = ({
   });
 
   const CollisionBody =
-    collisionBody && collisionBodyRenderMap[collisionBody.type];
+    collisionBody && collisionBodyRenderMap[collisionBody.shape];
 
   return (
     <group ref={positionGroupRef}>
@@ -57,7 +57,7 @@ export const MovingObject3DRender = ({
         )}
         {object3d && <primitive object={object3d} />}
       </group>
-      {collisionBody && <CollisionBody args={collisionBody.args} />}
+      {collisionBody && <CollisionBody args={collisionBody.shapeArgs} />}
     </group>
   );
 };

@@ -232,11 +232,11 @@ export class StateSystem extends DRMT.System {
       })
       .addComponent(MassComponent, { value: 1 })
       .addComponent(CollisionBodyComponent, {
-        value: new CollisionBody("capsule", [
-          new Vector3(),
-          new Vector3(0, 0.3, 0),
-          0.3,
-        ]),
+        value: new CollisionBody(
+          "capsule",
+          [new Vector3(), new Vector3(0, 0.3, 0), 0.3],
+          4
+        ),
       });
     this.observable.createLocalPlayer(partialPlayerData);
   }

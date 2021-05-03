@@ -2,31 +2,39 @@ import * as DRMT from "dreamt";
 
 export class CollisionBody {
   /** @type {"sphere" | "capsule"} */
-  type = "sphere";
+  shape = "sphere";
   /** @type {any[]} */
-  args = [];
+  shapeArgs = [];
+  /**
+   * @type {number} restitution How bouncy the object is, normally a positive
+   *   number, no maximum
+   */
+  restitutionFactor = 4;
 
   /**
-   * @param {"sphere" | "capsule"} type
-   * @param {any[]} args
+   * @param {"sphere" | "capsule"} shape
+   * @param {any[]} shapeArgs
+  * @param {number} restitutionFactor
    */
-  constructor(type, args) {
-    this.type = type;
-    this.args = args;
+  constructor(shape, shapeArgs, restitutionFactor) {
+    this.shape = shape;
+    this.shapeArgs = shapeArgs;
+    this.restitutionFactor = restitutionFactor;
   }
 
   /** @param {CollisionBody} src */
   copy(src) {
-    this.type = src.type;
-    src.args.forEach((arg) => {
+    this.shape = src.shape;
+    this.restitutionFactor = src.restitutionFactor;
+    src.shapeArgs.forEach((arg) => {
       const clone = arg.clone ? arg.clone() : arg;
-      this.args.push(clone);
-    })
+      this.shapeArgs.push(clone);
+    });
     return this;
   }
 
   clone() {
-    const result = new CollisionBody(this.type, this.args);
+    const result = new CollisionBody(this.shape, this.shapeArgs, this.restitutionFactor);
     result.copy(this);
     return result;
   }
@@ -34,7 +42,7 @@ export class CollisionBody {
 
 const CollisionBodyType = DRMT.createType({
   name: "CollisionBody",
-  default: new CollisionBody("sphere", []),
+  default: new CollisionBody("sphere", [], 4),
   copy: DRMT.copyCopyable,
   clone: DRMT.cloneClonable,
 });
