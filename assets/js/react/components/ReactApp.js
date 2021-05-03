@@ -7,6 +7,7 @@ import { gameLoop, world } from "../../world";
 import { Scene } from "./Scene";
 import {AdaptiveDpr, AdaptiveEvents, Preload} from "@react-three/drei";
 import {CameraSystem} from "../../systems";
+import {CollisionHelper} from "./CollisionHelper";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -58,6 +59,7 @@ export const ReactApp = observer(
               <Preload all/>
               <Scene stationaryObject3DList={state.stationaryObject3DList} movingObject3DList={state.movingObject3DList} showNameTags={state.showNameTags} />
             </React.Suspense>
+            {state.debugCollisionTriangles && <CollisionHelper triangles={state.debugCollisionTriangles} />}
           </Canvas>
         </div>
         <UI.Drawer

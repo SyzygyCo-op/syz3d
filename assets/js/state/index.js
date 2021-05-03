@@ -1,5 +1,6 @@
 import * as DRMT from "dreamt";
 import * as MOBX from "mobx";
+import {Triangle} from "three";
 import * as config from "../config";
 import { preloadGltf } from "../systems/LoaderSystem";
 
@@ -58,6 +59,9 @@ export class ObservableState {
   showNameTags = false;
 
   isUsing3rdPersonCamera = true;
+
+  /** @type Triangle[] */
+  debugCollisionTriangles = [];
 
   localPlayer = MOBX.makeAutoObservable(
     new DRMT.DualModel(() => new PlayerState(), {

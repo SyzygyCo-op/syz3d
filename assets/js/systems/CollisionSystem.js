@@ -1,5 +1,5 @@
 import * as DRMT from "dreamt";
-import { Sphere, Vector3 } from "three";
+import { Sphere, Triangle, Vector3 } from "three";
 import {
   OwnershipComponent,
   PositionComponent,
@@ -12,6 +12,7 @@ import {
 import { Octree } from "three/examples/jsm/math/Octree";
 import { isMine } from "../utils";
 import { Capsule } from "three/examples/jsm/math/Capsule";
+import {StateSystem} from "./StateSystem";
 
 const sphereCollider = new Sphere(new Vector3(), 0);
 const capsuleCollider = new Capsule(new Vector3(), new Vector3(), 0);
@@ -80,7 +81,18 @@ export class CollisionSystem extends DRMT.System {
       console.log("adding", entity.name, "to collision octree");
       const object3d = entity.getComponent(Object3DComponent).value;
       this.octree.fromGraphNode(object3d);
+      getAllTriangles(this.world.getSystem(StateSystem).observable.debugCollisionTriangles, this.octree);
       console.log("finished adding", entity.name, "to collision octree");
     });
   }
+}
+
+/** @param {Triangle[]} result
+  * @param {Octree} octree
+  */
+function getAllTriangles(result, octree) {
+  DRMT.copyArray(octree.triangles, result)
+  octree.subTrees.forEach((sub) => {
+    getAllTriangles(result, sub);
+  })
 }

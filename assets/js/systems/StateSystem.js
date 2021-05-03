@@ -35,6 +35,7 @@ export class StateSystem extends DRMT.System {
         Object3DComponent,
         DRMT.Not(VelocityComponent),
         DRMT.Not(AngularVelocityComponent),
+        DRMT.Not(UseGlftForCollisionTag),
       ],
       listen: {
         removed: true,
