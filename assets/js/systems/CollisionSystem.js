@@ -81,18 +81,29 @@ export class CollisionSystem extends DRMT.System {
       console.log("adding", entity.name, "to collision octree");
       const object3d = entity.getComponent(Object3DComponent).value;
       this.octree.fromGraphNode(object3d);
-      getAllTriangles(this.world.getSystem(StateSystem).observable.debugCollisionTriangles, this.octree);
+     this.world.getSystem(StateSystem).observable.setDebugCollisionTriangles(getAllTriangles(this.octree));
       console.log("finished adding", entity.name, "to collision octree");
     });
   }
 }
 
+
+// TODO add these as methods to Octree class
+/**
+  * @param {Octree} octree
+  */
+function getAllTriangles(octree) {
+  const result = [];
+  getAllTrianglesInPlace(result, octree)
+  return result;
+}
+
 /** @param {Triangle[]} result
   * @param {Octree} octree
   */
-function getAllTriangles(result, octree) {
+function getAllTrianglesInPlace(result, octree) {
   DRMT.copyArray(octree.triangles, result)
   octree.subTrees.forEach((sub) => {
-    getAllTriangles(result, sub);
+    getAllTrianglesInPlace(result, sub);
   })
 }

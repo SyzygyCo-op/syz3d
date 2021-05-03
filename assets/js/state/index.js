@@ -63,6 +63,11 @@ export class ObservableState {
   /** @type Triangle[] */
   debugCollisionTriangles = [];
 
+  /** @param {Triangle[]} triangles */
+  setDebugCollisionTriangles(triangles) {
+    DRMT.copyArray(triangles, this.debugCollisionTriangles)
+  }
+
   localPlayer = MOBX.makeAutoObservable(
     new DRMT.DualModel(() => new PlayerState(), {
       debounceRequestMs: config.DEBOUNCE_MS_ON_CHANGE_INPUT,
