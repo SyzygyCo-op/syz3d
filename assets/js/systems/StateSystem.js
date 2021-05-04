@@ -234,7 +234,7 @@ export class StateSystem extends DRMT.System {
       .addComponent(CollisionBodyComponent, {
         value: new CollisionBody(
           "capsule",
-          [new Vector3(), new Vector3(0, 0.3, 0), 0.3],
+          [new Vector3(0, 0, 0), new Vector3(0, 0.3, 0), 0.3],
           4
         ),
       });

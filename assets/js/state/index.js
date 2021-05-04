@@ -40,7 +40,7 @@ export const avatars = [
   new Asset3D("/3d/PokemonDratini/preview.png", "/3d/PokemonDratini/model.glb"),
   new Asset3D("/3d/ShenLong/preview.png", "/3d/ShenLong/model.glb"),
 ];
-const assets = [...avatars, new Asset3D("", "/3d/game.glb"), new Asset3D("", "/3d/collision.glb")];
+const assets = [...avatars, new Asset3D("", "/3d/game.glb"), new Asset3D("", "/3d/collision.glb"), new Asset3D("", "/3d/example-collision-world.glb")];
 
 export async function preloadAssets() {
   await Promise.all(assets.map((a) => a.preload()));

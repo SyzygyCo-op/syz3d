@@ -111,6 +111,6 @@ export function createLocalPlayer() {
   world.getSystem(StateSystem).createLocalPlayer({
     label: getPlayerName(),
     glft_url: "/3d/PokemonHaunter/model.glb",
-    position: [0, 2, 0],
+    position: [0, 3, 0],
   });
 }
