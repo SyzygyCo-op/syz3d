@@ -9,6 +9,8 @@ const collisionBodyRenderMap = {
   capsule: Capsule,
 };
 
+const useCollisionBody = false;
+
 /**
  * @type React.ComponentType<{position: Vector3, rotation: Euler, scale:
  *   Vector3, label: string, object3d: Object3D, boundingBox: Vector3,
@@ -57,7 +59,7 @@ export const MovingObject3DRender = ({
         )}
         {object3d && <primitive object={object3d} />}
       </group>
-      {collisionBody && <CollisionBody args={collisionBody.shapeArgs} />}
+      {useCollisionBody && collisionBody && <CollisionBody args={collisionBody.shapeArgs} />}
     </group>
   );
 };
