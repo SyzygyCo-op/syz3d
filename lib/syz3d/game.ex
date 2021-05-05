@@ -18,13 +18,13 @@ defmodule  Syz3d.Game do
   def get_initial_data() do
     %{
       "river_island" => %{
-        "glft_url" => "/3d/example-collision-world.glb",
+        "glft_url" => "/3d/game.glb",
         "position" => [0, 0, 0],
         "rotation" => [0, 0, 0, "YXZ"],
         "scale" => [1, 1, 1],
       },
       "river_island_collision" => %{
-        "glft_url" => "/3d/example-collision-world.glb",
+        "glft_url" => "/3d/collision.glb",
         "position" => [0, 0, 0],
         "rotation" => [0, 0, 0, "YXZ"],
         "scale" => [1, 1, 1],
