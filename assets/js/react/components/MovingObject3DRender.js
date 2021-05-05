@@ -39,6 +39,7 @@ export const MovingObject3DRender = ({
       const group = rotationScaleGroupRef.current;
       rotation && group.rotation.copy(rotation);
       scale && group.scale.copy(scale);
+      group.position.y = -0.2;
     }
   });
 
