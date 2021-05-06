@@ -9,8 +9,8 @@ import {
 import { isMine } from "../utils";
 
 const PI_2 = Math.PI / 2;
-const minPolarAngle = 0;
-const maxPolarAngle = Math.PI;
+const minPolarAngle = Math.PI / 32;
+const maxPolarAngle = Math.PI * 31 / 32;
 
 export class MovementSystem extends DRMT.System {
   static queries = {
