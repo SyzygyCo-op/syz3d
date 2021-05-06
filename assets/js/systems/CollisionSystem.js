@@ -12,7 +12,6 @@ import {
 import { Octree } from "three-stdlib";
 import { isMine } from "../utils";
 import { Capsule } from "three/examples/jsm/math/Capsule";
-import {StateSystem} from "./StateSystem";
 import {CollisionBody} from "../components/CollisionBody";
 
 const sphereCollider = new Sphere(new Vector3(), 0);

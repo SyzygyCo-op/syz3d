@@ -77,7 +77,6 @@ function initialize() {
   gameLoop = new DRMT.GameLoop(
     world.execute.bind(world),
     GAME_LOOP_DURATION
-    // { pauseOnWindowBlur: true }
   );
 }
 

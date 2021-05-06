@@ -46,8 +46,6 @@ export const MovingObject3DEntity = ({ entity, showNameTags }) => {
 
   const [isFar, setFar] = React.useState(true);
 
-  // TODO make sure these are mostly only updating when the component mounts
-  // perhaps just call `sync` in a mount-only effect
   const [
     { label, object3d, boundingBox, position, rotation, scale, collisionBody },
     sync,
@@ -70,7 +68,6 @@ export const MovingObject3DEntity = ({ entity, showNameTags }) => {
 
   gameLoop.useTick(/** @type any */ (sync));
 
-  // TODO use fog instead
   gameLoop.useTick(() => {
     if (position && label && showNameTags) {
       const newValue = camera.position.distanceTo(position) > 5;

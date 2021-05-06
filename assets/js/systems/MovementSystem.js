@@ -2,18 +2,15 @@ import * as DRMT from "dreamt";
 import { Vector3, MathUtils, Euler } from "three";
 import {
   AngularVelocityComponent,
-  OwnershipComponent,
   PositionComponent,
   RotationComponent,
   VelocityComponent,
 } from "../components";
-import { getForwardNormal, isPlayer, isMine } from "../utils";
+import { isMine } from "../utils";
 
 const PI_2 = Math.PI / 2;
 const minPolarAngle = 0;
 const maxPolarAngle = Math.PI;
-
-// TODO if not using a full-blown physics rig like Cannon, split in to multiple more focused systems, e.g. MovementSystem, GravitySystem, FrictionSystem, CollisionSystem
 
 export class MovementSystem extends DRMT.System {
   static queries = {
@@ -23,9 +20,6 @@ export class MovementSystem extends DRMT.System {
     angularVelocity: {
       components: [AngularVelocityComponent, RotationComponent],
     },
-    // test: {
-    //   components: [OwnershipComponent],
-    // },
   };
 
   /**
@@ -44,29 +38,6 @@ export class MovementSystem extends DRMT.System {
         applyAngularVelocity(entity, RotationComponent, delta);
       }
     });
-
-    // this.queries.test.results.forEach((entity) => {
-    //   if (isMine(entity) && !isPlayer(entity)) {
-    //     if (!entity.hasComponent(VelocityComponent)) {
-    //       entity.addComponent(VelocityComponent);
-    //     }
-    //     if (!entity.hasComponent(AngularVelocityComponent)) {
-    //       entity.addComponent(AngularVelocityComponent, {
-    //         value: new Euler(
-    //           0,
-    //           Math.random() * 0.7 + 0.5,
-    //           Math.random() * 0.7 + 0.5
-    //         ),
-    //       });
-    //     }
-    //     /** @type Vector3 */
-    //     const velocity = entity.getComponent(VelocityComponent).value;
-    //     /** @type Euler */
-    //     const rotation = entity.getComponent(RotationComponent).value;
-
-    //     velocity.copy(getForwardNormal(rotation).multiplyScalar(3));
-    //   }
-    // });
   }
 }
 
