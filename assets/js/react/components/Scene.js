@@ -29,12 +29,11 @@ export const Scene =
         <directionalLight args={[0xff9999, 0.5]} position={[-1, 1, 2]} />
         <directionalLight args={[0x8888ff, 0.2]} position={[0, -1, 0]} />
         <directionalLight args={[0xffffaa, 1.2]} position={[-5, 25, 1]} />
-        <fog attach="fog" args={[0xddeeff, 2, 40]} />
+        <fog attach="fog" args={[0xefefef, 0, 175]} />
         <Sky
-          distance={450000} // Camera distance (default=450000)
-          sunPosition={[0, 1, 0]} // Sun position normal (defaults to inclination and azimuth if not set)
-          inclination={0} // Sun elevation angle from 0 to 1 (default=0)
-          azimuth={0.25} // Sun rotation around the Y axis from 0 to 1 (default=0.25)
+          distance={45000}
+          inclination={0.75}
+          azimuth={0.25}
         />
         {stationaryObject3DList.map((entity) => {
           return <StationaryObject3DEntity entity={entity} key={entity.id} />;
