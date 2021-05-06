@@ -9,7 +9,7 @@ import {
   UseGlftForCollisionTag,
   Object3DComponent,
 } from "../components";
-import { Octree } from "three/examples/jsm/math/Octree";
+import { Octree } from "three-stdlib";
 import { isMine } from "../utils";
 import { Capsule } from "three/examples/jsm/math/Capsule";
 import {StateSystem} from "./StateSystem";

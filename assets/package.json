@@ -24,7 +24,8 @@
     "react-draggable": "^4.4.3",
     "reset-css": "^5.0.1",
     "style-loader": "^2.0.0",
-    "three": "^0.127.0"
+    "three": "^0.127.0",
+    "three-stdlib": "^2.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
