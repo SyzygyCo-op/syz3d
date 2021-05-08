@@ -53,9 +53,9 @@ export class CollisionSystem extends DRMT.System {
     this.queries.dynamicBodies.results.forEach((entity) => {
       if (isMine(entity)) {
         /** @type Vector3 */
-        const position = entity.getComponent(PositionComponent).value;
+        const position = entity.getMutableComponent(PositionComponent).value;
         /** @type Vector3 */
-        const velocity = entity.getComponent(VelocityComponent).value;
+        const velocity = entity.getMutableComponent(VelocityComponent).value;
       /** @type CollisionBody */
         const body = entity.getComponent(CollisionBodyComponent).value;
         capsuleCollider.start.copy(body.shapeArgs[0]).add(position);

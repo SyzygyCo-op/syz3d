@@ -68,15 +68,15 @@ export class TweenSystem extends DRMT.System {
     });
     this.queries.position.results.forEach((entity) => {
       /** @type Vector3 */
-      const tween = entity.getComponent(PositionTweenComponent).value;
+      const tween = entity.getMutableComponent(PositionTweenComponent).value;
       /** @type Vector3 */
       const end = entity.getComponent(PositionComponent).value;
       const duration = getNetworkFrameDuration();
       if (!isMine(entity)) {
         /** @type Vector3 */
-        const start = entity.getComponent(PositionTweenStartComponent).value;
+        const start = entity.getMutableComponent(PositionTweenStartComponent).value;
         /** @type Vector3 */
-        const velocity = entity.getComponent(VelocityComponent).value;
+        const velocity = entity.getMutableComponent(VelocityComponent).value;
         const durationSeconds = duration / 1000;
         velocity.set(
           calcVelocity(start.x, end.x, durationSeconds),
@@ -95,15 +95,15 @@ export class TweenSystem extends DRMT.System {
     });
     this.queries.rotation.results.forEach((entity) => {
       /** @type Euler */
-      const tween = entity.getComponent(RotationTweenComponent).value;
+      const tween = entity.getMutableComponent(RotationTweenComponent).value;
       /** @type Euler */
       const end = entity.getComponent(RotationComponent).value;
       const duration = getNetworkFrameDuration();
       if (!isMine(entity)) {
         /** @type Euler */
-        const start = entity.getComponent(RotationTweenStartComponent).value;
+        const start = entity.getMutableComponent(RotationTweenStartComponent).value;
         /** @type Euler */
-        const velocity = entity.getComponent(AngularVelocityComponent).value;
+        const velocity = entity.getMutableComponent(AngularVelocityComponent).value;
         const durationSeconds = duration / 1000;
         velocity.set(
           calcVelocity(start.x, end.x, durationSeconds),

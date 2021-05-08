@@ -27,7 +27,7 @@ export class GravitySystem extends DRMT.System {
   execute(delta, time) {
     this.queries.entities.results.forEach((entity) => {
       /** @type Vector3 */
-      const velocity = entity.getComponent(VelocityComponent).value;
+      const velocity = entity.getMutableComponent(VelocityComponent).value;
 
       if (this.world.getSystem(CollisionSystem).playerOnFloor) {
         velocity.y = 0;

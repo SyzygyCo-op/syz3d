@@ -50,7 +50,7 @@ export function applyVelocity(entity, PositionComponent, delta) {
   /** @type Vector3 */
   const velocity = entity.getComponent(VelocityComponent).value;
   /** @type Vector3 */
-  const position = entity.getComponent(PositionComponent).value;
+  const position = entity.getMutableComponent(PositionComponent).value;
 
   if(velocity.x || velocity.y || velocity.z) {
     position.addScaledVector(velocity, delta / 1000);
@@ -67,7 +67,7 @@ export function applyAngularVelocity(entity, RotationComponent, delta) {
   /** @type Euler */
   const velocity = entity.getComponent(AngularVelocityComponent).value;
   /** @type Euler */
-  const rotation = entity.getComponent(RotationComponent).value;
+  const rotation = entity.getMutableComponent(RotationComponent).value;
 
   if(velocity.x || velocity.y || velocity.z) {
     Vector3.prototype.addScaledVector.call(rotation, velocity, delta / 1000);

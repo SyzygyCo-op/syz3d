@@ -27,9 +27,9 @@ export class FrictionSystem extends DRMT.System {
     this.queries.entities.results.forEach((entity) => {
       const friction = entity.getComponent(FrictionComponent);
       /** @type Vector3 */
-      const velocity = entity.getComponent(VelocityComponent).value;
+      const velocity = entity.getMutableComponent(VelocityComponent).value;
       /** @type Euler */
-      const angularVelocity = entity.getComponent(AngularVelocityComponent).value;
+      const angularVelocity = entity.getMutableComponent(AngularVelocityComponent).value;
 
       // TODO(perf) do these if statements really help?
       if (velocity.x || velocity.y || velocity.z) {

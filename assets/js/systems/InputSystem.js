@@ -130,7 +130,7 @@ export class InputSystem extends DRMT.System {
         event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
       /** @type Euler */
-      const angularVelocity = localPlayer.getComponent(AngularVelocityComponent)
+      const angularVelocity = localPlayer.getMutableComponent(AngularVelocityComponent)
         .value;
 
       angularVelocity.x += movementY * 0.04;
@@ -150,13 +150,13 @@ export class InputSystem extends DRMT.System {
     // TODO(perf) also check if any key at all is pressed
     if (entity && !state.observable.openModalId) {
       /** @type Vector3 */
-      const position = entity.getComponent(PositionComponent).value;
+      const position = entity.getMutableComponent(PositionComponent).value;
       /** @type Vector3 */
-      const velocity = entity.getComponent(VelocityComponent).value;
+      const velocity = entity.getMutableComponent(VelocityComponent).value;
       /** @type Euler */
-      const rotation = entity.getComponent(RotationComponent).value;
+      const rotation = entity.getMutableComponent(RotationComponent).value;
       /** @type Euler */
-      const angularVelocity = entity.getComponent(AngularVelocityComponent)
+      const angularVelocity = entity.getMutableComponent(AngularVelocityComponent)
         .value;
 
       if (this.keyDownLeft) {
