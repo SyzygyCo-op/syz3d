@@ -33,37 +33,37 @@ export class CameraSystem extends DRMT.System {
   }
 
   execute(delta, time) {
-    this.queries.players.results.forEach(followPlayerWithCamera);
+    this.queries.players.results.forEach(this.followPlayerWithCamera);
   }
-}
 
-/** @param {DRMT.Entity} entity */
-function followPlayerWithCamera(entity) {
-  if (isMine(entity)) {
-    /** @type Vector3 */
-    const position = entity.getComponent(PositionComponent).value;
-    /** @type Euler */
-    const lookDirection = entity.getComponent(RotationComponent).value;
-    const box = entity.getComponent(BoundingBoxComponent).value;
+  /** @param {DRMT.Entity} entity */
+  followPlayerWithCamera = (entity) => {
+    if (isMine(entity)) {
+      /** @type Vector3 */
+      const position = entity.getComponent(PositionComponent).value;
+      /** @type Euler */
+      const lookDirection = entity.getComponent(RotationComponent).value;
+      const box = entity.getComponent(BoundingBoxComponent).value;
 
-    const cameraRelativeY = (box.y * 1) / 4;
+      const cameraRelativeY = (box.y * 1) / 4;
 
-    const setback = this.world.getSystem(StateSystem).observable
-      .isUsing3rdPersonCamera
-      ? 1
-      : 0.01;
+      const setback = this.world.getSystem(StateSystem).observable
+        .isUsing3rdPersonCamera
+        ? 1
+        : 0.01;
 
-    DRMT.camera.apply3rdPersonView(
-      this.camera,
-      position,
-      lookDirection,
-      setback,
-      (box.y * 5) / 8,
-      box.x
-    );
+      DRMT.camera.apply3rdPersonView(
+        this.camera,
+        position,
+        lookDirection,
+        setback,
+        (box.y * 5) / 8,
+        box.x
+      );
 
-    this.camera.position.y += cameraRelativeY;
-  }
+      this.camera.position.y += cameraRelativeY;
+    }
+  };
 }
 
 /** @param {PerspectiveCamera} camera */
