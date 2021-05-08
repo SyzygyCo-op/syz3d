@@ -15,8 +15,9 @@ import {
   GAME_LOOP_DURATION,
 } from "../config";
 import { StateSystem } from "./StateSystem";
-import { getForwardNormal, isMine } from "../utils";
-import {CollisionSystem} from "./CollisionSystem";
+import { isMine } from "../utils";
+import { CollisionSystem } from "./CollisionSystem";
+import { MoveCommand } from "../commands";
 
 export class InputSystem extends DRMT.System {
   static queries = {
@@ -83,6 +84,11 @@ export class InputSystem extends DRMT.System {
   };
 
   init() {
+    this.runForward = new MoveCommand(PLAYER_RUN_ACCEL);
+    this.runBackward = new MoveCommand(-PLAYER_RUN_ACCEL);
+    this.walkForward = new MoveCommand(PLAYER_WALK_ACCEL);
+    this.walkBackward = new MoveCommand(-PLAYER_WALK_ACCEL);
+
     window.addEventListener("keydown", this.updateKeyDownState);
     window.addEventListener("keyup", this.updateKeyDownState);
     window.addEventListener("blur", this.handleWindowBlur);
@@ -130,8 +136,9 @@ export class InputSystem extends DRMT.System {
         event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
       /** @type Euler */
-      const angularVelocity = localPlayer.getMutableComponent(AngularVelocityComponent)
-        .value;
+      const angularVelocity = localPlayer.getMutableComponent(
+        AngularVelocityComponent
+      ).value;
 
       angularVelocity.x += movementY * 0.04;
       angularVelocity.y -= movementX * 0.04;
@@ -150,14 +157,11 @@ export class InputSystem extends DRMT.System {
     // TODO(perf) also check if any key at all is pressed
     if (entity && !state.observable.openModalId) {
       /** @type Vector3 */
-      const position = entity.getMutableComponent(PositionComponent).value;
-      /** @type Vector3 */
       const velocity = entity.getMutableComponent(VelocityComponent).value;
       /** @type Euler */
-      const rotation = entity.getMutableComponent(RotationComponent).value;
-      /** @type Euler */
-      const angularVelocity = entity.getMutableComponent(AngularVelocityComponent)
-        .value;
+      const angularVelocity = entity.getMutableComponent(
+        AngularVelocityComponent
+      ).value;
 
       if (this.keyDownLeft) {
         angularVelocity.y += PLAYER_TURN_ACCEL;
@@ -166,17 +170,15 @@ export class InputSystem extends DRMT.System {
         angularVelocity.y -= PLAYER_TURN_ACCEL;
       }
 
-
-      if (this.keyDownUp || this.keyDownDown) {
-        const accel = this.keyDownShift ? PLAYER_WALK_ACCEL : PLAYER_RUN_ACCEL;
-        const forward = getForwardNormal(rotation);
-
-        if (this.keyDownUp) {
-          velocity.add(forward.multiplyScalar(accel));
-        }
-        if (this.keyDownDown) {
-          velocity.add(forward.multiplyScalar(-accel));
-        }
+      if (this.keyDownUp) {
+        this.keyDownShift
+          ? this.walkForward.execute(entity)
+          : this.runForward.execute(entity);
+      }
+      if (this.keyDownDown) {
+        this.keyDownShift
+          ? this.walkBackward.execute(entity)
+          : this.runBackward.execute(entity);
       }
 
       // Jumping and gravity
