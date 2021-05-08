@@ -1,6 +1,6 @@
 import { debounce } from "debounce";
 import * as DRMT from "dreamt";
-import { PerspectiveCamera } from "three";
+import { Euler, PerspectiveCamera, Vector3 } from "three";
 import {
   BoundingBoxComponent,
   OwnershipComponent,
@@ -35,26 +35,29 @@ export class CameraSystem extends DRMT.System {
   execute(delta, time) {
     this.queries.players.results.forEach((entity) => {
       if (isMine(entity)) {
+        /** @type Vector3 */
         const position = entity.getComponent(PositionComponent).value;
+        /** @type Euler */
         const lookDirection = entity.getComponent(RotationComponent).value;
         const box = entity.getComponent(BoundingBoxComponent).value;
 
-        // console.log("x", lookDirection.x);
-        const offset = this.world.getSystem(StateSystem).observable
+        const cameraRelativeY = (box.y * 1) / 4;
+
+        const setback = this.world.getSystem(StateSystem).observable
           .isUsing3rdPersonCamera
-          ? lookDirection.x < 0
-            ? Math.min(- 0.8 / Math.sin(lookDirection.x), 2)
-            : 2
+          ? 1
           : 0.01;
+
         DRMT.camera.apply3rdPersonView(
           this.camera,
           position,
           lookDirection,
-          offset
+          setback,
+          (box.y * 5) / 8,
+          box.x
         );
-        // Generically position the camera at 3/4 the avatar's height
-        this.camera.position.y += (box.y / 4) * 3;
-        // TODO is camera positioned too far in front of player?
+
+        this.camera.position.y += cameraRelativeY;
       }
     });
   }
