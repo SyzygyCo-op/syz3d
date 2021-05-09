@@ -7,6 +7,14 @@ import {
 import { getForwardNormal } from "../utils";
 
 export class Command {
+  /**
+   * @abstract
+   * @type DRMT.ComponentConstructor[]
+   */
+  static _requiredComponents;
+  static getRequiredComponents () {
+    return this._requiredComponents;
+  }
   constructor() {}
 
   /**
@@ -21,6 +29,8 @@ export class Command {
 }
 
 export class MoveCommand extends Command {
+  static _requiredComponents = [RotationComponent, VelocityComponent];
+
   /** @param {number} accel */
   constructor(accel) {
     super();
@@ -37,6 +47,7 @@ export class MoveCommand extends Command {
 }
 
 export class JumpCommand extends Command {
+  static _requiredComponents = [VelocityComponent];
   /**
    * @param {DRMT.Entity} entity
    * @param {number} accel
@@ -49,6 +60,7 @@ export class JumpCommand extends Command {
 }
 
 export class TurnCommand extends Command {
+  static _requiredComponents = [AngularVelocityComponent];
   /**
    * @param {number} xAccel
    * @param {number} yAccel

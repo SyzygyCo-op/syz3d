@@ -13,6 +13,7 @@ import { StateSystem } from "./StateSystem";
 import { isMine } from "../utils";
 import { CollisionSystem } from "./CollisionSystem";
 import { MoveCommand, JumpCommand, TurnCommand } from "../commands";
+import { uniq } from 'lodash-es';
 
 export class InputSystem extends DRMT.System {
   static queries = {
@@ -20,6 +21,11 @@ export class InputSystem extends DRMT.System {
       components: [
         PlayerTag,
         OwnershipComponent,
+        ...uniq([
+          ...MoveCommand.getRequiredComponents(),
+          ...JumpCommand.getRequiredComponents(),
+          ...TurnCommand.getRequiredComponents()
+        ])
       ],
     },
   };
