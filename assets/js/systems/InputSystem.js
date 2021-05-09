@@ -1,12 +1,7 @@
 import * as DRMT from "dreamt";
-import { Euler, Vector3 } from "three";
 import {
-  AngularVelocityComponent,
   OwnershipComponent,
   PlayerTag,
-  PositionComponent,
-  RotationComponent,
-  VelocityComponent,
 } from "../components";
 import {
   PLAYER_WALK_ACCEL,
@@ -25,10 +20,6 @@ export class InputSystem extends DRMT.System {
       components: [
         PlayerTag,
         OwnershipComponent,
-        PositionComponent,
-        RotationComponent,
-        VelocityComponent,
-        AngularVelocityComponent,
       ],
     },
   };
