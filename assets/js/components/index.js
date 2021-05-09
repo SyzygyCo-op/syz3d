@@ -1,55 +1,13 @@
 import * as DRMT from "dreamt";
-import * as THREE from "three";
+import {Vector3Type, Object3DType, YawPitchRollType} from '../types';
 
 export {CollisionBodyComponent} from './CollisionBody';
 
 export class PlayerTag extends DRMT.TagComponent {}
 
-const Object3DType = DRMT.createType({
-  name: "Object3D",
-  default: new THREE.Object3D(),
-  copy: DRMT.copyCopyable,
-  clone: DRMT.cloneClonable,
-});
-const Vector3Type = DRMT.createType({
-  name: "Vector3",
-  default: new THREE.Vector3(),
-  copy: DRMT.copyCopyable,
-  clone: DRMT.cloneClonable,
-});
-const YawPitchRollType = DRMT.createType({
-  name: "Euler",
-  // Use YXZ order to enable translating mouse movement to YAW and PITCH
-  default: new THREE.Euler(0, 0, 0, "YXZ"),
-  copy: DRMT.copyCopyable,
-  clone: DRMT.cloneClonable,
-});
 
-/**
- * The latest position according to the server, which is used as the target
- * value when transitioning from the previously reported position using
- * PositionTweenComponent and PositionTweenStartComponent.
- *
- * @see PositionTweenComponent
- * @see PositionTweenStartComponent
- */
-export class PositionComponent extends DRMT.Component {
-  static schema = {
-    value: { type: Vector3Type },
-  };
-}
-/** @see PositionComponent */
-export class PositionTweenComponent extends DRMT.Component {
-  static schema = {
-    value: { type: Vector3Type },
-  };
-}
-/** @see PositionComponent */
-export class PositionTweenStartComponent extends DRMT.Component {
-  static schema = {
-    value: { type: Vector3Type },
-  };
-}
+export * from './PositionComponent';
+
 export class VelocityComponent extends DRMT.Component {
   static schema = {
     value: { type: Vector3Type },
