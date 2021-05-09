@@ -44,13 +44,13 @@ describe("TurnCommand", () => {
     const entity = new Entity();
     const accelX = 5;
     const accelY = 5;
-    const sut = new TurnCommand();
+    const sut = new TurnCommand(accelX, accelY);
 
     entity
       .addComponent(AngularVelocityComponent, { value: new Euler() });
 
-    sut.execute(entity, accelX, accelY);
-    sut.execute(entity, accelX, accelY);
+    sut.execute(entity);
+    TurnCommand.executePure(entity, accelX, accelY);
 
     /** @type {Vector3} */
     const velocity = entity.getComponent(AngularVelocityComponent).value;

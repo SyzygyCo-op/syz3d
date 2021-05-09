@@ -89,7 +89,8 @@ export class InputSystem extends DRMT.System {
     this.walkForward = new MoveCommand(PLAYER_WALK_ACCEL);
     this.walkBackward = new MoveCommand(-PLAYER_WALK_ACCEL);
     this.jump = new JumpCommand();
-    this.turn = new TurnCommand();
+    this.turnLeft = new TurnCommand(0, PLAYER_TURN_ACCEL);
+    this.turnRight = new TurnCommand(0, -PLAYER_TURN_ACCEL);
 
     window.addEventListener("keydown", this.updateKeyDownState);
     window.addEventListener("keyup", this.updateKeyDownState);
@@ -137,7 +138,7 @@ export class InputSystem extends DRMT.System {
       var movementY =
         event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
-      this.turn.execute(localPlayer, movementY * 0.04, -movementX * 0.04);
+      TurnCommand.executePure(localPlayer, movementY * 0.04, -movementX * 0.04);
     }
   };
 
@@ -154,10 +155,10 @@ export class InputSystem extends DRMT.System {
     if (entity && !state.observable.openModalId) {
 
       if (this.keyDownLeft) {
-        this.turn.execute(entity, 0, PLAYER_TURN_ACCEL)
+        this.turnLeft.execute(entity)
       }
       if (this.keyDownRight) {
-        this.turn.execute(entity, 0, -PLAYER_TURN_ACCEL)
+        this.turnRight.execute(entity)
       }
 
       if (this.keyDownUp) {
