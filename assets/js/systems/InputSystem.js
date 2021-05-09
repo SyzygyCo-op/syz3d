@@ -17,7 +17,7 @@ import {
 import { StateSystem } from "./StateSystem";
 import { isMine } from "../utils";
 import { CollisionSystem } from "./CollisionSystem";
-import { MoveCommand } from "../commands";
+import { MoveCommand, JumpCommand } from "../commands";
 
 export class InputSystem extends DRMT.System {
   static queries = {
@@ -88,6 +88,7 @@ export class InputSystem extends DRMT.System {
     this.runBackward = new MoveCommand(-PLAYER_RUN_ACCEL);
     this.walkForward = new MoveCommand(PLAYER_WALK_ACCEL);
     this.walkBackward = new MoveCommand(-PLAYER_WALK_ACCEL);
+    this.jump = new JumpCommand();
 
     window.addEventListener("keydown", this.updateKeyDownState);
     window.addEventListener("keyup", this.updateKeyDownState);
@@ -156,8 +157,6 @@ export class InputSystem extends DRMT.System {
     this.canvasElement = state.canvasElement;
     // TODO(perf) also check if any key at all is pressed
     if (entity && !state.observable.openModalId) {
-      /** @type Vector3 */
-      const velocity = entity.getMutableComponent(VelocityComponent).value;
       /** @type Euler */
       const angularVelocity = entity.getMutableComponent(
         AngularVelocityComponent
@@ -183,7 +182,7 @@ export class InputSystem extends DRMT.System {
 
       // Jumping and gravity
       if (this.world.getSystem(CollisionSystem).playerOnFloor) {
-        velocity.y = getJumpIntensity(this.keyDownJump);
+        this.jump.execute(entity, getJumpIntensity(this.keyDownJump));
       }
     }
   }
@@ -199,7 +198,7 @@ export class InputSystem extends DRMT.System {
 let jumpPrepTimer = 0;
 let jumpRestTimer = 0;
 
-/** @param {boolean} keyIsDown TODO test jumping logic */
+/** @param {boolean} keyIsDown TODO test jumping logic, refactor to FSM */
 function getJumpIntensity(keyIsDown) {
   let retval = 0;
 

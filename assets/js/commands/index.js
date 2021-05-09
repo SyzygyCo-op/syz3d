@@ -8,9 +8,11 @@ export class Command {
   /**
    * @abstract
    * @param {DRMT.Entity} entity
+   * @param {any[]} args
    */
-  execute(entity) {
+  execute(entity, ...args) {
     void entity;
+    void args;
   }
 }
 
@@ -27,5 +29,17 @@ export class MoveCommand extends Command {
     const forward = getForwardNormal(rotation);
 
     velocity.add(forward.multiplyScalar(this.accel));
+  }
+}
+
+export class JumpCommand extends Command {
+  /**
+   * @param {DRMT.Entity} entity
+   * @param {number} accel
+   */
+  execute(entity, accel) {
+    const velocity = entity.getComponent(VelocityComponent).value;
+
+    velocity.y = accel;
   }
 }

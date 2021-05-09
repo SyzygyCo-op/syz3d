@@ -1,7 +1,7 @@
 import { Entity } from "dreamt";
 import { Euler, Vector3 } from "three";
 import { RotationComponent, VelocityComponent } from "../components";
-import { MoveCommand } from "./";
+import { MoveCommand, JumpCommand } from "./";
 
 describe("MoveCommand", () => {
   it("sets the velocity to running in whatever direction it's looking", () => {
@@ -19,8 +19,23 @@ describe("MoveCommand", () => {
 
     /** @type {Vector3} */
     const velocity = entity.getComponent(VelocityComponent).value;
-    expect(velocity.length()).toBe(accel);
     expect(velocity.x).toBe(Math.cos(yRot) * accel);
     expect(velocity.z).toBe(Math.sin(yRot) * accel);
+  });
+});
+describe("JumpCommand", () => {
+  it("sets the velocity to straight up", () => {
+    const entity = new Entity();
+    const accel = 5;
+    const sut = new JumpCommand();
+
+    entity
+      .addComponent(VelocityComponent, { value: new Vector3() });
+
+    sut.execute(entity, accel);
+
+    /** @type {Vector3} */
+    const velocity = entity.getComponent(VelocityComponent).value;
+    expect(velocity.y).toBe(accel);
   });
 });
