@@ -77,6 +77,7 @@ export class InputSystem extends DRMT.System {
         break;
       case "Shift":
         this.keyDownShift = isDown;
+        break;
       case "n":
       case "N":
         !isDown && this.toggleShowNameTags();
