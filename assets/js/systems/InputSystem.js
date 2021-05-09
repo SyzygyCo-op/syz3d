@@ -17,7 +17,7 @@ import {
 import { StateSystem } from "./StateSystem";
 import { isMine } from "../utils";
 import { CollisionSystem } from "./CollisionSystem";
-import { MoveCommand, JumpCommand } from "../commands";
+import { MoveCommand, JumpCommand, TurnCommand } from "../commands";
 
 export class InputSystem extends DRMT.System {
   static queries = {
@@ -89,6 +89,7 @@ export class InputSystem extends DRMT.System {
     this.walkForward = new MoveCommand(PLAYER_WALK_ACCEL);
     this.walkBackward = new MoveCommand(-PLAYER_WALK_ACCEL);
     this.jump = new JumpCommand();
+    this.turn = new TurnCommand();
 
     window.addEventListener("keydown", this.updateKeyDownState);
     window.addEventListener("keyup", this.updateKeyDownState);
@@ -136,13 +137,7 @@ export class InputSystem extends DRMT.System {
       var movementY =
         event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
-      /** @type Euler */
-      const angularVelocity = localPlayer.getMutableComponent(
-        AngularVelocityComponent
-      ).value;
-
-      angularVelocity.x += movementY * 0.04;
-      angularVelocity.y -= movementX * 0.04;
+      this.turn.execute(localPlayer, movementY * 0.04, -movementX * 0.04);
     }
   };
 
@@ -157,16 +152,12 @@ export class InputSystem extends DRMT.System {
     this.canvasElement = state.canvasElement;
     // TODO(perf) also check if any key at all is pressed
     if (entity && !state.observable.openModalId) {
-      /** @type Euler */
-      const angularVelocity = entity.getMutableComponent(
-        AngularVelocityComponent
-      ).value;
 
       if (this.keyDownLeft) {
-        angularVelocity.y += PLAYER_TURN_ACCEL;
+        this.turn.execute(entity, 0, PLAYER_TURN_ACCEL)
       }
       if (this.keyDownRight) {
-        angularVelocity.y -= PLAYER_TURN_ACCEL;
+        this.turn.execute(entity, 0, -PLAYER_TURN_ACCEL)
       }
 
       if (this.keyDownUp) {

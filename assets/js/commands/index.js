@@ -1,5 +1,5 @@
 import * as DRMT from "dreamt";
-import { RotationComponent, VelocityComponent } from "../components";
+import { AngularVelocityComponent, RotationComponent, VelocityComponent } from "../components";
 import { getForwardNormal } from "../utils";
 
 export class Command {
@@ -38,8 +38,22 @@ export class JumpCommand extends Command {
    * @param {number} accel
    */
   execute(entity, accel) {
-    const velocity = entity.getComponent(VelocityComponent).value;
+    const velocity = entity.getMutableComponent(VelocityComponent).value;
 
     velocity.y = accel;
+  }
+}
+
+export class TurnCommand extends Command {
+  /**
+   * @param {DRMT.Entity} entity
+   * @param {number} xAccel
+   * @param {number} yAccel
+   */
+  execute(entity, xAccel, yAccel) {
+    const velocity = entity.getMutableComponent(AngularVelocityComponent).value;
+
+    velocity.x += xAccel;
+    velocity.y += yAccel;
   }
 }
