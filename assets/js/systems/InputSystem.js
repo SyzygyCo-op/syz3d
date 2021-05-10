@@ -1,20 +1,11 @@
 import * as DRMT from "dreamt";
-import {
-  OwnershipComponent,
-  PlayerTag,
-} from "../components";
-import {
-  PLAYER_WALK_ACCEL,
-  PLAYER_RUN_ACCEL,
-  PLAYER_TURN_ACCEL,
-  GAME_LOOP_DURATION,
-} from "../config";
+import { OwnershipComponent, PlayerTag } from "../components";
+import { GAME_LOOP_DURATION } from "../config";
 import { StateSystem } from "./StateSystem";
 import { isMine } from "../utils";
 import { CollisionSystem } from "./CollisionSystem";
-import { MoveCommand, JumpCommand, TurnCommand } from "../commands";
-import { uniq } from 'lodash-es';
-import {userSettings} from "../state";
+import { userSettings } from "../state";
+import { CommandMenu } from "../CommandMenu";
 
 export class InputSystem extends DRMT.System {
   static queries = {
@@ -22,11 +13,7 @@ export class InputSystem extends DRMT.System {
       components: [
         PlayerTag,
         OwnershipComponent,
-        ...uniq([
-          ...MoveCommand.getRequiredComponents(),
-          ...JumpCommand.getRequiredComponents(),
-          ...TurnCommand.getRequiredComponents()
-        ])
+        ...CommandMenu.getRequiredComponents()
       ],
     },
   };
@@ -83,14 +70,6 @@ export class InputSystem extends DRMT.System {
   };
 
   init() {
-    this.runForward = new MoveCommand(PLAYER_RUN_ACCEL);
-    this.runBackward = new MoveCommand(-PLAYER_RUN_ACCEL);
-    this.walkForward = new MoveCommand(PLAYER_WALK_ACCEL);
-    this.walkBackward = new MoveCommand(-PLAYER_WALK_ACCEL);
-    this.jump = new JumpCommand();
-    this.turnLeft = new TurnCommand(0, PLAYER_TURN_ACCEL);
-    this.turnRight = new TurnCommand(0, -PLAYER_TURN_ACCEL);
-
     window.addEventListener("keydown", this.updateKeyDownState);
     window.addEventListener("keyup", this.updateKeyDownState);
     window.addEventListener("blur", this.handleWindowBlur);
@@ -152,28 +131,27 @@ export class InputSystem extends DRMT.System {
     this.canvasElement = state.canvasElement;
     // TODO(perf) also check if any key at all is pressed
     if (entity && !state.observable.openModalId) {
-
       if (this.keyDownLeft) {
-        this.turnLeft.execute(entity)
+        CommandMenu.turnLeft.execute(entity);
       }
       if (this.keyDownRight) {
-        this.turnRight.execute(entity)
+        CommandMenu.turnRight.execute(entity);
       }
 
       if (this.keyDownUp) {
         this.keyDownShift
-          ? this.walkForward.execute(entity)
-          : this.runForward.execute(entity);
+          ? CommandMenu.walkForward.execute(entity)
+          : CommandMenu.runForward.execute(entity);
       }
       if (this.keyDownDown) {
         this.keyDownShift
-          ? this.walkBackward.execute(entity)
-          : this.runBackward.execute(entity);
+          ? CommandMenu.walkBackward.execute(entity)
+          : CommandMenu.runBackward.execute(entity);
       }
 
       // Jumping and gravity
       if (this.world.getSystem(CollisionSystem).playerOnFloor) {
-        this.jump.execute(entity, getJumpIntensity(this.keyDownJump));
+        CommandMenu.jump.execute(entity, getJumpIntensity(this.keyDownJump));
       }
     }
   }
