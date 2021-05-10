@@ -3,6 +3,7 @@ import * as MOBX from "mobx";
 import {Triangle} from "three";
 import * as config from "../config";
 import { preloadGltf } from "../systems/LoaderSystem";
+import {UserSettings} from "./UserSettings";
 
 export class PlayerState {
   is_player = true;
@@ -46,19 +47,14 @@ export async function preloadAssets() {
   await Promise.all(assets.map((a) => a.preload()));
 }
 
+export const userSettings = new UserSettings();
+
 /**
  * @typedef {"EDIT_MY_AVATAR" | "SETTINGS"} ModalID
- *
- * @typedef {Pick<ObservableState, "showNameTags">} ISettings
  */
-
 export class ObservableState {
   /** @type {null | ModalID} */
   openModalId = null;
-
-  showNameTags = false;
-
-  isUsing3rdPersonCamera = true;
 
   /** @type Triangle[] */
   debugCollisionTriangles = [];

@@ -16,15 +16,16 @@ import { USE_TWEENING } from "../../config";
 import { MovingObject3DRender } from "./MovingObject3DRender";
 import { useThree } from "@react-three/fiber";
 import { isMine } from "../../utils";
+import {userSettings} from "../../state";
 
 const debug = false;
 
 /**
  * React-THREE-Fiber component that renders an entity.
  *
- * @type React.ComponentType<{entity: DRMT.Entity} & import("../../state").ISettings>
+ * @type React.ComponentType<{entity: DRMT.Entity}>
  */
-export const MovingObject3DEntity = ({ entity, showNameTags }) => {
+export const MovingObject3DEntity = ({ entity }) => {
   const entityId = React.useMemo(() => entity.id, [entity]);
 
   const isMyEntity = React.useMemo(() => isMine(entity), [entity]);
@@ -69,7 +70,7 @@ export const MovingObject3DEntity = ({ entity, showNameTags }) => {
   gameLoop.useTick(/** @type any */ (sync));
 
   gameLoop.useTick(() => {
-    if (position && label && showNameTags) {
+    if (position && label && userSettings.shouldShowNameTags) {
       const newValue = camera.position.distanceTo(position) > 5;
       if (newValue !== isFar) {
         setFar(newValue);
@@ -85,7 +86,7 @@ export const MovingObject3DEntity = ({ entity, showNameTags }) => {
       label={label}
       object3d={object3d}
       boundingBox={boundingBox}
-      showNameTags={showNameTags && !isFar}
+      showNameTags={userSettings.shouldShowNameTags && !isFar}
       collisionBody={collisionBody}
     />
   );

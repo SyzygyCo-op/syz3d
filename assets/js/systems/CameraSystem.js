@@ -8,8 +8,8 @@ import {
   PositionComponent,
   RotationComponent,
 } from "../components";
+import { userSettings } from "../state";
 import { isMine } from "../utils";
-import { StateSystem } from "./StateSystem";
 
 export class CameraSystem extends DRMT.System {
   static queries = {
@@ -47,10 +47,7 @@ export class CameraSystem extends DRMT.System {
 
       const cameraRelativeY = (box.y * 1) / 4;
 
-      const setback = this.world.getSystem(StateSystem).observable
-        .isUsing3rdPersonCamera
-        ? 1
-        : 0.01;
+      const setback = userSettings.shouldUse3rdPersonCamera ? 1 : 0.01;
 
       DRMT.camera.apply3rdPersonView(
         this.camera,

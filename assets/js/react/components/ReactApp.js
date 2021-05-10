@@ -2,12 +2,13 @@ import * as React from "react";
 import { observer } from "mobx-react-lite";
 import { Canvas, invalidate } from "@react-three/fiber";
 import * as UI from "./ui";
-import { ObservableState, avatars } from "../../state";
+import { ObservableState, avatars, userSettings } from "../../state";
 import { gameLoop, world } from "../../world";
 import { Scene } from "./Scene";
-import {AdaptiveDpr, AdaptiveEvents, Preload} from "@react-three/drei";
-import {CameraSystem} from "../../systems";
-import {CollisionHelper} from "./CollisionHelper";
+import { AdaptiveDpr, AdaptiveEvents, Preload } from "@react-three/drei";
+import { CameraSystem } from "../../systems";
+import { CollisionHelper } from "./CollisionHelper";
+import { mapStateToFields } from "./ui/Form";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -36,13 +37,13 @@ class ErrorBoundary extends React.Component {
 const invalidateOnTick = () => invalidate();
 
 export const ReactApp = observer(
-  /**
-   * @param {{ state: ObservableState }} props
-   */
+  /** @param {{ state: ObservableState }} props */
   ({ state }) => {
     gameLoop.useTick(invalidateOnTick);
 
     const camera = world.getSystem(CameraSystem).camera;
+
+    const settingsFields = mapStateToFields(userSettings, ['shouldShowNameTags'])
 
     return (
       <ErrorBoundary>
@@ -53,13 +54,18 @@ export const ReactApp = observer(
             localPlayerName={state.localPlayer.actual.label}
           />
           <Canvas frameloop="demand" camera={camera} mode="concurrent">
-            <AdaptiveDpr pixelated/>
-            <AdaptiveEvents/>
+            <AdaptiveDpr pixelated />
+            <AdaptiveEvents />
             <React.Suspense fallback={null}>
-              <Preload all/>
-              <Scene stationaryObject3DList={state.stationaryObject3DList} movingObject3DList={state.movingObject3DList} showNameTags={state.showNameTags} />
+              <Preload all />
+              <Scene
+                stationaryObject3DList={state.stationaryObject3DList}
+                movingObject3DList={state.movingObject3DList}
+              />
             </React.Suspense>
-            {state.debugCollisionTriangles && <CollisionHelper triangles={state.debugCollisionTriangles} />}
+            {state.debugCollisionTriangles && (
+              <CollisionHelper triangles={state.debugCollisionTriangles} />
+            )}
           </Canvas>
         </div>
         <UI.Drawer
@@ -73,8 +79,8 @@ export const ReactApp = observer(
             onAvatarEdit={handleAvatarEdit}
             // TODO use selectors
             localPlayerName={state.localPlayer.actual.label}
-            initialValues={{showNameTags: state.showNameTags}}
             onValuesChange={handleSettingsChange}
+            fields={settingsFields}
           />
         </UI.Drawer>
         <UI.Drawer
@@ -102,9 +108,8 @@ export const ReactApp = observer(
       state.setOpenModal("SETTINGS");
     }
 
-    /** @param {import("../../state").ISettings} settings */
-    function handleSettingsChange(settings) {
-      state.updateSettings(settings);
+    function handleSettingsChange(changedValues) {
+      userSettings.update(changedValues);
     }
 
     function handleModalClose() {

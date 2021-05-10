@@ -9,7 +9,6 @@ const smallHeading = {
 };
 
 /**
- * @typedef {import("../../../state").ISettings} ISettings
  * @type {React.ComponentType<
  *   AntD.FormProps<any> & {
  *     onAvatarEdit: () => void;
@@ -21,7 +20,7 @@ export const SettingsModalBody = (props) => {
   return (
     <AntD.Form
       onValuesChange={props.onValuesChange}
-      initialValues={props.initialValues}
+      fields={props.fields}
     >
       <AntD.Divider orientation="left" style={{ margin: 0 }}>
         <span style={smallHeading}>lewks</span>
@@ -43,10 +42,10 @@ export const SettingsModalBody = (props) => {
         <AntD.Col flex="auto">
           <AntD.Form.Item
             label="Nametags"
-            name="showNameTags"
+            name="shouldShowNameTags"
             valuePropName="checked"
           >
-            <AntD.Switch />
+            <AntD.Switch/>
           </AntD.Form.Item>
         </AntD.Col>
         <AntD.Col>
@@ -57,4 +56,5 @@ export const SettingsModalBody = (props) => {
       </AntD.Row>
     </AntD.Form>
   );
+
 };

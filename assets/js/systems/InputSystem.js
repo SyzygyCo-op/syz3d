@@ -14,6 +14,7 @@ import { isMine } from "../utils";
 import { CollisionSystem } from "./CollisionSystem";
 import { MoveCommand, JumpCommand, TurnCommand } from "../commands";
 import { uniq } from 'lodash-es';
+import {userSettings} from "../state";
 
 export class InputSystem extends DRMT.System {
   static queries = {
@@ -77,7 +78,7 @@ export class InputSystem extends DRMT.System {
         break;
       case "n":
       case "N":
-        !isDown && this.toggleShowNameTags();
+        !isDown && userSettings.toggleNameTags();
     }
   };
 
@@ -175,10 +176,6 @@ export class InputSystem extends DRMT.System {
         this.jump.execute(entity, getJumpIntensity(this.keyDownJump));
       }
     }
-  }
-  toggleShowNameTags() {
-    const state = this.world.getSystem(StateSystem).observable;
-    state.updateSettings({ showNameTags: !state.showNameTags });
   }
   getLocalPlayer() {
     return this.queries.players.results.find(isMine);
