@@ -36,6 +36,8 @@ module.exports = (env, options) => {
       },
       // docs recommend this matches output.publicPath
       publicPath: `http://${process.env.HOST_NAME}:${process.env.PORT}/js/`,
+      host: "0.0.0.0",
+      disableHostCheck: true,
     },
     module: {
       rules: [
