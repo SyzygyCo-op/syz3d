@@ -21,6 +21,7 @@ defmodule Syz3dWeb.UserSocket do
       {:ok, player_id} ->
         {:ok, assign(socket, player_id: player_id)}
       {:error, _} ->
+        IO.puts("Invalid token")
         :error
     end
   end
