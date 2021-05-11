@@ -6,6 +6,7 @@ import { isMine } from "../utils";
 import { CollisionSystem } from "./CollisionSystem";
 import { userSettings } from "../state";
 import { CommandMenu } from "../CommandMenu";
+import {TurnCommand} from "../commands";
 
 export class InputSystem extends DRMT.System {
   static queries = {
@@ -102,7 +103,7 @@ export class InputSystem extends DRMT.System {
     if (document.pointerLockElement || this._hasPointerLock) {
       document.exitPointerLock();
       this._hasPointerLock = false;
-    } else if (evt.target === this.canvasElement) {
+    } else if (evt.target === this.canvasElement && this.canvasElement.requestPointerLock) {
       this.canvasElement.requestPointerLock();
       this._hasPointerLock = true;
     }
