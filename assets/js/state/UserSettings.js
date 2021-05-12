@@ -3,7 +3,7 @@ import * as MOBX from "mobx";
 export class UserSettings {
   shouldShowNameTags = false;
   shouldUse3rdPersonCamera = true;
-  shouldShowVirtualGamePad = false;
+  shouldShowVirtualGamePad = window.innerWidth < 1200;
 
   constructor() {
     MOBX.makeAutoObservable(this);
