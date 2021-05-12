@@ -6,6 +6,7 @@ export const SideBar = (props) => {
     <>
       <div
         style={{
+          padding: "5vw",
           position: "fixed",
           maxWidth: "50%",
           height: "100%",
@@ -21,7 +22,7 @@ export const SideBar = (props) => {
           }}
         >
           <div
-            style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "center" }}
+            style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "flex-end" }}
           >
             {props.children}
           </div>
