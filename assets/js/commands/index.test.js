@@ -1,7 +1,7 @@
 import { Entity } from "dreamt";
 import { Euler, Vector3 } from "three";
 import { AngularVelocityComponent, RotationComponent, VelocityComponent } from "../components";
-import { TurnCommand, MoveCommand, JumpCommand } from "./";
+import { TurnCommand, MoveForwardCommand, JumpCommand } from "./";
 
 describe("MoveCommand", () => {
   it("sets the velocity to running in whatever direction it's looking", () => {
@@ -9,7 +9,7 @@ describe("MoveCommand", () => {
     const yRot = Math.PI / 4;
     const accel = 5;
     const lookDirection = new Euler(0, yRot, 0);
-    const sut = new MoveCommand(accel);
+    const sut = new MoveForwardCommand(accel);
 
     entity
       .addComponent(RotationComponent, { value: lookDirection })

@@ -8,10 +8,13 @@ const o1 = new Object3D();
 const DEGREES_TO_RADIANS = Math.PI / 180;
 
 /**
- * @param {Euler}  facingAngle
+ * @param {number}  x
+ * @param {number}  y
+ * @param {number}  z
+  * @param {string?} order
  */
-export function getForwardNormal(facingAngle) {
-  o1.rotation.copy(facingAngle);
+export function getForwardNormal(x, y, z, order = 'YXZ') {
+  o1.rotation.set(x, y, z, order)
   o1.getWorldDirection(v1);
 
   v1.y = 0;

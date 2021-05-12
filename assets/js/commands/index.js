@@ -1,4 +1,5 @@
 import * as DRMT from "dreamt";
+import { Euler } from "three";
 import {
   AngularVelocityComponent,
   RotationComponent,
@@ -12,7 +13,7 @@ export class Command {
    * @type DRMT.ComponentConstructor[]
    */
   static _requiredComponents;
-  static getRequiredComponents () {
+  static getRequiredComponents() {
     return this._requiredComponents;
   }
   constructor() {}
@@ -28,7 +29,30 @@ export class Command {
   }
 }
 
-export class MoveCommand extends Command {
+/**
+ * @param {DRMT.Entity} entity
+ * @param {number} yAngle
+ * @param {number} magnitude
+ */
+export function addVelocity(entity, yAngle, magnitude) {
+  const velocity = entity.getMutableComponent(VelocityComponent).value;
+  const forward = getForwardNormal(0, yAngle, 0);
+
+  velocity.add(forward.multiplyScalar(magnitude));
+}
+
+/**
+ * @param {DRMT.Entity} entity
+ * @param {number} yAngle
+ * @param {number} magnitude
+ */
+export function addStrafeVelocity(entity, yAngle, magnitude) {
+  const rotation = entity.getComponent(RotationComponent).value;
+
+  addVelocity(entity, rotation.y + yAngle, magnitude)
+}
+
+export class MoveForwardCommand extends Command {
   static _requiredComponents = [RotationComponent, VelocityComponent];
 
   /** @param {number} accel */
@@ -38,11 +62,10 @@ export class MoveCommand extends Command {
   }
   /** @param {DRMT.Entity} entity */
   execute(entity) {
-    const rotation = entity.getMutableComponent(RotationComponent).value;
-    const velocity = entity.getComponent(VelocityComponent).value;
-    const forward = getForwardNormal(rotation);
+    /** @type Euler */
+    const rotation = entity.getComponent(RotationComponent).value;
 
-    velocity.add(forward.multiplyScalar(this.accel));
+    addVelocity(entity, rotation.y, this.accel);
   }
 }
 
@@ -87,4 +110,3 @@ export class TurnCommand extends Command {
     velocity.y += yAccel;
   }
 }
-
