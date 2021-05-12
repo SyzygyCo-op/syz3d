@@ -84,16 +84,19 @@ export const JoyStick = (props) => {
 
   /** @param {React.TouchEvent} evt */
   function handleTouchStart(evt) {
+    evt.preventDefault();
     setActive(true);
     moveEventRef.current = getMoveEventForTouchEvent(evt, containerRef.current);
   }
   function handleTouchEnd() {
+    evt.preventDefault();
     setActive(false);
     moveEventRef.current = null;
   }
 
   /** @param {React.TouchEvent} evt */
   function handleTouchMove(evt) {
+    evt.preventDefault();
     moveEventRef.current = getMoveEventForTouchEvent(evt, containerRef.current);
   }
 };
