@@ -11,7 +11,8 @@ import { gameLoop } from "../../../world";
  * @type React.FunctionComponent<{onMove: (evt: JoyStickMoveEvent) => void}>
  */
 export const JoyStick = (props) => {
-  const radius = "10vw";
+  const radius = "15vw";
+  const stickRadius = "1.5vw";
   const [active, setActive] = React.useState(false);
   const moveEventRef = React.useRef(null);
   const containerRef = React.useRef(null);
@@ -36,21 +37,24 @@ export const JoyStick = (props) => {
       style={{
         width: radius,
         height: radius,
-        backgroundColor: "rgba(255, 255, 255, 0.2)",
         borderRadius: radius,
+        backgroundColor: "rgba(255, 255, 255, 0.2)",
         position: "relative",
       }}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseMove={handleMouseMove}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       <div
         ref={stickRef}
         style={{
-          width: "1vw",
-          height: "1vw",
+          width: stickRadius,
+          height: stickRadius,
+          borderRadius: stickRadius,
           backgroundColor: "black",
-          borderRadius: "1vw",
           border: "1px solid white",
           position: "absolute",
           transform: "translate(-50%, -50%)",
@@ -76,6 +80,21 @@ export const JoyStick = (props) => {
     if (active && evt.target === containerRef.current) {
       moveEventRef.current = getMoveEventForMouseEvent(evt);
     }
+  }
+
+  /** @param {React.TouchEvent} evt */
+  function handleTouchStart(evt) {
+    setActive(true);
+    moveEventRef.current = getMoveEventForTouchEvent(evt, containerRef.current);
+  }
+  function handleTouchEnd() {
+    setActive(false);
+    moveEventRef.current = null;
+  }
+
+  /** @param {React.TouchEvent} evt */
+  function handleTouchMove(evt) {
+    moveEventRef.current = getMoveEventForTouchEvent(evt, containerRef.current);
   }
 };
 
@@ -111,12 +130,13 @@ function absMin(a, b) {
 }
 
 /**
- * @param {React.MouseEvent} evt
+ * @param {number} clientX
+ * @param {number} clientY
+ * @param {HTMLElement} target
  * @returns {JoyStickMoveEvent}
  */
-export function getMoveEventForMouseEvent(evt) {
-  const target = /** @type any */ (evt.target);
-  const offset = getElementOffset(target, evt.clientX, evt.clientY);
+export function getMoveEvent(clientX, clientY, target) {
+  const offset = getElementOffset(target, clientX, clientY);
   const center = getElementHalfExtents(target);
   const xDistance = (offset.x - center.x) / center.x;
   const yDistance = (offset.y - center.y) / center.y;
@@ -154,4 +174,19 @@ function getElementHalfExtents(elem) {
     x: rect.width / 2,
     y: rect.height / 2,
   };
+}
+
+/** @param {React.MouseEvent} evt */
+function getMoveEventForMouseEvent(evt) {
+  return getMoveEvent(evt.clientX, evt.clientY, /** @type any */ (evt.target));
+}
+/**
+ * @param {React.TouchEvent} evt
+ * @param {HTMLElement} target
+ */
+function getMoveEventForTouchEvent(evt, target) {
+  const touch = evt.touches.item(0);
+  return touch
+    ? getMoveEvent(touch.clientX, touch.clientY, /** @type any */ (target))
+    : null;
 }

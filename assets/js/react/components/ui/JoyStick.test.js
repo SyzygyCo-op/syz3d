@@ -1,4 +1,4 @@
-import { getMoveEventForMouseEvent } from "./JoyStick";
+import { getMoveEvent } from "./JoyStick";
 
 jest.mock("../../../world", () => ({
   gameLoop: {
@@ -11,15 +11,12 @@ jest.mock("../../../world", () => ({
  * @param {number} left
  * @param {number} width
  * @param {number} height
- * @param {number} clientX
- * @param {number} clientY
- * @returns Partial<React.MouseEvent>
+ * @returns Partial<HTMLDivElement>
  */
-function getMouseEvent(top, left, width, height, clientX, clientY) {
+function getTarget(top, left, width, height) {
   const getBoundingClientRect = () =>
     /** @type DOMRect */ ({ top, left, width, height });
-  const target = /** @type HTMLDivElement */ ({ getBoundingClientRect });
-  return { target, clientX, clientY };
+  return ({ getBoundingClientRect });
 }
 
 describe("getMoveEventForMouseEvent", () => {
@@ -30,15 +27,13 @@ describe("getMoveEventForMouseEvent", () => {
     const height = 12;
     const clientX = left + width / 2 + 1;
     const clientY = top + height / 2 + 1;
-    const inputEvent = getMouseEvent(
+    const target = getTarget(
       top,
       left,
       width,
       height,
-      clientX,
-      clientY
     );
-    const evt = getMoveEventForMouseEvent(/** @type any */ (inputEvent));
+    const evt = getMoveEvent(clientX, clientY, /** @type any */(target));
 
     expect(evt.angle).toBe(Math.PI / 4);
   });
@@ -49,15 +44,13 @@ describe("getMoveEventForMouseEvent", () => {
     const height = 24;
     const clientX = left + width / 2 + 3;
     const clientY = top + height / 2 + 4;
-    const inputEvent = getMouseEvent(
+    const target = getTarget(
       top,
       left,
       width,
       height,
-      clientX,
-      clientY
     );
-    const evt = getMoveEventForMouseEvent(/** @type any */ (inputEvent));
+    const evt = getMoveEvent(clientX, clientY, /** @type any */(target));
 
     expect(evt.xDistance).toBe(1 / 4);
     expect(evt.yDistance).toBe(1 / 3);
@@ -69,15 +62,13 @@ describe("getMoveEventForMouseEvent", () => {
     const height = 24;
     const clientX = left + width / 2 + 12;
     const clientY = top + height / 2 + 12;
-    const inputEvent = getMouseEvent(
+    const target = getTarget(
       top,
       left,
       width,
       height,
-      clientX,
-      clientY
     );
-    const evt = getMoveEventForMouseEvent(/** @type any */ (inputEvent));
+    const evt = getMoveEvent(clientX, clientY, /** @type any */(target));
 
     expect(evt.xDistance).toBeCloseTo(Math.cos(Math.PI / 4));
     expect(evt.yDistance).toBeCloseTo(Math.sin(Math.PI / 4));
@@ -89,15 +80,13 @@ describe("getMoveEventForMouseEvent", () => {
     const height = 12;
     const clientX = left + 1;
     const clientY = top + height / 2;
-    const inputEvent = getMouseEvent(
+    const target = getTarget(
       top,
       left,
       width,
       height,
-      clientX,
-      clientY
     );
-    const evt = getMoveEventForMouseEvent(/** @type any */ (inputEvent));
+    const evt = getMoveEvent(clientX, clientY, /** @type any */(target));
 
     expect(evt.dominantDirection).toBe("left");
   });
@@ -108,15 +97,13 @@ describe("getMoveEventForMouseEvent", () => {
     const height = 12;
     const clientX = left + width - 1;
     const clientY = top + height / 2;
-    const inputEvent = getMouseEvent(
+    const target = getTarget(
       top,
       left,
       width,
       height,
-      clientX,
-      clientY
     );
-    const evt = getMoveEventForMouseEvent(/** @type any */ (inputEvent));
+    const evt = getMoveEvent(clientX, clientY, /** @type any */(target));
 
     expect(evt.dominantDirection).toBe("right");
   });
@@ -127,15 +114,13 @@ describe("getMoveEventForMouseEvent", () => {
     const height = 12;
     const clientX = left + width / 2;
     const clientY = top + 1;
-    const inputEvent = getMouseEvent(
+    const target = getTarget(
       top,
       left,
       width,
       height,
-      clientX,
-      clientY
     );
-    const evt = getMoveEventForMouseEvent(/** @type any */ (inputEvent));
+    const evt = getMoveEvent(clientX, clientY, /** @type any */(target));
 
     expect(evt.dominantDirection).toBe("up");
   });
@@ -146,15 +131,13 @@ describe("getMoveEventForMouseEvent", () => {
     const height = 12;
     const clientX = left + width / 2;
     const clientY = top + height - 1;
-    const inputEvent = getMouseEvent(
+    const target = getTarget(
       top,
       left,
       width,
       height,
-      clientX,
-      clientY
     );
-    const evt = getMoveEventForMouseEvent(/** @type any */ (inputEvent));
+    const evt = getMoveEvent(clientX, clientY, /** @type any */(target));
 
     expect(evt.dominantDirection).toBe("down");
   });
