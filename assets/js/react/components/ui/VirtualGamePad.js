@@ -19,11 +19,10 @@ export const VirtualGamePad = () => {
 
   /** @param {JoyStickMoveEvent} evt */
   function handleLook(evt) {
-    // TODO this API should be more intuitive
     TurnCommand.executePure(
       localPlayer,
-      evt.yDistance * 0.5,
-      -evt.xDistance * 1.5
+      evt.yDistance * 0.1,
+      -evt.xDistance * 0.5
     );
   }
 
