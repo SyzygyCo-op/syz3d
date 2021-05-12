@@ -11,8 +11,8 @@ import { gameLoop } from "../../../world";
  * @type React.FunctionComponent<{onMove: (evt: JoyStickMoveEvent) => void}>
  */
 export const JoyStick = (props) => {
-  const radius = "15vw";
-  const stickRadius = "1.5vw";
+  const radius = "30vw";
+  const stickRadius = "3vw";
   const [active, setActive] = React.useState(false);
   const moveEventRef = React.useRef(null);
   const containerRef = React.useRef(null);
