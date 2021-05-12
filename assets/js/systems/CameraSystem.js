@@ -47,7 +47,7 @@ export class CameraSystem extends DRMT.System {
 
       const cameraRelativeY = (box.y * 1) / 4;
 
-      const setback = userSettings.shouldUse3rdPersonCamera ? 1 : 0.01;
+      const setback = userSettings.shouldUse3rdPersonCamera ? userSettings.cameraSetback : 0.01;
 
       DRMT.camera.apply3rdPersonView(
         this.camera,
