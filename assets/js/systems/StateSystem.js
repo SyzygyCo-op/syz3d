@@ -220,7 +220,7 @@ export class StateSystem extends DRMT.System {
 
   /** @param {Partial<PlayerState>} partialPlayerData */
   createLocalPlayer(partialPlayerData) {
-    this.correspondent
+    const player = this.correspondent
       .createEntity(getPlayerEntityId())
       .addComponent(PlayerTag)
       .addComponent(VelocityComponent)
@@ -239,6 +239,7 @@ export class StateSystem extends DRMT.System {
         ),
       });
     this.observable.createLocalPlayer(partialPlayerData);
+    return player;
   }
 
   getLocalPlayer() {

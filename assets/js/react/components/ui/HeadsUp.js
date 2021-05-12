@@ -2,6 +2,7 @@ import * as React from "react";
 import * as AntD from "antd";
 import { SettingFilled } from "@ant-design/icons";
 import { NameTag } from "./NameTag";
+import { zIndexes } from "../../../state/UILayering";
 
 /**
  * @param {{
@@ -14,7 +15,13 @@ export const HeadsUp = (props) => {
   return (
     <AntD.Space
       align="center"
-      style={{ height: "2rem", position: "fixed", top: 0, left: 0, zIndex: 999 }}
+      style={{
+        height: "2rem",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        zIndex: zIndexes.headsUp,
+      }}
     >
       <button onClick={props.onSettingsOpen}>
         <SettingFilled style={{ fontSize: "1.5rem" }} />

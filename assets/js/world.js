@@ -105,11 +105,3 @@ function unregisterSystems() {
   });
 }
 
-export function createLocalPlayer() {
-  console.log("creating local player");
-  world.getSystem(StateSystem).createLocalPlayer({
-    label: getPlayerName(),
-    glft_url: "/3d/PokemonHaunter/model.glb",
-    position: [0, 3, 0],
-  });
-}

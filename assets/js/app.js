@@ -2,7 +2,7 @@ import "../css/app.css";
 import "reset-css";
 import "phoenix_html";
 import NProgress from "nprogress";
-import { gameLoop, createLocalPlayer } from "./world";
+import { gameLoop } from "./world";
 import { startReactApp } from "./react";
 import { preloadAssets } from "./state";
 import { configure } from "mobx";
@@ -23,7 +23,6 @@ console.info("preloading assets");
 preloadAssets().then(() => {
   console.info("starting game loop");
   gameLoop.start();
-  createLocalPlayer();
 
   startReactApp();
 

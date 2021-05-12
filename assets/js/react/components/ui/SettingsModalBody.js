@@ -54,6 +54,17 @@ export const SettingsModalBody = (props) => {
           </AntD.Typography.Text>
         </AntD.Col>
       </AntD.Row>
+      <AntD.Row style={{ margin: "1rem" }}>
+        <AntD.Col flex="auto">
+          <AntD.Form.Item
+            label="On-screen controls"
+            name="shouldShowVirtualGamePad"
+            valuePropName="checked"
+          >
+            <AntD.Switch/>
+          </AntD.Form.Item>
+        </AntD.Col>
+      </AntD.Row>
     </AntD.Form>
   );
 

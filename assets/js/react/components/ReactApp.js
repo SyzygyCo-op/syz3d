@@ -9,6 +9,8 @@ import { AdaptiveDpr, AdaptiveEvents, Preload } from "@react-three/drei";
 import { CameraSystem } from "../../systems";
 import { CollisionHelper } from "./CollisionHelper";
 import { mapStateToFields } from "./ui/Form";
+import { VirtualGamePad } from "./ui/VirtualGamePad";
+import { zIndexes } from "../../state/UILayering";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -43,16 +45,19 @@ export const ReactApp = observer(
 
     const camera = world.getSystem(CameraSystem).camera;
 
-    const settingsFields = mapStateToFields(userSettings, ['shouldShowNameTags'])
+    const settingsFields = mapStateToFields(userSettings, [
+      "shouldShowNameTags",
+      "shouldShowVirtualGamePad",
+    ]);
 
     return (
       <ErrorBoundary>
-        <div className="App">
-          <UI.HeadsUp
-            onAvatarEdit={handleAvatarEdit}
-            onSettingsOpen={handleSettingsOpen}
-            localPlayerName={state.localPlayer.actual.label}
-          />
+        <UI.HeadsUp
+          onAvatarEdit={handleAvatarEdit}
+          onSettingsOpen={handleSettingsOpen}
+          localPlayerName={state.localPlayer.actual.label}
+        />
+        <div className="Scene" style={{ zIndex: zIndexes.scene }}>
           <Canvas frameloop="demand" camera={camera} mode="concurrent">
             <AdaptiveDpr pixelated />
             <AdaptiveEvents />
@@ -101,6 +106,7 @@ export const ReactApp = observer(
             validateTrigger="onChange"
           />
         </UI.Drawer>
+        {userSettings.shouldShowVirtualGamePad && <VirtualGamePad />}
       </ErrorBoundary>
     );
 
