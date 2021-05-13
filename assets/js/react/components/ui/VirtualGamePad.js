@@ -13,10 +13,10 @@ export const VirtualGamePad = () => {
   return (
     <>
       <SideBar zIndex={zIndexes.virtualGamePad} side="left">
+        <ForceButton onPress={handleJump}>Jump</ForceButton>
         <JoyStick onMove={handleLook} label="look" />
       </SideBar>
       <SideBar zIndex={zIndexes.virtualGamePad} side="right">
-        <ForceButton onPress={handleJump}>Jump</ForceButton>
         <JoyStick onMove={handleMove} label="move" />
       </SideBar>
     </>
