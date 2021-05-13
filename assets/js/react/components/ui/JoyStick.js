@@ -8,7 +8,8 @@ import { gameLoop } from "../../../world";
  *   xDistance: number;
  *   yDistance: number;
  * }} JoyStickMoveEvent
- * @type React.FunctionComponent<{onMove: (evt: JoyStickMoveEvent) => void}>
+ * @type React.FunctionComponent<{label: String, onMove: (evt:
+ *   JoyStickMoveEvent) => void}>
  */
 export const JoyStick = (props) => {
   const radius = "30vw";
@@ -19,48 +20,64 @@ export const JoyStick = (props) => {
   const stickRef = React.useRef(null);
 
   gameLoop.useTick(() => {
+    /** @type {HTMLDivElement} */
+    const stick = stickRef.current;
     if (moveEventRef.current) {
       props.onMove(moveEventRef.current);
       setStickStyle(
-        stickRef.current.style,
+        stick.style,
         moveEventRef.current.xDistance,
         moveEventRef.current.yDistance
       );
     } else {
       setStickStyle(stickRef.current.style, 0, 0);
     }
+    stick.setAttribute("aria-valuetext", getValueText(moveEventRef.current));
   });
 
   return (
-    <div
-      ref={containerRef}
+    <label
       style={{
-        width: radius,
-        height: radius,
-        borderRadius: radius,
-        backgroundColor: "rgba(255, 255, 255, 0.2)",
-        position: "relative",
+        textAlign: "center",
+        userSelect: "none",
+        textTransform: "uppercase",
+        textShadow: "1px 1px 1px rgba(0, 0, 0, 0.5)",
       }}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onMouseMove={handleMouseMove}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
     >
+      {props.label}
       <div
-        ref={stickRef}
+        role="button"
+        aria-pressed={active}
+        ref={containerRef}
         style={{
-          width: stickRadius,
-          height: stickRadius,
-          borderRadius: stickRadius,
-          backgroundColor: "black",
-          border: "1px solid white",
-          position: "absolute",
-          transform: "translate(-50%, -50%)",
+          width: radius,
+          height: radius,
+          borderRadius: radius,
+          backgroundColor: "rgba(255, 255, 255, 0.2)",
+          position: "relative",
         }}
-      />
-    </div>
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div
+          role="slider"
+          ref={stickRef}
+          style={{
+            width: stickRadius,
+            height: stickRadius,
+            borderRadius: stickRadius,
+            backgroundColor: "black",
+            border: "1px solid white",
+            position: "absolute",
+            transform: "translate(-50%, -50%)",
+          }}
+        />
+      </div>
+    </label>
   );
 
   /** @param {React.MouseEvent} evt */
@@ -98,8 +115,13 @@ export const JoyStick = (props) => {
   }
 };
 
+/** @param {JoyStickMoveEvent} evt */
+function getValueText(evt) {
+  return evt ? `${evt.xDistance}, ${evt.yDistance}` : `0, 0`;
+}
+
 /**
- * @param {React.CSSProperties} style
+ * @param {CSSStyleDeclaration} style
  * @param {number} xDistance
  * @param {number} yDistance
  */
