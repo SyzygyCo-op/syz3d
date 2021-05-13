@@ -39,9 +39,9 @@ export const JoyStick = (props) => {
     <label
       style={{
         textAlign: "center",
-        userSelect: "none",
         textTransform: "uppercase",
         textShadow: "1px 1px 1px rgba(0, 0, 0, 0.5)",
+        userSelect: "none",
       }}
     >
       {props.label}
@@ -55,6 +55,7 @@ export const JoyStick = (props) => {
           borderRadius: radius,
           backgroundColor: "rgba(255, 255, 255, 0.2)",
           position: "relative",
+          userSelect: "none",
         }}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
@@ -74,6 +75,7 @@ export const JoyStick = (props) => {
             border: "1px solid white",
             position: "absolute",
             transform: "translate(-50%, -50%)",
+            userSelect: "none",
           }}
         />
       </div>
