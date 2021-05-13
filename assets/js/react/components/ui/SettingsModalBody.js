@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as AntD from "antd";
 import { NameTag } from "./NameTag";
+import { HeartTwoTone } from "@ant-design/icons";
 
 /** @type React.CSSProperties */
 const smallHeading = {
@@ -18,10 +19,7 @@ const smallHeading = {
  */
 export const SettingsModalBody = (props) => {
   return (
-    <AntD.Form
-      onValuesChange={props.onValuesChange}
-      fields={props.fields}
-    >
+    <AntD.Form onValuesChange={props.onValuesChange} fields={props.fields}>
       <AntD.Divider orientation="left" style={{ margin: 0 }}>
         <span style={smallHeading}>lewks</span>
       </AntD.Divider>
@@ -45,7 +43,7 @@ export const SettingsModalBody = (props) => {
             name="shouldShowNameTags"
             valuePropName="checked"
           >
-            <AntD.Switch/>
+            <AntD.Switch />
           </AntD.Form.Item>
         </AntD.Col>
         <AntD.Col>
@@ -61,11 +59,13 @@ export const SettingsModalBody = (props) => {
             name="shouldShowVirtualGamePad"
             valuePropName="checked"
           >
-            <AntD.Switch/>
+            <AntD.Switch />
           </AntD.Form.Item>
         </AntD.Col>
       </AntD.Row>
+      <p style={{ textAlign: "center" }}>
+        Made with <HeartTwoTone twoToneColor="#000" /> in my dungeon.
+      </p>
     </AntD.Form>
   );
-
 };
