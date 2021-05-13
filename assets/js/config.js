@@ -10,4 +10,7 @@ export const PLAYER_WALK_ACCEL = 0.35;
 /** rad/s^s */
 export const PLAYER_TURN_ACCEL = Math.PI / 3;
 
+/** m/s^2 */
+export const PLAYER_MAX_JUMP_ACCEL = 64;
+
 export const USE_TWEENING = true;

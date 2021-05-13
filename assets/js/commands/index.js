@@ -7,6 +7,9 @@ import {
 } from "../components";
 import { getForwardNormal } from "../utils";
 
+/* TODO create IncrReentrantJumpAccelCommand and CommitReentrantJumpCommand to encapsulate this */
+export { getJumpIntensity } from './JumpMachine';
+
 export class Command {
   /**
    * @abstract

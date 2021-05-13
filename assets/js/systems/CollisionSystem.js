@@ -8,6 +8,7 @@ import {
   CollisionBodyComponent,
   UseGlftForCollisionTag,
   Object3DComponent,
+  PlayerInternalsComponent,
 } from "../components";
 import { Octree } from "three-stdlib";
 import { isMine } from "../utils";
@@ -58,15 +59,16 @@ export class CollisionSystem extends DRMT.System {
         const velocity = entity.getMutableComponent(VelocityComponent).value;
       /** @type CollisionBody */
         const body = entity.getComponent(CollisionBodyComponent).value;
+        const internals = entity.getMutableComponent(PlayerInternalsComponent);
         capsuleCollider.start.copy(body.shapeArgs[0]).add(position);
         capsuleCollider.end.copy(body.shapeArgs[1]).add(position);
         capsuleCollider.radius = body.shapeArgs[2];
         const result = this.octree.capsuleIntersect(capsuleCollider);
 
-        this.playerOnFloor = false;
+        internals.isTouchingStableSurface = false;
 
         if (result) {
-          this.playerOnFloor = result.normal.y > 0;
+          internals.isTouchingStableSurface = result.normal.y > 0;
 
           /** @type Vector3 */
           const collision = result.normal.multiplyScalar(result.depth);

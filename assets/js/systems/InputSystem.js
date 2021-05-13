@@ -1,12 +1,11 @@
 import * as DRMT from "dreamt";
-import { OwnershipComponent, PlayerTag } from "../components";
-import { GAME_LOOP_DURATION } from "../config";
+import { OwnershipComponent, PlayerInternalsComponent, PlayerTag } from "../components";
 import { StateSystem } from "./StateSystem";
 import { isMine } from "../utils";
 import { CollisionSystem } from "./CollisionSystem";
 import { userSettings } from "../state";
 import { CommandMenu } from "../CommandMenu";
-import {TurnCommand} from "../commands";
+import {TurnCommand, getJumpIntensity} from "../commands";
 
 export class InputSystem extends DRMT.System {
   static queries = {
@@ -151,8 +150,11 @@ export class InputSystem extends DRMT.System {
       }
 
       // Jumping and gravity
-      if (this.world.getSystem(CollisionSystem).playerOnFloor) {
-        CommandMenu.jump.execute(entity, getJumpIntensity(this.keyDownJump));
+      if (entity.getComponent(PlayerInternalsComponent).isTouchingStableSurface) {
+        const intensity = getJumpIntensity(this.keyDownJump);
+        if(intensity > 0) {
+          CommandMenu.jump.execute(entity, intensity);
+        }
       }
     }
   }
@@ -161,38 +163,3 @@ export class InputSystem extends DRMT.System {
   }
 }
 
-let jumpPrepTimer = 0;
-let jumpRestTimer = 0;
-
-/** @param {boolean} keyIsDown TODO test jumping logic, refactor to FSM */
-function getJumpIntensity(keyIsDown) {
-  let retval = 0;
-
-  const isRested = jumpRestTimer > 0;
-
-  const maxPrep = 4;
-
-  const isMaxedOut = jumpPrepTimer == maxPrep;
-  const isPrepped = isMaxedOut || (jumpPrepTimer > 0 && !keyIsDown);
-  const isNonZero = isRested && isPrepped;
-
-  if (isNonZero) {
-    retval = Math.sqrt(jumpPrepTimer) * 32;
-    jumpPrepTimer = 0;
-    jumpRestTimer = 0;
-  }
-
-  if (keyIsDown && !isNonZero) {
-    jumpPrepTimer = Math.min(0.5 * GAME_LOOP_DURATION, jumpPrepTimer + 1);
-  }
-
-  if (!keyIsDown) {
-    jumpPrepTimer = 0;
-  }
-
-  if (!keyIsDown && !isNonZero) {
-    jumpRestTimer += 1;
-  }
-
-  return retval;
-}

@@ -16,6 +16,7 @@ import {
   Object3DComponent,
   CollisionBodyComponent,
   UseGlftForCollisionTag,
+  PlayerInternalsComponent,
 } from "../components";
 import { entityStore, ObservableState, PlayerState } from "../state";
 import {
@@ -222,7 +223,10 @@ export class StateSystem extends DRMT.System {
   createLocalPlayer(partialPlayerData) {
     const player = this.correspondent
       .createEntity(getPlayerEntityId())
-      .addComponent(PlayerTag)
+      .addComponent(PlayerTag) // TODO remove
+      .addComponent(PlayerInternalsComponent, {
+        isTouchingStableSurface: false,
+      })
       .addComponent(VelocityComponent)
       .addComponent(AngularVelocityComponent)
       .addComponent(OwnershipComponent, { value: getPlayerId() })

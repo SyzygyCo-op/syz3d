@@ -90,3 +90,8 @@ export class OwnershipComponent extends DRMT.Component {
     value: { type: DRMT.Types.Number },
   };
 }
+export class PlayerInternalsComponent extends DRMT.Component {
+  static schema = {
+    isTouchingStableSurface: { type: DRMT.Types.Boolean },
+  };
+}

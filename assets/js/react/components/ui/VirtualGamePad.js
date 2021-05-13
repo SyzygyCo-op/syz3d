@@ -4,6 +4,10 @@ import { SideBar } from "./SideBar";
 import { JoyStick, JoyStickMoveEvent } from "./JoyStick";
 import { localPlayer } from "../../../localPlayer";
 import { addStrafeVelocity, TurnCommand } from "../../../commands";
+import { CommandMenu } from "../../../CommandMenu";
+import { ForceButton, ForceButtonPressEvent } from "./ForceButton";
+import { PLAYER_MAX_JUMP_ACCEL } from "../../../config";
+import { PlayerInternalsComponent } from "../../../components";
 
 export const VirtualGamePad = () => {
   return (
@@ -12,6 +16,7 @@ export const VirtualGamePad = () => {
         <JoyStick onMove={handleLook} label="look" />
       </SideBar>
       <SideBar zIndex={zIndexes.virtualGamePad} side="right">
+        <ForceButton onPress={handleJump}>Jump</ForceButton>
         <JoyStick onMove={handleMove} label="move" />
       </SideBar>
     </>
@@ -33,5 +38,17 @@ export const VirtualGamePad = () => {
       Math.PI / 2 - evt.angle,
       -Math.hypot(evt.xDistance, evt.yDistance)
     );
+  }
+
+  /** @param {ForceButtonPressEvent} evt */
+  function handleJump(evt) {
+    if (
+      localPlayer.getComponent(PlayerInternalsComponent).isTouchingStableSurface
+    ) {
+      CommandMenu.jump.execute(
+        localPlayer,
+        evt.intensity * PLAYER_MAX_JUMP_ACCEL
+      );
+    }
   }
 };
