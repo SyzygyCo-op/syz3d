@@ -1,7 +1,12 @@
 import * as React from "react";
 import * as AntD from "antd";
 import { NameTag } from "./NameTag";
-import { HeartTwoTone } from "@ant-design/icons";
+import {
+  HeartTwoTone,
+  FullscreenOutlined,
+  FullscreenExitOutlined,
+} from "@ant-design/icons";
+import { uiFullScreen } from "../../../state";
 
 /** @type React.CSSProperties */
 const smallHeading = {
@@ -63,9 +68,22 @@ export const SettingsModalBody = (props) => {
           </AntD.Form.Item>
         </AntD.Col>
       </AntD.Row>
+      <AntD.Row style={{ margin: "1rem" }}>
+        <AntD.Button onClick={toggleFullScreen}>
+          {uiFullScreen.isActive ? (
+            <FullscreenExitOutlined />
+          ) : (
+            <FullscreenOutlined />
+          )}
+        </AntD.Button>
+      </AntD.Row>
       <p style={{ textAlign: "center" }}>
         Made with <HeartTwoTone twoToneColor="#000" /> in my dungeon.
       </p>
     </AntD.Form>
   );
+
+  function toggleFullScreen() {
+    uiFullScreen.toggle();
+  }
 };

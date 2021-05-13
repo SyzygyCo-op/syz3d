@@ -9,6 +9,7 @@ export const Drawer = (props) => {
     <AntD.Drawer
       {...props}
       headerStyle={{ border: 0 }}
+      getContainer={false}
     >
       {props.children}
     </AntD.Drawer>

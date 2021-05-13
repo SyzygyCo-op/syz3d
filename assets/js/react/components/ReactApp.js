@@ -2,7 +2,7 @@ import * as React from "react";
 import { observer } from "mobx-react-lite";
 import { Canvas, invalidate } from "@react-three/fiber";
 import * as UI from "./ui";
-import { ObservableState, avatars, userSettings } from "../../state";
+import { ObservableState, avatars, userSettings, uiFullScreen } from "../../state";
 import { gameLoop, world } from "../../world";
 import { Scene } from "./Scene";
 import { AdaptiveDpr, AdaptiveEvents, Preload } from "@react-three/drei";
@@ -50,63 +50,69 @@ export const ReactApp = observer(
       "shouldShowVirtualGamePad",
     ]);
 
+    const fullScreenElementRef = React.useCallback((element) => {
+      uiFullScreen.setElement(element)
+    }, [uiFullScreen])
+
     return (
       <ErrorBoundary>
-        <UI.HeadsUp
-          onAvatarEdit={handleAvatarEdit}
-          onSettingsOpen={handleSettingsOpen}
-          localPlayerName={state.localPlayer.actual.label}
-        />
-        <div className="Scene" style={{ zIndex: zIndexes.scene }}>
-          <Canvas frameloop="demand" camera={camera} mode="concurrent">
-            <AdaptiveDpr pixelated />
-            <AdaptiveEvents />
-            <React.Suspense fallback={null}>
-              <Preload all />
-              <Scene
-                stationaryObject3DList={state.stationaryObject3DList}
-                movingObject3DList={state.movingObject3DList}
-              />
-            </React.Suspense>
-            {state.debugCollisionTriangles && (
-              <CollisionHelper triangles={state.debugCollisionTriangles} />
-            )}
-          </Canvas>
-        </div>
-        <UI.Drawer
-          title="settings"
-          placement="left"
-          onClose={handleModalClose}
-          bodyStyle={{ padding: 0 }}
-          visible={state.openModalId === "SETTINGS"}
-        >
-          <UI.SettingsModalBody
+        <main ref={fullScreenElementRef}>
+          <UI.HeadsUp
             onAvatarEdit={handleAvatarEdit}
-            // TODO use selectors
+            onSettingsOpen={handleSettingsOpen}
             localPlayerName={state.localPlayer.actual.label}
-            onValuesChange={handleSettingsChange}
-            fields={settingsFields}
           />
-        </UI.Drawer>
-        <UI.Drawer
-          height="50%"
-          title="lewks"
-          placement="bottom"
-          visible={state.openModalId === "EDIT_MY_AVATAR"}
-          onClose={handleModalClose}
-          maskStyle={{ backgroundColor: "transparent" }}
-        >
-          <UI.AvatarForm
-            avatars={avatars}
-            initialValues={state.localPlayer.actual}
-            onValuesChange={(data) => {
-              state.localPlayer.setRequest(data);
-            }}
-            validating={state.localPlayer.isDirty}
-            validateTrigger="onChange"
-          />
-        </UI.Drawer>
-        {userSettings.shouldShowVirtualGamePad && <VirtualGamePad />}
+          <div className="Scene" style={{ zIndex: zIndexes.scene }}>
+            <Canvas frameloop="demand" camera={camera} mode="concurrent">
+              <AdaptiveDpr pixelated />
+              <AdaptiveEvents />
+              <React.Suspense fallback={null}>
+                <Preload all />
+                <Scene
+                  stationaryObject3DList={state.stationaryObject3DList}
+                  movingObject3DList={state.movingObject3DList}
+                />
+              </React.Suspense>
+              {state.debugCollisionTriangles && (
+                <CollisionHelper triangles={state.debugCollisionTriangles} />
+              )}
+            </Canvas>
+          </div>
+          <UI.Drawer
+            title="settings"
+            placement="left"
+            onClose={handleModalClose}
+            bodyStyle={{ padding: 0 }}
+            visible={state.openModalId === "SETTINGS"}
+          >
+            <UI.SettingsModalBody
+              onAvatarEdit={handleAvatarEdit}
+              // TODO use selectors
+              localPlayerName={state.localPlayer.actual.label}
+              onValuesChange={handleSettingsChange}
+              fields={settingsFields}
+            />
+          </UI.Drawer>
+          <UI.Drawer
+            height="50%"
+            title="lewks"
+            placement="bottom"
+            visible={state.openModalId === "EDIT_MY_AVATAR"}
+            onClose={handleModalClose}
+            maskStyle={{ backgroundColor: "transparent" }}
+          >
+            <UI.AvatarForm
+              avatars={avatars}
+              initialValues={state.localPlayer.actual}
+              onValuesChange={(data) => {
+                state.localPlayer.setRequest(data);
+              }}
+              validating={state.localPlayer.isDirty}
+              validateTrigger="onChange"
+            />
+          </UI.Drawer>
+          {userSettings.shouldShowVirtualGamePad && <VirtualGamePad />}
+        </main>
       </ErrorBoundary>
     );
 

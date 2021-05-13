@@ -1,9 +1,10 @@
 import * as DRMT from "dreamt";
 import * as MOBX from "mobx";
-import {Triangle} from "three";
+import { Triangle } from "three";
 import * as config from "../config";
 import { preloadGltf } from "../systems/LoaderSystem";
-import {UserSettings} from "./UserSettings";
+import { UIFullScreen } from "./UIFullScreen";
+import { UserSettings } from "./UserSettings";
 
 export class PlayerState {
   is_player = true;
@@ -41,7 +42,12 @@ export const avatars = [
   new Asset3D("/3d/PokemonDratini/preview.png", "/3d/PokemonDratini/model.glb"),
   new Asset3D("/3d/ShenLong/preview.png", "/3d/ShenLong/model.glb"),
 ];
-const assets = [...avatars, new Asset3D("", "/3d/game.glb"), new Asset3D("", "/3d/collision.glb"), new Asset3D("", "/3d/example-collision-world.glb")];
+const assets = [
+  ...avatars,
+  new Asset3D("", "/3d/game.glb"),
+  new Asset3D("", "/3d/collision.glb"),
+  new Asset3D("", "/3d/example-collision-world.glb"),
+];
 
 export async function preloadAssets() {
   await Promise.all(assets.map((a) => a.preload()));
@@ -49,9 +55,9 @@ export async function preloadAssets() {
 
 export const userSettings = new UserSettings();
 
-/**
- * @typedef {"EDIT_MY_AVATAR" | "SETTINGS"} ModalID
- */
+export const uiFullScreen = new UIFullScreen();
+
+/** @typedef {"EDIT_MY_AVATAR" | "SETTINGS"} ModalID */
 export class ObservableState {
   /** @type {null | ModalID} */
   openModalId = null;
@@ -61,7 +67,7 @@ export class ObservableState {
 
   /** @param {Triangle[]} triangles */
   setDebugCollisionTriangles(triangles) {
-    DRMT.copyArray(triangles, this.debugCollisionTriangles)
+    DRMT.copyArray(triangles, this.debugCollisionTriangles);
   }
 
   localPlayer = MOBX.makeAutoObservable(
