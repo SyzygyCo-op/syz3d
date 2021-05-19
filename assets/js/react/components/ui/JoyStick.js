@@ -43,6 +43,7 @@ export const JoyStick = (props) => {
         textShadow: "1px 1px 1px rgba(0, 0, 0, 0.5)",
         userSelect: "none",
       }}
+      onTouchMove={clearTextSelection}
     >
       {props.label}
       <div
@@ -81,6 +82,13 @@ export const JoyStick = (props) => {
       </div>
     </label>
   );
+
+  function clearTextSelection() {
+    const selection = window.getSelection();
+    if(selection) {
+      selection.removeAllRanges();
+    }
+  }
 
   /** @param {React.MouseEvent} evt */
   function handleMouseDown(evt) {

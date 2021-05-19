@@ -28,6 +28,7 @@ export const ForceButton = (props) => {
 
   /** @param {React.TouchEvent} evt */
   function handleTouchStart(evt) {
+    // TODO handle any touch that isn't being handled already
     const touch = /** @type Touch */ (evt.targetTouches[0]);
     pressEvent.intensity = touch.force || 1;
     props.onPress(pressEvent);
