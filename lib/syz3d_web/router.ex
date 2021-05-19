@@ -20,12 +20,17 @@ defmodule Syz3dWeb.Router do
     plug :basic_auth, username: "syzygy", password: System.get_env("SYZ3D_ADMIN_PASSWORD") || ""
   end
 
+  pipeline :web_app do
+    plug :put_root_layout, {Syz3dWeb.LayoutView, :web_app_root}
+  end
+
   scope "/", Syz3dWeb do
     pipe_through :browser
 
     live "/", PageLive, :index
 
     scope "/room" do
+      pipe_through :web_app
       # live "/new", Room.NewLive, :new, as: :new_room
 
       # TODO drop the as: alias here?
