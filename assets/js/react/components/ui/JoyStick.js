@@ -1,5 +1,6 @@
 import * as React from "react";
 import { gameLoop } from "../../../world";
+import { find } from "lodash-es";
 
 /**
  * @typedef {{
@@ -16,6 +17,7 @@ export const JoyStick = (props) => {
   const stickRadius = "3vw";
   const isActiveRef = React.useRef(false);
   const moveEventRef = React.useRef(createMoveEvent());
+  const touchIdRef = React.useRef(null);
   const containerRef = React.useRef(null);
   const stickRef = React.useRef(null);
 
@@ -115,8 +117,15 @@ export const JoyStick = (props) => {
 
   /** @param {React.TouchEvent} evt */
   function handleTouchStart(evt) {
+    const touch = evt.targetTouches[0];
     isActiveRef.current = true;
-    updateMoveEventWithTouchEvent(moveEventRef.current, evt, containerRef.current);
+    touchIdRef.current = touch.identifier;
+    updateMoveEventWithTouchEvent(
+      moveEventRef.current,
+      evt,
+      touchIdRef.current,
+      containerRef.current
+    );
   }
   function handleTouchEnd() {
     isActiveRef.current = false;
@@ -124,7 +133,12 @@ export const JoyStick = (props) => {
 
   /** @param {React.TouchEvent} evt */
   function handleTouchMove(evt) {
-    updateMoveEventWithTouchEvent(moveEventRef.current, evt, containerRef.current);
+    updateMoveEventWithTouchEvent(
+      moveEventRef.current,
+      evt,
+      touchIdRef.current,
+      containerRef.current
+    );
   }
 };
 
@@ -227,11 +241,17 @@ function updateMoveEventWithMouseEvent(moveEvent, mouseEvent) {
 /**
  * @param {JoyStickMoveEvent} moveEvent
  * @param {React.TouchEvent} touchEvent
+ * @param {React.Touch["identifier"]} touchId
  * @param {HTMLElement} target
  */
-function updateMoveEventWithTouchEvent(moveEvent, touchEvent, target) {
-  const touch = touchEvent.touches.item(0);
+function updateMoveEventWithTouchEvent(moveEvent, touchEvent, touchId, target) {
+  const touch = find(touchEvent.targetTouches, (touch) => touch.identifier === touchId);
   return touch
-    ? updateMoveEvent(moveEvent, touch.clientX, touch.clientY, /** @type any */ (target))
+    ? updateMoveEvent(
+        moveEvent,
+        touch.clientX,
+        touch.clientY,
+        /** @type any */ (target)
+      )
     : null;
 }
