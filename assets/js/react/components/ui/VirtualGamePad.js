@@ -3,17 +3,31 @@ import { zIndexes } from "../../../state/UILayering";
 import { SideBar } from "./SideBar";
 import { JoyStick, JoyStickMoveEvent } from "./JoyStick";
 import { localPlayer } from "../../../localPlayer";
-import { addStrafeVelocity, TurnCommand } from "../../../commands";
-import { CommandMenu } from "../../../CommandMenu";
-import { ForceButton, ForceButtonPressEvent } from "./ForceButton";
-import { PLAYER_MAX_JUMP_ACCEL } from "../../../config";
+import {
+  addStrafeVelocity,
+  TurnCommand,
+} from "../../../commands";
 import { PlayerInternalsComponent } from "../../../components";
+import { jumpPowerUpMachine } from "../../../state";
+import { BIT_VIRTUAL_GAMEPAD } from "../../../state/PowerUpMachine";
 
 export const VirtualGamePad = () => {
   return (
     <>
       <SideBar zIndex={zIndexes.virtualGamePad} side="left">
-        <ForceButton onPress={handleJump}>Jump</ForceButton>
+        <button
+          style={{
+            height: "10vw",
+            backgroundColor: "rgba(255, 255, 255, 0.2)",
+            textShadow: "1px 1px 1px rgba(0, 0, 0, 0.5)",
+            textTransform: "uppercase",
+            userSelect: "none",
+          }}
+          onTouchStart={handleStartJump}
+          onTouchEnd={handleEndJump}
+        >
+          Jump
+        </button>
         <JoyStick onMove={handleLook} label="look" />
       </SideBar>
       <SideBar zIndex={zIndexes.virtualGamePad} side="right">
@@ -40,15 +54,17 @@ export const VirtualGamePad = () => {
     );
   }
 
-  /** @param {ForceButtonPressEvent} evt */
-  function handleJump(evt) {
+  function handleStartJump() {
     if (
-      localPlayer.getComponent(PlayerInternalsComponent).isTouchingStableSurface
+      localPlayer.getComponent(PlayerInternalsComponent)
+        .isTouchingStableSurface &&
+      !jumpPowerUpMachine.started
     ) {
-      CommandMenu.jump.execute(
-        localPlayer,
-        evt.intensity * PLAYER_MAX_JUMP_ACCEL
-      );
+      jumpPowerUpMachine.sendStart(BIT_VIRTUAL_GAMEPAD);
     }
+  }
+
+  function handleEndJump() {
+    jumpPowerUpMachine.sendFinish(BIT_VIRTUAL_GAMEPAD);
   }
 };

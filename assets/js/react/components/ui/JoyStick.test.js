@@ -1,10 +1,12 @@
-import { createMoveEvent, updateMoveEvent as updateMoveEvent } from "./JoyStick";
+import { createMoveEvent, updateMoveEvent } from "./JoyStick";
 
 jest.mock("../../../world", () => ({
   gameLoop: {
     useTick: () => {}
   }
 }))
+
+jest.mock("lodash-es");
 
 /**
  * @param {number} top

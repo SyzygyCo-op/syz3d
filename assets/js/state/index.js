@@ -3,6 +3,7 @@ import * as MOBX from "mobx";
 import { Triangle } from "three";
 import * as config from "../config";
 import { preloadGltf } from "../systems/LoaderSystem";
+import { PowerUpMachine } from "./PowerUpMachine";
 import { UIFullScreen } from "./UIFullScreen";
 import { UserSettings } from "./UserSettings";
 
@@ -146,3 +147,5 @@ export class ObservableState {
 
 export const correspondentCache = DRMT.Correspondent.createEmptyBox();
 export const entityStore = DRMT.Correspondent.createEntityStore();
+
+export const jumpPowerUpMachine = new PowerUpMachine(5);

@@ -1,11 +1,16 @@
 import * as DRMT from "dreamt";
-import { OwnershipComponent, PlayerInternalsComponent, PlayerTag } from "../components";
+import {
+  OwnershipComponent,
+  PlayerInternalsComponent,
+  PlayerTag,
+} from "../components";
 import { StateSystem } from "./StateSystem";
-import { isMine } from "../utils";
-import { CollisionSystem } from "./CollisionSystem";
-import { userSettings } from "../state";
+import { jumpPowerUpMachine, userSettings } from "../state";
 import { CommandMenu } from "../CommandMenu";
-import {TurnCommand, getJumpIntensity} from "../commands";
+import { TurnCommand } from "../commands";
+import { PLAYER_MAX_JUMP_ACCEL } from "../config";
+import { isMine } from "../utils";
+import { BIT_KEYBOARD } from "../state/PowerUpMachine";
 
 export class InputSystem extends DRMT.System {
   static queries = {
@@ -13,7 +18,7 @@ export class InputSystem extends DRMT.System {
       components: [
         PlayerTag,
         OwnershipComponent,
-        ...CommandMenu.getRequiredComponents()
+        ...CommandMenu.getRequiredComponents(),
       ],
     },
   };
@@ -102,7 +107,10 @@ export class InputSystem extends DRMT.System {
     if (document.pointerLockElement || this._hasPointerLock) {
       document.exitPointerLock();
       this._hasPointerLock = false;
-    } else if (evt.target === this.canvasElement && this.canvasElement.requestPointerLock) {
+    } else if (
+      evt.target === this.canvasElement &&
+      this.canvasElement.requestPointerLock
+    ) {
       this.canvasElement.requestPointerLock();
       this._hasPointerLock = true;
     }
@@ -125,6 +133,7 @@ export class InputSystem extends DRMT.System {
    * @param {number} _time
    */
   execute(delta, _time) {
+    // TODO use localPlayer
     const entity = this.getLocalPlayer();
     const state = this.world.getSystem(StateSystem);
 
@@ -150,16 +159,31 @@ export class InputSystem extends DRMT.System {
       }
 
       // Jumping and gravity
-      if (entity.getComponent(PlayerInternalsComponent).isTouchingStableSurface) {
-        const intensity = getJumpIntensity(this.keyDownJump);
-        if(intensity > 0) {
-          CommandMenu.jump.execute(entity, intensity);
+      // TODO move to jump system
+      if (
+        entity.getComponent(PlayerInternalsComponent).isTouchingStableSurface &&
+        this.keyDownJump
+      ) {
+        if (!jumpPowerUpMachine.finished) {
+          jumpPowerUpMachine.sendStart(BIT_KEYBOARD);
         }
       }
+
+      if (jumpPowerUpMachine.started && !this.keyDownJump) {
+        jumpPowerUpMachine.sendFinish(BIT_KEYBOARD);
+      }
+
+      if (jumpPowerUpMachine.finished) {
+        CommandMenu.jump.execute(
+          entity,
+          jumpPowerUpMachine.result * PLAYER_MAX_JUMP_ACCEL
+        );
+        jumpPowerUpMachine.reset();
+      }
+      jumpPowerUpMachine.sendTick();
     }
   }
   getLocalPlayer() {
     return this.queries.players.results.find(isMine);
   }
 }
-

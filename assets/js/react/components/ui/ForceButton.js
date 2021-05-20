@@ -1,4 +1,5 @@
 import * as React from "react";
+import { gameLoop } from "../../../world";
 
 /** @type {ForceButtonPressEvent} */
 const pressEvent = {
@@ -7,9 +8,18 @@ const pressEvent = {
 
 /**
  * @typedef {{ intensity: number }} ForceButtonPressEvent
- * @type React.FunctionComponent<{onPress: (evt: ForceButtonPressEvent) => void}>
+ * @type React.FunctionComponent<{onPress: (evt: ForceButtonPressEvent) => void,
+ *   getNextIntensity: (isDown: boolean) => number}>
  */
 export const ForceButton = (props) => {
+  const intensityRef = React.useRef(0);
+  const isDownRef = React.useRef(false);
+  gameLoop.useTick(() => {
+    intensityRef.current = props.getNextIntensity(isDownRef.current);
+    if (intensityRef.current > 1) {
+      props.onPress(pressEvent);
+    }
+  });
   return (
     <button
       style={{
@@ -20,24 +30,18 @@ export const ForceButton = (props) => {
         userSelect: "none",
       }}
       onTouchStart={handleTouchStart}
-      onMouseDown={handleMouseDown}
+      onTouchEnd={handleTouchEnd}
     >
       {props.children}
     </button>
   );
 
-  /** @param {React.TouchEvent} evt */
-  function handleTouchStart(evt) {
-    // TODO handle any touch that isn't being handled already
-    const touch = /** @type Touch */ (evt.targetTouches[0]);
-    pressEvent.intensity = touch.force || 1;
-    props.onPress(pressEvent);
+  function handleTouchStart() {
+    isDownRef.current = true;
   }
 
-  /** @param {React.MouseEvent} evt */
-  function handleMouseDown(evt) {
-    evt.preventDefault()
-    pressEvent.intensity = 1;
+  function handleTouchEnd() {
     props.onPress(pressEvent);
+    isDownRef.current = false;
   }
 };
