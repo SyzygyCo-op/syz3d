@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as AntD from "antd";
-import { SettingFilled } from "@ant-design/icons";
+import { SettingFilled, ReloadOutlined } from "@ant-design/icons";
 import { NameTag } from "./NameTag";
 import { zIndexes } from "../../../state/UILayering";
 
@@ -30,6 +30,16 @@ export const HeadsUp = (props) => {
       <button onClick={props.onAvatarEdit}>
         <NameTag name={props.localPlayerName} />
       </button>
+
+      {process.env.NODE_ENV === "development" && (
+        <button onClick={reloadPage}>
+          <ReloadOutlined />
+        </button>
+      )}
     </AntD.Space>
   );
+
+  function reloadPage() {
+    location.reload();
+  }
 };
