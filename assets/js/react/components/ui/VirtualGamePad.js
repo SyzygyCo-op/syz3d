@@ -15,6 +15,9 @@ export const VirtualGamePad = () => {
   return (
     <>
       <SideBar zIndex={zIndexes.virtualGamePad} side="left">
+        <JoyStick onMove={handleMove} label="move" />
+      </SideBar>
+      <SideBar zIndex={zIndexes.virtualGamePad} side="right">
         <button
           style={{
             height: "10vw",
@@ -28,9 +31,6 @@ export const VirtualGamePad = () => {
           Jump
         </button>
         <JoyStick onMove={handleLook} label="look" />
-      </SideBar>
-      <SideBar zIndex={zIndexes.virtualGamePad} side="right">
-        <JoyStick onMove={handleMove} label="move" />
       </SideBar>
     </>
   );
