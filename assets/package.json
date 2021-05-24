@@ -11,7 +11,7 @@
     "@react-three/fiber": "^6.0.16",
     "antd": "^4.14.0",
     "debounce": "^1.2.1",
-    "dreamt": "^0.6.18",
+    "dreamt": "^0.7.3",
     "ecsy": "^0.4.2",
     "lodash-es": "^4.17.21",
     "mobx": "^6.0.4",

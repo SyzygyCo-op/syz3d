@@ -2,10 +2,12 @@ import "../css/app.css";
 import "reset-css";
 import "phoenix_html";
 import NProgress from "nprogress";
+import "./locator";
 import { gameLoop } from "./world";
 import { startReactApp } from "./react";
 import { preloadAssets } from "./state";
 import { configure } from "mobx";
+
 
 configure({
   enforceActions: "always",
