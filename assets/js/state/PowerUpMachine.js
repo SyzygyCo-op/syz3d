@@ -35,7 +35,6 @@ export class PowerUpMachine {
   sendTick() {
     if(this.activeBits > 0) {
       this.powerUps++;
-      console.log("powerUps", this.powerUps);
     }
 
     if(this.result === 1) {
