@@ -69,6 +69,17 @@ export const SettingsModalBody = (props) => {
         </AntD.Col>
       </AntD.Row>
       <AntD.Row style={{ margin: "1rem" }}>
+        <AntD.Col flex="auto">
+          <AntD.Form.Item
+            label="3rd person view"
+            name="shouldUse3rdPersonCamera"
+            valuePropName="checked"
+          >
+            <AntD.Switch />
+          </AntD.Form.Item>
+        </AntD.Col>
+      </AntD.Row>
+      <AntD.Row style={{ margin: "1rem" }}>
         <AntD.Button onClick={toggleFullScreen}>
           {uiFullScreen.isActive ? (
             <FullscreenExitOutlined />

@@ -48,6 +48,7 @@ export const ReactApp = observer(
     const settingsFields = mapStateToFields(userSettings, [
       "shouldShowNameTags",
       "shouldShowVirtualGamePad",
+      "shouldUse3rdPersonCamera"
     ]);
 
     const fullScreenElementRef = React.useCallback((element) => {
