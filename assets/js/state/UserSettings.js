@@ -1,7 +1,7 @@
 import * as MOBX from "mobx";
 
 export class UserSettings {
-  shouldShowNameTags = false;
+  shouldShowNameTags = true;
   cameraSetback = 2;
   shouldShowVirtualGamePad = window.innerWidth < 1200;
   shouldUse3rdPersonCamera = window.innerWidth > 1200;
