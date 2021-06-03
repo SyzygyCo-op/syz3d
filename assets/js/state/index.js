@@ -51,7 +51,7 @@ export async function preloadAssets() {
   await Promise.all(assets.map((a) => a.preload()));
 }
 
-export const userSettings = new UserSettings();
+export const userSettings = new UserSettings({windowInnerWidth: window.innerWidth});
 
 export const uiFullScreen = new UIFullScreen();
 
