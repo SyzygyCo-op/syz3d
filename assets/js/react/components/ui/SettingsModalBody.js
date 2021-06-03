@@ -89,7 +89,7 @@ export const SettingsModalBody = (props) => {
         </AntD.Button>
       </AntD.Row>
       <p style={{ textAlign: "center" }}>
-        Made with <HeartTwoTone twoToneColor="#000" /> in my dungeon.
+        Made with <HeartTwoTone twoToneColor="#000" /> in my nest.
       </p>
     </AntD.Form>
   );
