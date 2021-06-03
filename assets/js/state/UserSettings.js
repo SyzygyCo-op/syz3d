@@ -1,12 +1,34 @@
 import * as MOBX from "mobx";
+import * as _ from "lodash-es";
 
+/**
+ * @namespace UserSettings
+ * @typedef {{
+ *   cameraSetback: number;
+ *   shouldShowNameTags: boolean;
+ *   shouldShowVirtualGamePad: boolean;
+ *   shouldUse3rdPersonCamera: boolean;
+ * }} UserSettings.IData
+ *
+ * @typedef {{ windowInnerWidth: number }} UserSettings.IEnv
+ */
+
+/** @extends UserSettings.IData */
 export class UserSettings {
+  static writableProperties = [
+    "cameraSetback",
+    "shouldShowNameTags",
+    "shouldShowVirtualGamePad",
+    "shouldUse3rdPersonCamera",
+  ];
+
   shouldShowNameTags = true;
   cameraSetback = 2;
-  shouldShowVirtualGamePad = window.innerWidth < 1200;
-  shouldUse3rdPersonCamera = window.innerWidth > 1200;
 
-  constructor() {
+  /** @param {UserSettings.IEnv} env */
+  constructor(env) {
+    this.shouldShowVirtualGamePad = env.windowInnerWidth < 1200;
+    this.shouldUse3rdPersonCamera = env.windowInnerWidth > 1200;
     MOBX.makeAutoObservable(this);
   }
 
@@ -14,9 +36,11 @@ export class UserSettings {
     this.shouldShowNameTags = !this.shouldShowNameTags;
   }
 
-  update(values) {
-    this.shouldShowNameTags = values.shouldShowNameTags;
-    this.shouldShowVirtualGamePad = values.shouldShowVirtualGamePad;
-    this.shouldUse3rdPersonCamera = values.shouldUse3rdPersonCamera;
+  /** @param {Partial<UserSettings.IData>} source */
+  update(source) {
+    Object.assign(
+      this,
+      _.defaults(_.pick(source, UserSettings.writableProperties), this)
+    );
   }
 }
