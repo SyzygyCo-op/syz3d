@@ -91,6 +91,9 @@ export const SettingsModalBody = (props) => {
       <p style={{ textAlign: "center" }}>
         Made with <HeartTwoTone twoToneColor="#000" /> in my nest.
       </p>
+      <p style={{ textAlign: "center" }}>
+        No animals were harmed in the making of this game.
+      </p>
     </AntD.Form>
   );
 
