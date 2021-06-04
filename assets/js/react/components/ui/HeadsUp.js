@@ -1,6 +1,10 @@
 import * as React from "react";
 import * as AntD from "antd";
-import { SettingFilled, ReloadOutlined } from "@ant-design/icons";
+import {
+  SettingFilled,
+  ReloadOutlined,
+  QuestionCircleFilled,
+} from "@ant-design/icons";
 import { NameTag } from "./NameTag";
 import { zIndexes } from "../../../state/UILayering";
 
@@ -8,6 +12,7 @@ import { zIndexes } from "../../../state/UILayering";
  * @param {{
  *   onAvatarEdit: () => void;
  *   onSettingsOpen: () => void;
+ *   onHelpOpen: () => void;
  *   localPlayerName: string;
  * }} props
  */
@@ -25,6 +30,10 @@ export const HeadsUp = (props) => {
     >
       <button onClick={props.onSettingsOpen}>
         <SettingFilled style={{ fontSize: "1.5rem" }} />
+      </button>
+
+      <button onClick={props.onHelpOpen}>
+        <QuestionCircleFilled style={{ fontSize: "1.5rem" }} />
       </button>
 
       <button onClick={props.onAvatarEdit}>

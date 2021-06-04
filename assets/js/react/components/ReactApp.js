@@ -11,6 +11,8 @@ import { CollisionHelper } from "./CollisionHelper";
 import { mapStateToFields } from "./ui/Form";
 import { VirtualGamePad } from "./ui/VirtualGamePad";
 import { zIndexes } from "../../state/UILayering";
+import { Modal } from 'antd';
+import { HelpModalBody } from './ui/HelpModalBody';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -45,6 +47,7 @@ export const ReactApp = observer(
 
     const camera = world.getSystem(CameraSystem).camera;
 
+    // TODO use static field?
     const settingsFields = mapStateToFields(userSettings, [
       "shouldShowNameTags",
       "shouldShowVirtualGamePad",
@@ -61,6 +64,7 @@ export const ReactApp = observer(
           <UI.HeadsUp
             onAvatarEdit={handleAvatarEdit}
             onSettingsOpen={handleSettingsOpen}
+            onHelpOpen={handleHelpOpen}
             localPlayerName={state.localPlayer.actual.label}
           />
           <div className="Scene" style={{ zIndex: zIndexes.scene }}>
@@ -112,6 +116,11 @@ export const ReactApp = observer(
               validateTrigger="onChange"
             />
           </UI.Drawer>
+          <Modal
+            title="help"
+            visible={state.openModalId === "HELP"}
+            footer={[]}
+          ><HelpModalBody/></Modal>
           {userSettings.shouldShowVirtualGamePad && <VirtualGamePad />}
         </main>
       </ErrorBoundary>
@@ -119,6 +128,10 @@ export const ReactApp = observer(
 
     function handleSettingsOpen() {
       state.setOpenModal("SETTINGS");
+    }
+
+    function handleHelpOpen() {
+      state.setOpenModal("HELP");
     }
 
     function handleSettingsChange(changedValues) {
