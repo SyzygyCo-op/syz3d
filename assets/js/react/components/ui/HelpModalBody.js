@@ -77,12 +77,20 @@ const nodeControlsKeyboard = (
   </>
 );
 
+const nodeControlsMouse = (
+  <>
+    <Title level={3}>mouse</Title>
+    <p>A left-click within the game locks the mouse so that it can be used to control the camera view. Left-click again to unlock.</p>
+  </>
+);
+
 /** @type React.FunctionComponent */
 export const HelpModalBody = () => {
   return (
     <>
       <Title level={1}>controls</Title>
       {nodeControlsKeyboard}
+      {nodeControlsMouse}
       <Title level={1}>tips</Title>
       {userSettings.shouldShowVirtualGamePad && nodeAddToHomeScreen}
     </>
