@@ -7,6 +7,8 @@ import { PowerUpMachine } from "./PowerUpMachine";
 import { UIFullScreen } from "./UIFullScreen";
 import { UserSettings } from "./UserSettings";
 
+export * as keyMap from './KeyMap';
+
 export class PlayerState {
   is_player = true;
   render_to_canvas = true;
