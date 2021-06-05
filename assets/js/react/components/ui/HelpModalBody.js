@@ -67,7 +67,7 @@ const nodeControlsKeyboard = (
           <>
             <dt style={{float: "left"}}>{keyMap.getHumanReadableName(actionName)}</dt>
             <dd style={{float: "right"}}>
-              {keyMap.getKeyNames(actionName).map((name) => <><Text keyboard>{name}</Text>,</>)}
+              {keyMap.getKeyNames(actionName).map((name, idx, ary) => <><Text keyboard>{name}</Text>{idx < ary.length -1 ? "," : ""}</>)}
             </dd>
             <br/>
           </>
