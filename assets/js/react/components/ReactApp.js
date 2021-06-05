@@ -120,6 +120,8 @@ export const ReactApp = observer(
             title="help"
             visible={state.openModalId === "HELP"}
             footer={[]}
+            onCancel={handleModalClose}
+            onOk={handleModalClose}
           ><HelpModalBody/></Modal>
           {userSettings.shouldShowVirtualGamePad && <VirtualGamePad />}
         </main>
