@@ -8,7 +8,7 @@ const mapping = {
   "TURN_RIGHT": ["D", "→"],
   "JUMP": ["SPACEBAR"],
   "SLOW_DOWN": ["SHIFT"],
-  "SHOW_NAMETAGS": ["N"],
+  "TOGGLE_NAMETAGS": ["N"],
 };
 
 export function getActions() {
