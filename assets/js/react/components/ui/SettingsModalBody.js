@@ -60,7 +60,7 @@ export const SettingsModalBody = (props) => {
       <AntD.Row style={{ margin: "1rem" }}>
         <AntD.Col flex="auto">
           <AntD.Form.Item
-            label="On-screen controls"
+            label="touchscreen controls"
             name="shouldShowVirtualGamePad"
             valuePropName="checked"
           >
