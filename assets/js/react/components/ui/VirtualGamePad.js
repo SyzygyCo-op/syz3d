@@ -29,8 +29,8 @@ export const VirtualGamePad = () => {
   function handleLook(evt) {
     TurnCommand.executePure(
       localPlayer,
-      evt.yDistance * 0.2,
-      -evt.xDistance * 0.2
+      evt.yDistance * 0.8,
+      -evt.xDistance * 0.8
     );
   }
 
