@@ -84,6 +84,7 @@ const nodeControlsMouse = (
   <>
     <Title level={3}>mouse</Title>
     <p>A left-click within the game locks the mouse so that it can be used to control the camera view. Left-click again to unlock.</p>
+    <p><Text strong>Note:</Text> I've noticed an issue with the mouse when using Firefox. If it's acting weird for you, try another browser (like Chrome).</p>
   </>
 );
 
