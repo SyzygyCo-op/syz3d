@@ -29,7 +29,7 @@ export class PowerUpMachine {
 
   // TODO should be no-op if not in STATE_STARTED?
   sendTick() {
-    if(this.result < 1) {
+    if(this.result < 1 && this.state === PowerUpMachine.STATE_STARTED) {
       this.powerUps++;
     }
   }

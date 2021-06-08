@@ -8,7 +8,6 @@ describe("PowerUpMachine", () => {
   });
   test("result correlates to number of tick messages between a start message and a finish message", () => {
     const result0 = sut.result;
-    sut.sendTick();
     sut.sendStart();
     sut.sendTick();
     const result1 = sut.result;
@@ -19,10 +18,21 @@ describe("PowerUpMachine", () => {
     expect(result1 > result0).toBe(true)
     expect(result2 > result1).toBe(true)
   });
+  test("ticks before start do not count", () => {
+    sut.sendTick();
+    sut.sendStart();
+    expect(sut.result).toBe(0);
+  });
+  test("ticks after finish do not count", () => {
+    sut.sendStart();
+    sut.sendFinish();
+    sut.sendTick();
+    expect(sut.result).toBe(0);
+  });
   test("result is between zero and one", () => {
     expect(sut.result).toBe(0)
     sut.sendStart();
-    new Array(maxPowerUps + 1).fill(0).forEach(() => sut.sendTick())
+    new Array(maxPowerUps * 2).fill(0).forEach(() => sut.sendTick())
     expect(sut.result).toBe(1)
   });
   test("is finished after recieve finish message", () => {
