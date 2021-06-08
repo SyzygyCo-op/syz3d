@@ -25,11 +25,6 @@ describe("PowerUpMachine", () => {
     new Array(maxPowerUps + 1).fill(0).forEach(() => sut.sendTick())
     expect(sut.result).toBe(1)
   });
-  test("finishes when result reaches 1", () => {
-    sut.sendStart();
-    new Array(maxPowerUps + 1).fill(0).forEach(() => sut.sendTick())
-    expect(sut.finished).toBe(true)
-  });
   test("is finished after recieve finish message", () => {
     sut.sendStart();
     sut.sendFinish();

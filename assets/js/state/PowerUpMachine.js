@@ -12,7 +12,7 @@ export class PowerUpMachine {
   }
 
   get finished() {
-    return this.state === PowerUpMachine.STATE_FINISHED || this.result === 1;
+    return this.state === PowerUpMachine.STATE_FINISHED;
   }
 
   get started() {
