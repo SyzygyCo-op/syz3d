@@ -1,6 +1,7 @@
 
 // TODO replace TURN_* with STRAFE_*
 // TODO use this as source of truth in InputSystem
+// TODO add settings (*) and help (?) key maps
 const mapping = {
   "MOVE_FORWARD": ["W", "↑"],
   "TURN_LEFT": ["A", "←"],

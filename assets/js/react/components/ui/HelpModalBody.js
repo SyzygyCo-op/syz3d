@@ -1,8 +1,11 @@
 import * as React from "react";
-import { userSettings, keyMap } from "../../../state";
+import { keyMap } from "../../../state";
 import { Collapse } from "antd";
 import { List } from "./List";
 import { Typography } from "antd";
+import {
+  SettingFilled,
+} from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 
@@ -84,6 +87,13 @@ const nodeControlsMouse = (
   </>
 );
 
+const nodeControlsVirtualGamePad = (
+  <>
+    <Title level={3}>on-screen mobile controls</Title>
+    <p>Handy for, and enabled by default, on mobile devices. Can be toggled in the <SettingFilled/> settings panel. Features two virtual joysticks, one for controlling the camera and the other for moving. Also a button for jumping. Coming soon: tap on joystick to jump.</p>
+  </>
+);
+
 /** @type React.FunctionComponent */
 export const HelpModalBody = () => {
   return (
@@ -91,8 +101,9 @@ export const HelpModalBody = () => {
       <Title level={1}>controls</Title>
       {nodeControlsKeyboard}
       {nodeControlsMouse}
+      {nodeControlsVirtualGamePad}
       <Title level={1}>tips</Title>
-      {userSettings.shouldShowVirtualGamePad && nodeAddToHomeScreen}
+      {nodeAddToHomeScreen}
     </>
   );
 };
