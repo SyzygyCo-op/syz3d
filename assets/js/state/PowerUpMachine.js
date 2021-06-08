@@ -1,7 +1,7 @@
 export class PowerUpMachine {
   static STATE_INIT = 0;
-  static STATE_STARTED = 1;
-  static STATE_FINISHED = 2;
+  static STATE_KEY_DOWN = 1;
+  static STATE_OK = 2;
 
   /** @param {number} maxPowerUps
     */
@@ -12,30 +12,32 @@ export class PowerUpMachine {
   }
 
   get finished() {
-    return this.state === PowerUpMachine.STATE_FINISHED;
+    return this.state === PowerUpMachine.STATE_OK;
   }
 
   get started() {
-    return this.state === PowerUpMachine.STATE_STARTED;
+    return this.state === PowerUpMachine.STATE_KEY_DOWN;
   }
 
   get result() {
     return Math.sqrt(this.powerUps) / this.maxPowerUpsSqrt;
   }
 
-  sendStart() {
-    this.state = PowerUpMachine.STATE_STARTED;
+  sendKeyDown() {
+    this.state = PowerUpMachine.STATE_KEY_DOWN;
   }
 
-  // TODO should be no-op if not in STATE_STARTED?
   sendTick() {
-    if(this.result < 1 && this.state === PowerUpMachine.STATE_STARTED) {
+    if(this.result < 1 && this.state === PowerUpMachine.STATE_KEY_DOWN) {
       this.powerUps++;
+      if(this.result === 1) {
+        this.state = PowerUpMachine.STATE_OK;
+      }
     }
   }
 
-  sendFinish() {
-    this.state = PowerUpMachine.STATE_FINISHED;
+  sendKeyUp() {
+    this.state = PowerUpMachine.STATE_OK;
   }
 
   reset() {
