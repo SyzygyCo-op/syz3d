@@ -91,7 +91,7 @@ const nodeControlsMouse = (
 const nodeControlsVirtualGamePad = (
   <>
     <Title level={3}>touchscreen controls</Title>
-    <p>Handy for, and enabled by default, on mobile devices. Can be toggled in the <SettingFilled/> settings panel. Features two virtual joysticks, one for controlling the camera and the other for moving. Also a button for jumping. Coming soon: tap on joystick to jump.</p>
+    <p>Handy for, and enabled by default, on mobile devices. Can be toggled in the <SettingFilled/> settings panel. Features two virtual joysticks, one for controlling the camera and the other for moving. Tap on the look/jump joystick to jump.</p>
   </>
 );
 

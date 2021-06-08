@@ -10,7 +10,8 @@ import { find } from "lodash-es";
  *   yDistance: number;
  * }} JoyStickMoveEvent
  * @type React.FunctionComponent<{label: String, onMove: (evt:
- *   JoyStickMoveEvent) => void}>
+ *   JoyStickMoveEvent) => void, onTouchStart?: (evt: React.TouchEvent) => void,
+ *   onTouchEnd?: (evt: React.TouchEvent) => void}>
  */
 export const JoyStick = (props) => {
   const radius = "30vw";
@@ -106,6 +107,9 @@ export const JoyStick = (props) => {
 
   /** @param {React.TouchEvent} evt */
   function handleTouchStart(evt) {
+    if (props.onTouchStart) {
+      props.onTouchStart(evt);
+    }
     const touch = evt.targetTouches[0];
     isActiveRef.current = true;
     touchIdRef.current = touch.identifier;
@@ -116,7 +120,11 @@ export const JoyStick = (props) => {
       containerRef.current
     );
   }
-  function handleTouchEnd() {
+  /** @param {React.TouchEvent} evt */
+  function handleTouchEnd(evt) {
+    if (props.onTouchEnd) {
+    props.onTouchEnd(evt);
+    }
     isActiveRef.current = false;
   }
 
@@ -148,7 +156,9 @@ function setStickStyle(style, xDistance, yDistance) {
 
 /** @returns JoyStickMoveEvent */
 export const createMoveEvent = () => ({
-  dominantDirection: /** @type JoyStickMoveEvent["dominantDirection"] */ ("left"),
+  dominantDirection: /** @type JoyStickMoveEvent["dominantDirection"] */ (
+    "left"
+  ),
   angle: 0,
   xDistance: 0,
   yDistance: 0,
@@ -234,7 +244,10 @@ function updateMoveEventWithMouseEvent(moveEvent, mouseEvent) {
  * @param {HTMLElement} target
  */
 function updateMoveEventWithTouchEvent(moveEvent, touchEvent, touchId, target) {
-  const touch = find(touchEvent.targetTouches, (touch) => touch.identifier === touchId);
+  const touch = find(
+    touchEvent.targetTouches,
+    (touch) => touch.identifier === touchId
+  );
   return touch
     ? updateMoveEvent(
         moveEvent,

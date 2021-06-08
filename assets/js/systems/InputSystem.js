@@ -5,12 +5,11 @@ import {
   PlayerTag,
 } from "../components";
 import { StateSystem } from "./StateSystem";
-import { jumpPowerUpMachine, userSettings } from "../state";
+import { jumpStateMachine, userSettings } from "../state";
 import { CommandMenu } from "../CommandMenu";
 import { TurnCommand } from "../commands";
 import { PLAYER_MAX_JUMP_ACCEL } from "../config";
 import { isMine } from "../utils";
-import { BIT_KEYBOARD } from "../state/PowerUpMachine";
 
 export class InputSystem extends DRMT.System {
   static queries = {
@@ -28,6 +27,7 @@ export class InputSystem extends DRMT.System {
   keyDownUp = false;
   keyDownDown = false;
   keyDownJump = false;
+  keyWasDownJump = false;
   keyDownShift = false;
 
   /** @type HTMLCanvasElement */
@@ -161,27 +161,29 @@ export class InputSystem extends DRMT.System {
       // Jumping and gravity
       // TODO move to jump system
       if (
-        entity.getComponent(PlayerInternalsComponent).isTouchingStableSurface &&
-        this.keyDownJump
+        entity.getComponent(PlayerInternalsComponent).isTouchingStableSurface
       ) {
-        if (!jumpPowerUpMachine.finished) {
-          jumpPowerUpMachine.sendStart(BIT_KEYBOARD);
+        if (this.keyDownJump && !this.keyWasDownJump) {
+          jumpStateMachine.sendKeyDown();
         }
-      }
 
-      if (jumpPowerUpMachine.started && !this.keyDownJump) {
-        jumpPowerUpMachine.sendFinish(BIT_KEYBOARD);
-      }
+        if (!this.keyDownJump && this.keyWasDownJump) {
+          jumpStateMachine.sendKeyUp();
+        }
 
-      if (jumpPowerUpMachine.finished) {
-        CommandMenu.jump.execute(
-          entity,
-          jumpPowerUpMachine.result * PLAYER_MAX_JUMP_ACCEL
-        );
-        jumpPowerUpMachine.reset();
+        if (jumpStateMachine.finished) {
+          if (jumpStateMachine.resultOk) {
+            CommandMenu.jump.execute(
+              entity,
+              jumpStateMachine.result * PLAYER_MAX_JUMP_ACCEL
+            );
+          }
+          jumpStateMachine.reset();
+        }
+        jumpStateMachine.sendTick();
       }
-      jumpPowerUpMachine.sendTick();
     }
+    this.keyWasDownJump = this.keyDownJump;
   }
   getLocalPlayer() {
     return this.queries.players.results.find(isMine);

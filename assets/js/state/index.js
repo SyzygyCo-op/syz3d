@@ -147,4 +147,4 @@ export class ObservableState {
 export const correspondentCache = DRMT.Correspondent.createEmptyBox();
 export const entityStore = DRMT.Correspondent.createEntityStore();
 
-export const jumpPowerUpMachine = new PowerUpMachine(5);
+export const jumpStateMachine = new PowerUpMachine(7);

@@ -3,34 +3,24 @@ import { zIndexes } from "../../../state/UILayering";
 import { SideBar } from "./SideBar";
 import { JoyStick, JoyStickMoveEvent } from "./JoyStick";
 import { localPlayer } from "../../../localPlayer";
-import {
-  addStrafeVelocity,
-  TurnCommand,
-} from "../../../commands";
+import { addStrafeVelocity, TurnCommand } from "../../../commands";
 import { PlayerInternalsComponent } from "../../../components";
-import { jumpPowerUpMachine } from "../../../state";
-import { BIT_VIRTUAL_GAMEPAD } from "../../../state/PowerUpMachine";
+import { jumpStateMachine } from "../../../state";
 
 export const VirtualGamePad = () => {
   return (
     <>
       <SideBar zIndex={zIndexes.virtualGamePad} side="left">
-        <JoyStick onMove={handleMove} label="move" />
+        <JoyStick onMove={handleLook} label="look/jump"
+          onTouchEnd={handleJumpTouchEnd}
+          onTouchStart={handleJumpTouchStart}
+        />
       </SideBar>
       <SideBar zIndex={zIndexes.virtualGamePad} side="right">
-        <button
-          style={{
-            height: "10vw",
-            backgroundColor: "rgba(255, 255, 255, 0.2)",
-            textShadow: "1px 1px 1px rgba(0, 0, 0, 0.5)",
-            textTransform: "uppercase",
-          }}
-          onTouchStart={handleStartJump}
-          onTouchEnd={handleEndJump}
-        >
-          Jump
-        </button>
-        <JoyStick onMove={handleLook} label="look" />
+        <JoyStick
+          label="move"
+          onMove={handleMove}
+        />
       </SideBar>
     </>
   );
@@ -53,17 +43,19 @@ export const VirtualGamePad = () => {
     );
   }
 
-  function handleStartJump() {
+  function handleJumpTouchEnd() {
+    // TODO maybe physics system should tell the state machine when player is able to jump?
     if (
-      localPlayer.getComponent(PlayerInternalsComponent)
-        .isTouchingStableSurface &&
-      !jumpPowerUpMachine.started
+      localPlayer.getComponent(PlayerInternalsComponent).isTouchingStableSurface
     ) {
-      jumpPowerUpMachine.sendStart(BIT_VIRTUAL_GAMEPAD);
+      jumpStateMachine.sendTouchEnd();
     }
   }
-
-  function handleEndJump() {
-    jumpPowerUpMachine.sendFinish(BIT_VIRTUAL_GAMEPAD);
+  function handleJumpTouchStart() {
+    if (
+      localPlayer.getComponent(PlayerInternalsComponent).isTouchingStableSurface
+    ) {
+      jumpStateMachine.sendTouchStart();
+    }
   }
 };
