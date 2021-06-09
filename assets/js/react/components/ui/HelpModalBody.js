@@ -40,7 +40,7 @@ const nodeAddToHomeScreen = (
           <List.Item>
             Tap the share button in iOS (looks like{" "}
             <img
-              src="https://developer.apple.com/design/human-interface-guidelines/ios/images/icons/navigation_bar_toobar_icons/Navigation_Action.png"
+              src="/images/iOS-share-icon.png"
               alt="share button"
               style={{ height: "1em" }}
             />
