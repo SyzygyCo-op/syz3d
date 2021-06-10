@@ -137,11 +137,6 @@ export class ObservableState {
   setOpenModal(modalId) {
     this.openModalId = modalId;
   }
-
-  /** @param {ISettings} settings */
-  updateSettings(settings) {
-    Object.assign(this, settings);
-  }
 }
 
 export const correspondentCache = DRMT.Correspondent.createEmptyBox();
