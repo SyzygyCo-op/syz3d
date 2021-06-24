@@ -3,10 +3,11 @@ import "reset-css";
 import "phoenix_html";
 import NProgress from "nprogress";
 import "./locator";
-import { gameLoop } from "./world";
+import { gameLoop, world } from "./world";
 import { startReactApp } from "./react";
 import { preloadAssets } from "./state";
 import { configure } from "mobx";
+import {StateSystem} from "./systems";
 
 
 configure({
@@ -25,6 +26,7 @@ console.info("preloading assets");
 preloadAssets().then(() => {
   console.info("starting game loop");
   gameLoop.start();
+  world.getSystem(StateSystem).observable.setOpenModal("WELCOME")
 
   startReactApp();
 

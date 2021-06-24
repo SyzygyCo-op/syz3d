@@ -57,7 +57,7 @@ export const userSettings = new UserSettings({windowInnerWidth: window.innerWidt
 
 export const uiFullScreen = new UIFullScreen();
 
-/** @typedef {"EDIT_MY_AVATAR" | "SETTINGS" | "HELP"} ModalID */
+/** @typedef {"EDIT_MY_AVATAR" | "SETTINGS" | "HELP" | "WELCOME"} ModalID */
 export class ObservableState {
   /** @type {null | ModalID} */
   openModalId = null;

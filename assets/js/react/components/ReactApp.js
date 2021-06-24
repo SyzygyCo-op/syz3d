@@ -13,6 +13,7 @@ import { VirtualGamePad } from "./ui/VirtualGamePad";
 import { zIndexes } from "../../state/UILayering";
 import { Modal } from 'antd';
 import { HelpModalBody } from './ui/HelpModalBody';
+import { WelcomeModalBody } from './ui/WelcomeModalBody';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -123,6 +124,13 @@ export const ReactApp = observer(
             onCancel={handleModalClose}
             onOk={handleModalClose}
           ><HelpModalBody/></Modal>
+          <Modal
+            title="welcome"
+            visible={state.openModalId === "WELCOME"}
+            footer={[]}
+            onCancel={handleModalClose}
+            onOk={handleModalClose}
+          ><WelcomeModalBody/></Modal>
           {userSettings.shouldShowVirtualGamePad && <VirtualGamePad />}
         </main>
       </ErrorBoundary>
