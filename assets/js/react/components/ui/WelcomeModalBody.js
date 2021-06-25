@@ -56,6 +56,9 @@ export const WelcomeModalBody = () => {
         <a href="https://github.com/SyzygyCo-op/syz3d">Github</a> if you're in
         to that sort of thing.
       </Paragraph>
+      <Paragraph>
+        Follow <a href="https://twitter.com/skwerelz">@skwerelz</a> on Twitter for updates.
+      </Paragraph>
     </>
   );
 };
