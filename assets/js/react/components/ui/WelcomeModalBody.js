@@ -27,8 +27,8 @@ export const WelcomeModalBody = () => {
         was making at first. The desire to make a platformer was present, but I
         was also feeling the isolation of the lockdown, so I also wanted
         something that would facilitate virtually hanging out with people. Hence
-        everyone who comes to this site can see each other and explore a shared
-        environment.
+        everyone who comes to this site can see each other (or rather, their
+        squirrely avatars) and explore a shared environment.
       </Paragraph>
       <Paragraph>
         How does all this related to "glitch" (besides the{" "}
@@ -57,7 +57,8 @@ export const WelcomeModalBody = () => {
         to that sort of thing.
       </Paragraph>
       <Paragraph>
-        Follow <a href="https://twitter.com/skwerelz">@skwerelz</a> on Twitter for updates.
+        Follow <a href="https://twitter.com/skwerelz">@skwerelz</a> on Twitter
+        for updates.
       </Paragraph>
     </>
   );
