@@ -8,8 +8,7 @@ defmodule Syz3dWeb.Room.ShowView do
     if Mix.env == :prod do
       ~s(<script defer phx-track-static src="/js/app.js"></script>)
     else
-      {:ok, hostname} = :inet.gethostname
-      ~s(<script defer phx-track-static crossorigin src="http://#{hostname}:8080/js/app.js"></script>)
+      ~s(<script defer phx-track-static crossorigin src="http://localhost:8080/js/app.js"></script>)
     end
   end
 end
