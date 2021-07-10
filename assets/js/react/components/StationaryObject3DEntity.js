@@ -2,14 +2,14 @@
 import * as DRMT from "dreamt";
 import * as React from "react";
 import {
-  Object3DComponent,
+  VisibleObject3DComponent,
   ScaleComponent,
   PositionComponent,
   RotationComponent,
 } from "../../components";
 
 const stateComponentMap = {
-  object3d: Object3DComponent,
+  object3d: VisibleObject3DComponent,
   position: PositionComponent,
   rotation: RotationComponent,
   scale: ScaleComponent,

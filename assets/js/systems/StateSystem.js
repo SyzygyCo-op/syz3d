@@ -4,7 +4,8 @@ import {
   PlayerTag,
   UILabelComponent,
   PositionComponent,
-  GltfUrlComponent,
+  VisibleGltfUrlComponent,
+  CollisionGltfUrlComponent,
   BumpComponent,
   RotationComponent,
   VelocityComponent,
@@ -13,9 +14,8 @@ import {
   OwnershipComponent,
   FrictionComponent,
   MassComponent,
-  Object3DComponent,
+  VisibleObject3DComponent,
   CollisionBodyComponent,
-  UseGlftForCollisionTag,
   PlayerInternalsComponent,
 } from "../components";
 import { entityStore, ObservableState, PlayerState } from "../state";
@@ -33,10 +33,9 @@ export class StateSystem extends DRMT.System {
   static queries = {
     stationaryObject3D: {
       components: [
-        Object3DComponent,
+        VisibleObject3DComponent,
         DRMT.Not(VelocityComponent),
         DRMT.Not(AngularVelocityComponent),
-        DRMT.Not(UseGlftForCollisionTag),
       ],
       listen: {
         removed: true,
@@ -44,7 +43,7 @@ export class StateSystem extends DRMT.System {
     },
     movingObject3D: {
       components: [
-        Object3DComponent,
+        VisibleObject3DComponent,
         VelocityComponent,
         AngularVelocityComponent,
         OwnershipComponent,
@@ -74,12 +73,16 @@ export class StateSystem extends DRMT.System {
         read: () => {},
         write: (compo) => !!compo,
       })
-      .registerComponent("use_gltf_for_collision", UseGlftForCollisionTag, {
-        read: () => {},
-        write: (compo) => !!compo,
-      })
       .registerComponent("label", UILabelComponent)
-      .registerComponent("glft_url", GltfUrlComponent, {
+      .registerComponent("glft_url", VisibleGltfUrlComponent, {
+        read: (compo, data) => {
+          if (compo) {
+            /** @type any */ (compo).value = data;
+          }
+        },
+        write: (compo) => compo && /** @type any */ (compo).value,
+      })
+      .registerComponent("collision_glft_url", CollisionGltfUrlComponent, {
         read: (compo, data) => {
           if (compo) {
             /** @type any */ (compo).value = data;

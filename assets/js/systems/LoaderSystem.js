@@ -1,8 +1,10 @@
 import * as DRMT from "dreamt";
 import * as THREE from "three";
 import {
-  Object3DComponent,
-  GltfUrlComponent,
+  VisibleGltfUrlComponent,
+  VisibleObject3DComponent,
+  CollisionGltfUrlComponent,
+  CollisionObject3DComponent,
   BoundingBoxComponent,
 } from "../components";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
@@ -14,7 +16,14 @@ const tempVec3 = new THREE.Vector3();
 export class LoaderSystem extends DRMT.System {
   static queries = {
     glftUrls: {
-      components: [GltfUrlComponent],
+      components: [VisibleGltfUrlComponent],
+      listen: {
+        added: true,
+        changed: true,
+      },
+    },
+    collisionGlftUrls: {
+      components: [CollisionGltfUrlComponent],
       listen: {
         added: true,
         changed: true,
@@ -23,8 +32,10 @@ export class LoaderSystem extends DRMT.System {
   };
 
   execute() {
-    this.queries.glftUrls.added.forEach(entityReloadGltf);
-    this.queries.glftUrls.changed.forEach(entityReloadGltf);
+    this.queries.glftUrls.added.forEach(entityReloadVisibleGltf);
+    this.queries.glftUrls.changed.forEach(entityReloadVisibleGltf);
+    this.queries.collisionGlftUrls.added.forEach(entityReloadCollisionGltf);
+    this.queries.collisionGlftUrls.changed.forEach(entityReloadCollisionGltf);
   }
 }
 
@@ -49,16 +60,25 @@ const gltfLoader = new GLTFLoader();
 
 const cloneValue = ({ value }) => ({ value: value.clone() });
 
+async function entityReloadVisibleGltf(entity){
+  return await entityReloadGltf(entity, VisibleGltfUrlComponent, VisibleObject3DComponent)
+}
+async function entityReloadCollisionGltf(entity){
+  return await entityReloadGltf(entity, CollisionGltfUrlComponent, CollisionObject3DComponent)
+}
+
 /**
  * @param {DRMT.Entity} entity
+  * @param {DRMT.ComponentConstructor} UrlComponent
+  * @param {DRMT.ComponentConstructor} Object3DComponent
  */
-async function entityReloadGltf(entity) {
-  if (!entity.hasComponent(GltfUrlComponent)) {
-    console.error("entity", entity.id, "was expected to have GltfUrlComponent");
+async function entityReloadGltf(entity, UrlComponent, Object3DComponent) {
+  if (!entity.hasComponent(UrlComponent)) {
+    console.error("entity", entity.id, "was expected to have", UrlComponent.name);
     return;
   }
 
-  const url = entity.getComponent(GltfUrlComponent).value;
+  const url = /** @type any */(entity.getComponent(UrlComponent)).value;
 
   const result = await loadSceneFromGltf(url);
 

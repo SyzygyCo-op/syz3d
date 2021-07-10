@@ -52,20 +52,28 @@ export class MassComponent extends DRMT.Component {
 }
 
 /** Stores a URL pointing to a GLTF/GLB file */
-export class GltfUrlComponent extends DRMT.Component {
+export class VisibleGltfUrlComponent extends DRMT.Component {
   static schema = {
     value: { type: DRMT.Types.String },
   };
 }
 
-export class Object3DComponent extends DRMT.Component {
+export class CollisionGltfUrlComponent extends DRMT.Component {
+  static schema = {
+    value: { type: DRMT.Types.String },
+  };
+}
+
+export class VisibleObject3DComponent extends DRMT.Component {
   static schema = {
     value: { type: Object3DType },
   };
 }
-
-export class UseGlftForCollisionTag extends DRMT.TagComponent {}
-
+export class CollisionObject3DComponent extends DRMT.Component {
+  static schema = {
+    value: { type: Object3DType },
+  };
+}
 
 export class BoundingBoxComponent extends DRMT.Component {
   static schema = {

@@ -3,7 +3,7 @@ import * as React from "react";
 import {
   RotationTweenComponent,
   UILabelComponent,
-  Object3DComponent,
+  VisibleObject3DComponent,
   BoundingBoxComponent,
   ScaleComponent,
   PositionTweenComponent,
@@ -33,7 +33,7 @@ export const MovingObject3DEntity = ({ entity }) => {
   const stateComponentMap = React.useMemo(
     () => ({
       label: UILabelComponent,
-      object3d: Object3DComponent,
+      object3d: VisibleObject3DComponent,
       boundingBox: BoundingBoxComponent,
       position: USE_TWEENING && !isMyEntity ? PositionTweenComponent : PositionComponent,
       rotation: USE_TWEENING && !isMyEntity ? RotationTweenComponent : RotationComponent,

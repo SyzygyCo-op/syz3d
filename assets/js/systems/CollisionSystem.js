@@ -6,9 +6,8 @@ import {
   VelocityComponent,
   AngularVelocityComponent,
   CollisionBodyComponent,
-  UseGlftForCollisionTag,
-  Object3DComponent,
   PlayerInternalsComponent,
+  CollisionObject3DComponent,
 } from "../components";
 import { Octree } from "three-stdlib";
 import { isMine } from "../utils";
@@ -22,8 +21,7 @@ export class CollisionSystem extends DRMT.System {
   static queries = {
     staticBodies: {
       components: [
-        UseGlftForCollisionTag,
-        Object3DComponent,
+        CollisionObject3DComponent,
         DRMT.Not(VelocityComponent),
         DRMT.Not(AngularVelocityComponent),
       ],
@@ -57,7 +55,7 @@ export class CollisionSystem extends DRMT.System {
         const position = entity.getMutableComponent(PositionComponent).value;
         /** @type Vector3 */
         const velocity = entity.getMutableComponent(VelocityComponent).value;
-      /** @type CollisionBody */
+        /** @type CollisionBody */
         const body = entity.getComponent(CollisionBodyComponent).value;
         const internals = entity.getMutableComponent(PlayerInternalsComponent);
         capsuleCollider.start.copy(body.shapeArgs[0]).add(position);
@@ -88,7 +86,7 @@ export class CollisionSystem extends DRMT.System {
   addObject3DColliders(entities) {
     entities.forEach((entity) => {
       console.log("adding", entity.name, "to collision octree");
-      const object3d = entity.getComponent(Object3DComponent).value;
+      const object3d = entity.getComponent(CollisionObject3DComponent).value;
       this.octree.fromGraphNode(object3d);
       console.log("finished adding", entity.name, "to collision octree");
     });
