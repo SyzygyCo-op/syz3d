@@ -22,7 +22,7 @@ export const AvatarForm = (props) => {
         >
           <AntD.Input placeholder="Samuel L Jackson" type="text" />
         </AntD.Form.Item>
-        <AntD.Form.Item label="avatar" name="glft_url">
+        <AntD.Form.Item label="avatar" name="visible_gltf_url">
           <AntD.Radio.Group size="large">
             {avatars.map(({ previewImageUrl, assetUrl }) => {
               return (

@@ -22,7 +22,7 @@ export const WelcomeModalBody = () => {
       </Paragraph>
       <Paragraph>
         The Covid pandemic was a time of tragedies great and small, but also a
-        time of self-rediscovery for a lot of poeple, including me. That's when
+        time of self-discovery for a lot of poeple, including me. That's when
         I decided to sit down and do this thing. I didn't know exactly what I
         was making at first. The desire to make a platformer was present, but I
         was also feeling the isolation of the lockdown, so I also wanted

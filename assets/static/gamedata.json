@@ -1,7 +1,7 @@
 {
   "visible": {
-    "glft_url": "/3d/game.glb",
-    "collision_glft_url": "/3d/collision.glb",
+    "visible_gltf_url": "/3d/game.glb",
+    "collision_gltf_url": "/3d/collision.glb",
     "position": [0, 0, 0],
     "rotation": [0, 0, 0, "YXZ"],
     "scale": [1, 1, 1]

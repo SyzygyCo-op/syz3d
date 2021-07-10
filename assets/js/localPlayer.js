@@ -6,7 +6,7 @@ import { world } from "./world";
 console.log("creating local player");
 export const localPlayer = world.getSystem(StateSystem).createLocalPlayer({
   label: getPlayerName(),
-  glft_url: "/3d/squirrel-1.glb",
+  visible_gltf_url: "/3d/squirrel-1.glb",
   position: [0, 3, 0],
   scale: [0.4, 0.4, 0.4]
 });

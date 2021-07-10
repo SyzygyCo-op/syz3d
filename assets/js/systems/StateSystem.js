@@ -74,7 +74,7 @@ export class StateSystem extends DRMT.System {
         write: (compo) => !!compo,
       })
       .registerComponent("label", UILabelComponent)
-      .registerComponent("glft_url", VisibleGltfUrlComponent, {
+      .registerComponent("visible_gltf_url", VisibleGltfUrlComponent, {
         read: (compo, data) => {
           if (compo) {
             /** @type any */ (compo).value = data;
@@ -82,7 +82,7 @@ export class StateSystem extends DRMT.System {
         },
         write: (compo) => compo && /** @type any */ (compo).value,
       })
-      .registerComponent("collision_glft_url", CollisionGltfUrlComponent, {
+      .registerComponent("collision_gltf_url", CollisionGltfUrlComponent, {
         read: (compo, data) => {
           if (compo) {
             /** @type any */ (compo).value = data;
@@ -199,8 +199,8 @@ export class StateSystem extends DRMT.System {
           (localPlayerData &&
             localPlayerData.label !==
               this.observable.localPlayer.actual.label) ||
-          localPlayerData.glft_url !==
-            this.observable.localPlayer.actual.glft_url
+          localPlayerData.visible_gltf_url !==
+            this.observable.localPlayer.actual.visible_gltf_url
         ) {
           this.observable.localPlayer.setActual(
             /** @type any */ (localPlayerData)

@@ -14,7 +14,7 @@ export class PlayerState {
   render_to_canvas = true;
   label = "";
   /** @type string? */
-  glft_url = null;
+  visible_gltf_url = null;
   position = [0, 0, 0];
   rotation = [0, 0, 0, "YXZ"];
   scale = [1, 1, 1];
