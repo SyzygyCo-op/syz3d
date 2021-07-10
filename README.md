@@ -22,7 +22,7 @@ To start your Phoenix server:
 - Create and migrate your database with `mix ecto.setup`
 - Install Node.js dependencies with `npm install` inside the `assets` directory
 - Start postgres database server with `pg_ctl start -D ~/pgsql_data`
-- Start Phoenix endpoint with `mix phx.server` or `iex -S mix phx.server`
+- Start Phoenix endpoint with `mix dev` or `iex -S mix dev`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
