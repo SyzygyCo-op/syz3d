@@ -16,21 +16,8 @@ defmodule  Syz3d.Game do
   end
 
   def get_initial_data() do
-    %{
-      "river_island" => %{
-        "glft_url" => "/3d/game.glb",
-        "position" => [0, 0, 0],
-        "rotation" => [0, 0, 0, "YXZ"],
-        "scale" => [1, 1, 1],
-      },
-      "river_island_collision" => %{
-        "glft_url" => "/3d/collision.glb",
-        "position" => [0, 0, 0],
-        "rotation" => [0, 0, 0, "YXZ"],
-        "scale" => [1, 1, 1],
-        "use_gltf_for_collision" => true
-      },
-    }
+    {:ok, content} = File.read("./assets/static/gamedata.json")
+    Jason.decode!(content)
   end
 
   def list_test_entity_ids(player_id) do
