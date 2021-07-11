@@ -2,8 +2,6 @@ import * as DRMT from "dreamt";
 import { Euler, Vector3 } from "three";
 import { AngularVelocityComponent, PositionComponent, RotationComponent, VelocityComponent } from "../components";
 
-// TODO for wire format use something like Protobufs instead of JSON
-
 /**
  * @param {number} num
  */

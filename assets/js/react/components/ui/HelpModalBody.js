@@ -9,8 +9,6 @@ import {
 
 const { Title, Text } = Typography;
 
-// TODO add twitter account
-// TODO add intro/welcome modal that shoes while everything else is loading
 const nodeAddToHomeScreen = (
   <>
     <Title level={3}>install for better expirience on mobile!</Title>
