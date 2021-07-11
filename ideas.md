@@ -1,0 +1,7 @@
+- Tail flick animation
+- Jump from one to the other: Bricks that stick out of a wall
+- Mission: Steal shit from lawn
+  - requires 2X squirrels to carry, and 1X to distract dog
+- Describe missions as if they are normal squirrel activities but are actually subverting the enemy?
+- When falling, allow player to either spread out and glide or curl up and drop.
+- Listen to crow calls for danger signal (2 squawks, 1 rattle?)

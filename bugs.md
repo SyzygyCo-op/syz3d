@@ -1,0 +1,3 @@
+- Player name input is (only initially?) empty
+- Edges are visible on squirrel model
+- Make squirrel model less phalic
