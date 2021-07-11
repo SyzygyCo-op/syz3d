@@ -1,5 +1,5 @@
 {
-  "visible": {
+  "environment": {
     "visible_gltf_url": "/3d/game.glb",
     "collision_gltf_url": "/3d/collision.glb",
     "position": [0, 0, 0],
