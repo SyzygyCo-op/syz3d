@@ -87,12 +87,6 @@ export class UILabelComponent extends DRMT.Component {
   };
 }
 
-export class BumpComponent extends DRMT.Component {
-  static schema = {
-    value: { type: DRMT.Types.Number },
-  };
-}
-
 export class OwnershipComponent extends DRMT.Component {
   static schema = {
     value: { type: DRMT.Types.Number },

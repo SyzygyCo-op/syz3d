@@ -156,7 +156,6 @@ export class StateSystem extends DRMT.System {
           return JSON.stringify(data);
         },
       })
-      .registerComponent("bump", BumpComponent);
     this.worldCache = correspondentCache;
   }
 
